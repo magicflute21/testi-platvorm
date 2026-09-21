@@ -1,5 +1,10 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+@import "flowbite/src/themes/default";
+
+@plugin "flowbite/plugin";
+@source "../../node_modules/flowbite";
+
 
 /*#app {*/
 /*  font-weight: normal;*/
