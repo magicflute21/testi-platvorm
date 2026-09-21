@@ -16,7 +16,9 @@ npm run format     # Prettieri formaatimine src/ kaustas
 
 See on Vue 3 + Vite frontend (Vali-IT grupiprojekt).
 
-**Stack:** Vue 3 (Composition API), Vue Router 5, Pinia, Bootstrap 5, Axios, Phosphor Icons
+**Stack:** Vue 3 (Composition API), Vue Router 5, Pinia, Nuxt UI 4 (Tailwind CSS 4), Axios, Phosphor Icons
+
+**UI teek (Nuxt UI):** Kasutusel on `@nuxt/ui` Vue + Vite režiimis. Seadistus: `ui()` plugin `vite.config.js`-is, `app.use(ui)` `src/main.js`-is (peab tulema pärast `app.use(router)`), `@import "tailwindcss"` ja `@import "@nuxt/ui"` failis `src/assets/main.css`, juurkomponent `<UApp>` failis `src/App.vue` ning `class="isolate"` `index.html`-i `#app` elemendil. Komponendid (`UButton`, `UForm`, `UInput` jne) ja composable'id (`useToast` jne) on auto-importitud — neid ei pea käsitsi importima. Failid `components.d.ts` ja `auto-imports.d.ts` genereeritakse automaatselt. Bootstrapi CSS-i enam ei laeta.
 
 **Sisenemispunkt:** `index.html` laeb Vue rakenduse (`src/main.js` → `src/App.vue`).
 

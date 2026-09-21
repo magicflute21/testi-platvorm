@@ -1,25 +1,34 @@
-<template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 mb-3">
-    <RouterLink class="navbar-brand" to="/">Minu Projekt</RouterLink>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navMenu"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse justify-content-center" id="navMenu">
-      <div class="navbar-nav">
-        <RouterLink class="nav-link" to="/">Home</RouterLink>
-        <RouterLink class="nav-link" to="/test">Test</RouterLink>
-      </div>
-    </div>
-  </nav>
-
-  <RouterView />
-</template>
-
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
+<script>
+export default {
+  name: 'App',
+  data() {
+    return {
+      items: [
+        { label: 'Avaleht', to: '/' },
+        { label: 'Test', to: '/test' },
+      ],
+    }
+  },
+}
 </script>
+
+<template>
+  <UApp>
+    <UHeader title="SkillScope" to="/">
+      <UNavigationMenu :items="items" />
+
+      <template #right>
+        <!--        <UIcon name="i-lucide-user" class="size-5" />-->
+        <UButton to="/login">Logi sisse</UButton>
+      </template>
+
+      <template #body>
+        <UNavigationMenu :items="items" orientation="vertical" class="-mx-2.5" />
+      </template>
+    </UHeader>
+
+    <UMain>
+      <RouterView />
+    </UMain>
+  </UApp>
+</template>
