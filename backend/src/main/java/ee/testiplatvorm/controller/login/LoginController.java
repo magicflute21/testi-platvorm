@@ -2,6 +2,7 @@ package ee.testiplatvorm.controller.login;
 
 
 import ee.testiplatvorm.controller.login.dto.LoginRequest;
+import ee.testiplatvorm.controller.login.dto.LoginResponse;
 import ee.testiplatvorm.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,8 +17,9 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping("/api/login")
-    public void login(@RequestBody LoginRequest loginRequest) {
-        loginService.login(loginRequest);
+    public LoginResponse login(@RequestBody LoginRequest loginRequest) {
+        LoginResponse loginResponse =  loginService.login(loginRequest);
+        System.out.println(loginResponse);
+        return loginResponse;
     }
-
 }

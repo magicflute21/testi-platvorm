@@ -1,6 +1,7 @@
 package ee.testiplatvorm.persistence;
 
 import ee.testiplatvorm.persistence.group.Group;
+import ee.testiplatvorm.persistence.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

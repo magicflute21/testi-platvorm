@@ -1,6 +1,6 @@
 package ee.testiplatvorm.persistence.competence;
 
-import ee.testiplatvorm.persistence.User;
+import ee.testiplatvorm.persistence.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

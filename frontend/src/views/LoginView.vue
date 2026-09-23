@@ -1,6 +1,7 @@
 <script>
 import AlertDanger from '@/components/AlertDanger.vue'
-import LoginService from "@/services/LoginService.js";
+import LoginService from '@/services/LoginService.js'
+import NavigationService from '@/services/NavigationService.js'
 
 export default {
   name: 'LoginView',
@@ -17,11 +18,14 @@ export default {
       },
 
       loginResponse: {
-        userId: '',
+        userId: 0,
         roleName: '',
       },
 
-
+      errorResponse: {
+        message: '',
+        errorCode: '',
+      },
     }
   },
   methods: {
@@ -29,21 +33,27 @@ export default {
       this.showSpinner = true
       if (this.loginRequest.email === '' || this.loginRequest.password === '') {
         this.errorMessage = 'Täida kõik väljad!'
-
+        this.showSpinner = false
+      } else {
         LoginService.postLoginRequest(this.loginRequest)
-            .then(response => this.handleLoginResponse(response))
-            .catch(error => this.handleLoginErrorResponse(error))
-            .finally()
+          .then((response) => this.handleLoginResponse(response))
+          .catch((error) => this.handleLoginErrorResponse(error))
+          .finally(() => this.showSpinner = false)
       }
-
     },
     handleLoginResponse(response) {
       this.loginResponse = response.data
+      sessionStorage.setItem('userId', this.loginResponse.userId)
+      sessionStorage.setItem('roleName', this.loginResponse.roleName)
 
+      NavigationService.navigateToDashboard()
     },
     handleLoginErrorResponse(error) {
-      return undefined;
-    }
+      console.log(error)
+
+      this.errorResponse = error.response.data
+      this.errorMessage = this.errorResponse.message
+    },
   },
 }
 </script>
@@ -51,13 +61,13 @@ export default {
 <template>
   <div>
     <div class="container text-start col-5 mt-5">
-      <AlertDanger :error-message="errorMessage"/>
+      <AlertDanger :error-message="errorMessage" />
     </div>
     <div class="container text-start col-3 mt-5">
       <div class="row">
         <h1>Logi sisse</h1>
         <p>Sisesta oma konto email ja salasõna.</p>
-        <form>
+        <form @submit.prevent="login">
           <div class="mb-3">
             <input
               v-model="loginRequest.email"
@@ -66,7 +76,7 @@ export default {
               aria-describedby="emailHelp"
               placeholder="Email"
             />
-            <div id="emailHelp" class="form-text">Me ei jaga su emaili teistega.</div>
+            <div id="emailHelp" class="form-text">Su emaili ei jagata kolmandate osapooltega.</div>
           </div>
           <div class="mb-3">
             <input
