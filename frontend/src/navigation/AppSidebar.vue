@@ -12,7 +12,7 @@ export default {
     <div class="nav nav-pills flex-column">
       <RouterLink class="nav-link d-flex align-items-center gap-2" to="/">
         <PhHouse :size="20" />
-        Home
+        Töölaud
       </RouterLink>
       <RouterLink class="nav-link d-flex align-items-center gap-2" to="/test">
         <PhFlask :size="20" />

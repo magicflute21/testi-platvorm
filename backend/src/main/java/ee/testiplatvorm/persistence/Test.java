@@ -2,6 +2,7 @@ package ee.testiplatvorm.persistence;
 
 import ee.testiplatvorm.persistence.competence.Competence;
 import ee.testiplatvorm.persistence.competencelevel.CompetenceLevel;
+import ee.testiplatvorm.persistence.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

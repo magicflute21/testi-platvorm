@@ -1,6 +1,6 @@
 package ee.testiplatvorm.persistence.groupmanager;
 
-import ee.testiplatvorm.persistence.User;
+import ee.testiplatvorm.persistence.user.User;
 import ee.testiplatvorm.persistence.group.Group;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
