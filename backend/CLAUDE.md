@@ -17,7 +17,7 @@ See fail annab juhiseid Claude Code'ile (claude.ai/code) selles repositooriumis 
 ./gradlew test
 
 # Ühe testiklassi käivitamine
-./gradlew test --tests "ee.minuprojekt.MinuprojektApplicationTests"
+./gradlew test --tests "ee.testiplatvorm.service.UserServiceTest"
 
 # Ainult kompileerimine (käivitab ka MapStructi annotatsiooni töötluse)
 ./gradlew compileJava
@@ -32,11 +32,11 @@ PostgreSQL peab töötama `localhost`-is järgmiste seadetega:
 - Mugav DB url: `jdbc:postgresql://localhost:5432/vali_it`
 
 Käivita skriptid järjekorras kaustast `docs/database`:
-1. `1_reset_database.sql` — kustutab ja loob uuesti `minu_projekt` skeema
+1. `1_reset_database.sql` — kustutab ja loob uuesti `testi_platvorm` skeema
 2. `2_create.sql` — loob kõik tabelid
 3. `3_import.sql` — lisab algandmed
 
-Kõik tabelid asuvad `minu_projekt` skeemas.
+Kõik tabelid asuvad `testi_platvorm` skeemas (entiteedid: `@Table(..., schema = "testi_platvorm")`).
 
 ## Arhitektuur
 
@@ -57,7 +57,7 @@ Igal domeenialal on oma alampakk `controller/`-is koos DTOdega, teenusklass ja p
 
 **DTOd vs entiteedid** — Kontrollerid näevad ainult DTOsid. MapStructi mapperid (liidesed annotatsiooniga `@Mapper`) teisendavad DTOd JPA entiteetideks ja vastupidi. Genereeritud mapperi implementatsioonid tekivad kausta `src/main/generated/`.
 
-**Veakäsitlus** — Teenustest visatakse kohandatud erindeid (`DataNotFoundException`, `ForbiddenException`, `PrimaryKeyNotFoundException`), mille püüab kinni `RestExceptionHandler` (`@ControllerAdvice`). Kõik äriveateated ja numbrilised veakoodid on koondatud `ErrorResponse` enumi.
+**Veakäsitlus** — Teenustest visatakse kohandatud erindeid (`DataNotFoundException`, `ForbiddenException`, `PrimaryKeyNotFoundException`), mille püüab kinni `RestExceptionHandler` (`@ControllerAdvice`). Kõik äriveateated on koondatud `Error` enumi (`ee.testiplatvorm.Error`): enumi konstandi nimi on `errorCode` (nt `INCORRECT_CREDENTIALS`) ja `getMessage()` annab `message` teksti — `new ForbiddenException(INCORRECT_CREDENTIALS.getMessage(), INCORRECT_CREDENTIALS.name())`. `PrimaryKeyNotFoundException` koostab `message` ja `errorCode` (`PRIMARY_KEY_NOT_FOUND`) ise ning seda `Error` enumi lisada ei ole vaja. Staatuste koodid (nt `'A'`, `'I'`) on koondatud `Status` enumi — ära kasuta koodis staatuste maagilisi stringe.
 
 **Muutujate nimetamine** — Muutuja nimi peab peegeldama täistüüpi: `EntityDetailDto entityDetailDto`, mitte `EntityDetailDto dto`.
 

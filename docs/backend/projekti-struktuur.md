@@ -13,8 +13,8 @@ backend/
 ├── src/
 │   ├── main/
 │   │   ├── java/
-│   │   │   └── ee/minuprojekt/                          # Baaspakett
-│   │   │       ├── MinuprojektApplication.java         # Rakenduse põhiklass (entry point)
+│   │   │   └── ee/testiplatvorm/                        # Baaspakett
+│   │   │       ├── TestiplatvormApplication.java       # Rakenduse põhiklass (entry point)
 │   │   │       ├── Error.java                           # Veakoodide enum
 │   │   │       ├── Status.java                           # Staatuste enum
 │   │   │       ├── controller/                          # REST kontrollerid
@@ -43,12 +43,12 @@ backend/
 │   │   │       └── service/                              # Äriloogika teenused
 │   │   │           └── SomeService.java                  # Teenuse klass (nt EntityService.java)
 │   │   ├── generated/                                    # MapStruct genereeritud mapper-implementatsioonid (build-ajal, ei muudeta käsitsi)
-│   │   │   └── ee/minuprojekt/persistence/...
+│   │   │   └── ee/testiplatvorm/persistence/...
 │   │   └── resources/
 │   │       └── application.properties                    # Rakenduse konfiguratsioon (server, andmebaas, logimine)
 │   └── test/
 │       └── java/
-│           └── ee/minuprojekt/                          # Ühik- ja integratsioonitestid
+│           └── ee/testiplatvorm/                        # Ühik- ja integratsioonitestid
 └── docs/database/                                        # SQL skriptid skeemi loomiseks ja andmete importimiseks (projekti juurkaustas)
 ```
 
@@ -59,7 +59,7 @@ backend/
 | `CLAUDE.md` | Backendi juhised Claude Code'ile — Spring Boot, Java konventsioonid |
 | `build.gradle` / `settings.gradle` | Gradle build ja sõltuvuste haldus |
 | `gradle/`, `gradlew` | Gradle wrapper — projekti käivitamiseks ilma eraldi Gradle'i paigalduseta |
-| `src/main/java/.../MinuprojektApplication.java` | Spring Boot rakenduse käivitusklass |
+| `src/main/java/.../TestiplatvormApplication.java` | Spring Boot rakenduse käivitusklass |
 | `src/main/java/.../Error.java`, `Status.java` | Üldised enum-tüübid, mida kasutatakse läbi rakenduse |
 | `src/main/java/.../controller/` | REST kontrollerid — võtavad HTTP päringud vastu ja tagastavad vastused |
 | `src/main/java/.../controller/common/dto/` | Mitme ressursipaketi vahel jagatud DTO klassid (nt kasutusel mitmes kontrolleris/mapperis) |

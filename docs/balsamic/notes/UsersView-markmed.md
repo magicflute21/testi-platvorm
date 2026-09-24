@@ -8,7 +8,7 @@ Failinimi: UsersView.vue
 Frontend rada: /users
 
 Vaatega seotud lisainfo:
-Vaate avamisel küsitakse backendilt GET /api/users sõnumiga kõik süsteemi kasutajad (sh kustutatud) ja kuvatakse tabelis. Veerus "Nimi" kuvatakse eesnimi ja perenimi koos (firstName + " " + lastName, nt "Anna Admin"). roleName kuvatakse eesti keeles (ADMIN → Admin, MANAGER → Haldur, USER → Kasutaja), status samuti (A → Aktiivne, P → Ootel, I → Kustutatud).
+Vaate avamisel küsitakse backendilt GET /api/users sõnumiga kõik süsteemi kasutajad (sh kustutatud) ja kuvatakse tabelis. Veerus "Nimi" kuvatakse eesnimi ja perenimi koos (firstName + " " + lastName, nt "Anna Admin"). Veerus "Grupp" kuvatakse kõik kasutaja grupid komaga eraldatult (nt "Frontend Team, Backend Team"). roleName kuvatakse eesti keeles (ADMIN → Admin, MANAGER → Haldur, USER → Kasutaja), status samuti (A → Aktiivne, P → Ootel, I → Kustutatud).
 
 Prügikasti ikoonile vajutades saadetakse backendile DELETE /api/users/{userId} sõnum ning seejärel laaditakse tabel uuesti (rida jääb nimekirja staatusega "Kustutatud").
 
@@ -28,7 +28,7 @@ Response (200):
     "firstName": "Anna",
     "lastName": "Admin",
     "email": "admin@example.com",
-    "groupName": "Frontend Team",
+    "groupNames": ["Frontend Team"],
     "roleName": "ADMIN",
     "status": "A"
   },
@@ -37,14 +37,23 @@ Response (200):
     "firstName": "Marko",
     "lastName": "Manager",
     "email": "manager@example.com",
-    "groupName": null,
+    "groupNames": [],
     "roleName": "MANAGER",
+    "status": "A"
+  },
+  {
+    "userId": 3,
+    "firstName": "Kati",
+    "lastName": "Kasutaja",
+    "email": "user@example.com",
+    "groupNames": ["Frontend Team", "Backend Team"],
+    "roleName": "USER",
     "status": "A"
   }
 ]
 
 API teenuse lisainfo:
-Tagastatakse kõik kasutajad sõltumata staatusest (A = aktiivne, P = ootel, I = kustutatud). Kasutaja kuulub maksimaalselt ühte gruppi (group_member); kui grupp puudub, on groupName null. Ootel kasutajal (registreerimine lõpetamata, profile puudub) on firstName ja lastName null.
+Tagastatakse kõik kasutajad sõltumata staatusest (A = aktiivne, P = ootel, I = kustutatud). Kasutaja võib kuuluda mitmesse gruppi (group_member) — groupNames on alati massiiv, grupi puudumisel tühi ([]). Ootel kasutajal (registreerimine lõpetamata, profile puudub) on firstName ja lastName null.
 
 Veateated: —
 ```
@@ -57,7 +66,7 @@ API: DELETE /api/users/{userId}
 Response (200): NONE
 
 API teenuse lisainfo:
-Soft delete — kasutajat andmebaasist ei eemaldata, backend muudab user tabelis status väärtuseks 'I'.
+Soft delete — kasutajat andmebaasist ei eemaldata, backend muudab user tabelis status väärtuseks 'I'. Juba kustutatud kasutaja uuesti kustutamine ei ole viga (vastus 200).
 
 Veateated:
 HTTP: 404
