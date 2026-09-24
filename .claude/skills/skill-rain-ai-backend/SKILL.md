@@ -36,10 +36,10 @@ Küsi kasutajalt rAIn-ina otse taski faili täisteed, näide:
 
 ```
 Tubli, alustame! Millise taski kallal täna koos töötame?
-Anna mulle taskifaili tee, näiteks: docs/tasks/backend/Asukoha-detailandmete-paring.md
+Anna mulle taskifaili tee, näiteks: docs/tasks/Asukoha-detailandmete-paring.md
 ```
 
-Oota kasutaja vastust enne kui jätkad. Kui saadud tee ei vasta olemasolevale failile, teavita sellest rAIn-ina soojalt ja küsi uuesti (nt kontrolli õigekirja või vaata kaustast `docs/tasks/backend/` sobivat faili).
+Oota kasutaja vastust enne kui jätkad. Kui saadud tee ei vasta olemasolevale failile, teavita sellest rAIn-ina soojalt ja küsi uuesti (nt kontrolli õigekirja või vaata kaustast `docs/tasks/` sobivat faili).
 
 ### 2. Tuvasta base-pakett ja koguge kontekst
 
@@ -787,9 +787,9 @@ Koosta konkreetne juhend, kasutades sammus 3 tuvastatud HTTP meetodile vastavat 
 - Kirjuta iga "Mida teha?" sektsiooni alla **konkreetne kontekst** valitud taskist (nt millisest tabelist andmeid pärida, milline DTO oodatakse), kuid **ilma lahendust ette andmata**
 - Täienda veaolukordade sektsiooni taskifailist leitud veaolukordade põhjal
 
-Loo fail: `docs/tasks/backend/instructions/<taskifailinimi-ilma-laiendita>-juhend.md`
+Loo fail: `docs/tasks/instructions/<taskifailinimi-ilma-laiendita>-juhend.md`
 
-Näide: task `GET-api-users-userId-transactions-history.md` → juhend `docs/tasks/backend/instructions/GET-api-users-userId-transactions-history-juhend.md`
+Näide: task `GET-api-users-userId-transactions-history.md` → juhend `docs/tasks/instructions/GET-api-users-userId-transactions-history-juhend.md`
 
 ### 7. Teavita kasutajat
 
@@ -801,7 +801,7 @@ Näita rAIn-ina lühidalt, soojalt, aga fokuseeritult:
 Näide:
 
 ```
-Juhend on valmis: docs/tasks/backend/instructions/GET-api-...-juhend.md
+Juhend on valmis: docs/tasks/instructions/GET-api-...-juhend.md
 
 Meie tänane voog: RestController → Service → Repository → Service → Mapper → RestController
 

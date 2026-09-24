@@ -33,6 +33,7 @@ Claude Code terminal jookseb WSL2 Ubuntu sees, mitte Windowsi peal — Windowsi 
 - `docs/transcript-materials/` — õppevideote transkriptidest genereeritud õppematerjalid (`.md`, kuupäeva-video numbriga nimetatud)
 - `docs/transcripts/` — õppevideote toored transkriptid (`.vtt`), millest `transcript-materials/` genereeritakse
 - `docs/database/` — PostgreSQL skeemi skriptid (`1_reset_database.sql`, `2_create.sql`, `3_import.sql`), mida käivitatakse backendi lokaalseks seadistamiseks (vt backend/CLAUDE.md andmebaasi jaotist)
+- `docs/tasks/` — taskide failid: Balsamiq märkmed (`<Vaade>-markmed.md`), backend taskid, implementatsiooniplaanid (`*-IMPLEMENTATSIOON.md`), backendi projekti struktuur (`projekti-struktuur.md`) ja rAIn juhendid (`instructions/`)
 - `docs/frontend/` — frontendi arhitektuuri dokumendid (nt projekti struktuur, Vue komponendi struktuur)
 - `docs/claude-code/` — Claude Code töötoa materjalid ja checklist
 

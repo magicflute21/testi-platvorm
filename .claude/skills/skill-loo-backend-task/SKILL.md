@@ -5,7 +5,7 @@ description: Loo backend teenuse taski MD fail balsamic mockup PDF-i konkreetse 
 
 # Loo backend teenuse task balsamic mockupist
 
-Loe balsamic mockup PDF-i konkreetne lehekülg, tuvasta sellel kirjeldatud backend teenus (märgitud sõnaga "API:") ja koosta selle kohta täielik taski MD fail koos vastava lehekülje pildiga. Salvesta `docs/tasks/backend` kausta.
+Loe balsamic mockup PDF-i konkreetne lehekülg, tuvasta sellel kirjeldatud backend teenus (märgitud sõnaga "API:") ja koosta selle kohta täielik taski MD fail koos vastava lehekülje pildiga. Salvesta `docs/tasks` kausta.
 
 ## Steps
 
@@ -120,14 +120,14 @@ Tabel veergudega: Olukord | Status code | Response body
 - <Automaattestide olemasolu nõue>
 ```
 
-Ole taski sisu koostades sama põhjalik ja konkreetne nagu varasemas näidises (`docs/tasks/backend/Tehingutuupide-nimekirja-paring.md`) — kasuta seda stiilieeskujuna, kui see fail on olemas.
+Ole taski sisu koostades sama põhjalik ja konkreetne nagu varasemas näidises (`docs/tasks/Tehingutuupide-nimekirja-paring.md`) — kasuta seda stiilieeskujuna, kui see fail on olemas.
 
-### 8. Loo `docs/tasks/backend` kaust, kui puudub
+### 8. Loo `docs/tasks` kaust, kui puudub
 
 ### 9. Salvesta failid
 
-1. `docs/tasks/backend/<failinimi>.md` — taski sisu
-2. `docs/tasks/backend/<failinimi>.png` — koopia failist `docs/balsamic/pdf-images/<lehekülje number>.png`
+1. `docs/tasks/<failinimi>.md` — taski sisu
+2. `docs/tasks/<failinimi>.png` — koopia failist `docs/balsamic/pdf-images/<lehekülje number>.png`
 
 ### 10. Teavita kasutajat
 

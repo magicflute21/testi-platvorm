@@ -11,7 +11,7 @@ Koosta olemasoleva backend taski MD faili põhjal detailne tehniline implementat
 
 ### 1. Küsi taski faili path
 
-Kui kasutaja pole seda juba andnud, küsi, millise taski faili (`docs/tasks/backend/*.md`) jaoks implementatsiooniplaan koostada.
+Kui kasutaja pole seda juba andnud, küsi, millise taski faili (`docs/tasks/*.md`) jaoks implementatsiooniplaan koostada.
 
 Oota vastust enne kui jätkad.
 
@@ -99,7 +99,7 @@ Kui taskis kirjeldatud URL, DTO väljad, tabelinimi vms ei klapi täpselt olemas
 
 Salvesta implementatsiooniplaan **samasse kausta**, kus asub target taski fail, **sama failinimega**, millele on lisatud postfiks `-IMPLEMENTATSIOON` enne `.md` laiendit.
 
-Näide: task `docs/tasks/backend/Tehingutuupide-nimekirja-paring.md` → plaan `docs/tasks/backend/Tehingutuupide-nimekirja-paring-IMPLEMENTATSIOON.md`.
+Näide: task `docs/tasks/Tehingutuupide-nimekirja-paring.md` → plaan `docs/tasks/Tehingutuupide-nimekirja-paring-IMPLEMENTATSIOON.md`.
 
 ### 9. Teavita kasutajat
 
