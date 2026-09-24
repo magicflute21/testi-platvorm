@@ -198,6 +198,7 @@ CREATE TABLE test (
                       competence_id int  NOT NULL,
                       competence_level_id int  NOT NULL,
                       name varchar(255)  NOT NULL,
+                      short_description varchar(150)  NOT NULL,
                       description text  NOT NULL,
                       is_timed boolean  NOT NULL,
                       timer_min int  NULL,
