@@ -16,11 +16,10 @@ public class TestService {
     private final TestRepository testRepository;
     private final TestMapper testMapper;
 
-    public void findAllTests() {
+    public List<TestSummaryDto> findAllTests() {
         List<Test> tests = testRepository.findAll();
-        List<TestSummaryDto> testsDto = testMapper.toTestSummaryDto(List <Test> tests);
-
-
-
+        List<TestSummaryDto> testSummaryDtos = testMapper.toTestSummaryDtos(tests);
+        return testSummaryDtos;
     }
+
 }
