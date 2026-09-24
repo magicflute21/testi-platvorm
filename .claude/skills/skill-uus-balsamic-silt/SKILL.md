@@ -1,17 +1,17 @@
 ---
 name: skill-uus-balsamic-silt
-description: Pane olemasolevatest andmetest kokku Balsamiq mockup'i selgitav märkme-silt (Vaate märkmed või API märkmed) ja salvesta see docs/balsamic/notes/ kausta. Kasuta, kui kasutaja tahab luua uue balsamic sildi, balsamic märkmed, vaate märkmed, API märkmed, või soovib olemasolevat mockup silti/märget uuendada või täiendada.
+description: Pane olemasolevatest andmetest kokku Balsamiq mockup'i selgitav märkme-silt (Vaate märkmed või API märkmed) ja salvesta see docs/tasks/backend/ kausta. Kasuta, kui kasutaja tahab luua uue balsamic sildi, balsamic märkmed, vaate märkmed, API märkmed, või soovib olemasolevat mockup silti/märget uuendada või täiendada.
 ---
 
 # Loo uus Balsamiq märkme-silt
 
 **Taust:** Seda skilli kasutavad õpilased oma tiimiprojekti **planeerimisfaasis** — pärast seda, kui nad on toorikprojektist loonud oma projekti (vt `skill-uus-projekt`), aga **enne** kui domeeni `controller`/`service` klasse on kirjutatud. Sel hetkel on olemas ainult toorikprojekti baasstruktuur (sh `infrastructure/` kaust) ja andmebaasi skeem/näidisandmed — äriloogika kood tuleb alles hiljem. Nende märkmete täpsus kandub otse edasi: need on üks kolmest omavahel süncis peetavast allikast (Balsamiq mockup, Jira task, OpenAPI spec — vt struktuuridokumendi kokkuvõtet) ning on hiljem sisendiks task-failide (`skill-loo-backend-task`) ja koodi kirjutamise (`skill-rain-ai-backend`) faasile.
 
-Eesmärk: panna olemasolevatest andmetest (andmebaasi skeem, näidisandmed, kasutaja antud info) kokku mockup vaate juurde käiv selgitav silt — kas **Vaate märkmed** või **API märkmed** — täpselt struktuuris, mis on kokku lepitud failis `docs/balsamic/notes/balsamiq-markmete-struktuur.md`.
+Eesmärk: panna olemasolevatest andmetest (andmebaasi skeem, näidisandmed, kasutaja antud info) kokku mockup vaate juurde käiv selgitav silt — kas **Vaate märkmed** või **API märkmed** — täpselt struktuuris, mis on kokku lepitud failis `../../../docs/balsamic/notes/balsamiq-markmete-struktuur.md`.
 
 ## 1. Uuri kõigepealt struktuuridokumenti
 
-Loe alati **enne** sisu koostamist läbi `docs/balsamic/notes/balsamiq-markmete-struktuur.md`. See defineerib mõlema märkme-tüübi täpse struktuuri, väljad ja reeglid. Ära tugine mällu jäänud struktuurile ega varasemale näitele — loe fail iga kord uuesti, sest struktuur võib olla vahepeal muutunud.
+Loe alati **enne** sisu koostamist läbi `../../../docs/balsamic/notes/balsamiq-markmete-struktuur.md`. See defineerib mõlema märkme-tüübi täpse struktuuri, väljad ja reeglid. Ära tugine mällu jäänud struktuurile ega varasemale näitele — loe fail iga kord uuesti, sest struktuur võib olla vahepeal muutunud.
 
 ## 2. Küsi kasutajalt, mida ta soovib
 
@@ -21,7 +21,7 @@ Kui pole juba selge, küsi kasutajalt:
 2. Kumb märkme tüüp — Vaate märkmed (üks vaate kohta) või API märkmed (üks backend kutse kohta). Kui vaade teeb mitu API kutset, tuleta kasutajale meelde, et iga kutse kohta tuleb eraldi API märkmete kast.
 
 Kui tegemist on uuendamisega, küsi kasutajalt (kui pole juba antud), mille põhjal olemasolevat silti leida/täiendada — kasutaja võib anda:
-- olemasoleva `.md` faili path'i `docs/balsamic/notes/` kaustas,
+- olemasoleva `.md` faili path'i `docs/tasks/backend/` kaustas,
 - vabatekstina kirjelduse/muudatuse, mida tuleb arvesse võtta,
 - screenshoti/pildi konkreetsest balsamic mocki vaatest.
 
@@ -81,7 +81,7 @@ See kehtib nii Vaate märkmete sees mainitud andmete kui API märkmete request/r
 
 ## 7. Koosta sisu struktuuridokumendi järgi
 
-Järgi täpselt `docs/balsamic/notes/balsamiq-markmete-struktuur.md` struktuuri ja reegleid vastava märkme tüübi jaoks (Vaate märkmed või API märkmed) — väljade järjekord, tühjade ridade paigutus, `—` kasutamine kui lisainfot pole, DTO nime paiknemine vahetult body ploki kohal, veateadete kolmerealine formaat jne.
+Järgi täpselt `../../../docs/balsamic/notes/balsamiq-markmete-struktuur.md` struktuuri ja reegleid vastava märkme tüübi jaoks (Vaate märkmed või API märkmed) — väljade järjekord, tühjade ridade paigutus, `—` kasutamine kui lisainfot pole, DTO nime paiknemine vahetult body ploki kohal, veateadete kolmerealine formaat jne.
 
 Kui koostad mitut API märget sama vaate jaoks, koosta iga API kutse kohta eraldi plokk.
 
@@ -91,14 +91,14 @@ Kogu lõplik märkme tekst (Vaate märkmed plokk ja/või iga API märkmete plokk
 
 ## 9. Salvesta fail
 
-Salvesta tulemus `.md` failina kausta `docs/balsamic/notes/`.
+Salvesta tulemus `.md` failina kausta `docs/tasks/backend/` (struktuuridokument ise jääb kausta `docs/balsamic/notes/`).
 
 **Failinimi:**
 - Tuleta failinimi automaatselt vaate/teenuse nimest, ilma kasutajalt küsimata (v.a kui tuletus jääb ebaselgeks):
   - Vaate märkmete puhul: `<ComponentName>-markmed.md` (nt `LocationView-markmed.md`)
   - API märkmete puhul: `<METOOD>-<path-sidekriipsudega>-markmed.md` (nt `POST-atm-locations-markmed.md`)
   - Eestikeelsed täpitähed translitereeri (õ→o, ä→a, ö→o, ü→u, š→s, ž→z)
-- Uuendamise puhul: kui kasutaja andis olemasoleva faili path'i, kirjuta samasse faili. Kui kasutaja andis ainult vaate/teenuse nime või pildi, otsi kõigepealt `docs/balsamic/notes/` kaustast, kas sobiva nimega fail juba eksisteerib, ja kui jah, küsi kasutajalt kinnitust, kas seda täiendada, enne kui üle kirjutad.
+- Uuendamise puhul: kui kasutaja andis olemasoleva faili path'i, kirjuta samasse faili. Kui kasutaja andis ainult vaate/teenuse nime või pildi, otsi kõigepealt `docs/tasks/backend/` kaustast, kas sobiva nimega fail juba eksisteerib, ja kui jah, küsi kasutajalt kinnitust, kas seda täiendada, enne kui üle kirjutad.
 
 Kui samasse faili tuleb nii vaate märkmed kui mitu API märget (nt kui kasutaja soovib kogu vaate kohta korraga kõik sildid), pane need üksteise järele samas failis, iga plokk oma pealkirja all (nt `## Vaate märkmed`, `## API märkmed — POST /api/atm/locations`).
 
