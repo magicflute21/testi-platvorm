@@ -29,8 +29,8 @@ BEGIN;
 -- ------------------------------------------------------------
 INSERT INTO role (id, name) VALUES
     (1, 'ADMIN'),
-    (2, 'MANAGER'),
-    (3, 'USER');
+    (2, 'HALDUR'),
+    (3, 'KASUTAJA');
 
 -- ------------------------------------------------------------
 -- "user"  (4th row = pending invite, not yet completed registration)
@@ -45,17 +45,17 @@ INSERT INTO "user" (id, email, password_hash, role_id, status, created_at, updat
 -- level
 -- ------------------------------------------------------------
 INSERT INTO "level" (id, "level", name, description) VALUES
-    (1, 1, 'Beginner',     'Basic understanding of the topic'),
-    (2, 2, 'Intermediate', 'Practical, working knowledge'),
-    (3, 3, 'Advanced',     'Expert-level mastery');
+    (1, 1, 'Algaja',     'Teema põhiteadmised'),
+    (2, 2, 'Kesktase',   'Praktilised, töös kasutatavad teadmised'),
+    (3, 3, 'Edasijõudnu', 'Eksperditasemel oskused');
 
 -- ------------------------------------------------------------
 -- competence
 -- ------------------------------------------------------------
 INSERT INTO competence (id, name, short_description, description, updated_at, doc_url, doc_filename, status, created_by, created_at) VALUES
-    (1, 'JavaScript', 'JS language fundamentals', 'Core JavaScript syntax, closures, async patterns, and the DOM.', now(), 'https://docs.example.com/js', 'javascript_guide.pdf', 'A', 1, now() - interval '90 days'),
-    (2, 'SQL',        'Relational database querying', 'Writing and optimizing SQL queries across joins, aggregation, and indexing.', now(), 'https://docs.example.com/sql', 'sql_guide.pdf', 'A', 1, now() - interval '85 days'),
-    (3, 'Communication', 'Professional communication skills', 'Written and verbal communication in a team/business context.', now(), 'https://docs.example.com/comms', 'comms_guide.pdf', 'A', 1, now() - interval '80 days');
+    (1, 'JavaScript', 'JavaScripti keele alused', 'JavaScripti põhisüntaks, sulundid, asünkroonsed mustrid ja DOM.', now(), 'https://docs.example.com/js', 'javascripti_juhend.pdf', 'A', 1, now() - interval '90 days'),
+    (2, 'SQL',        'Relatsiooniliste andmebaaside päringud', 'SQL-päringute kirjutamine ja optimeerimine: liitmised, agregeerimine ja indeksid.', now(), 'https://docs.example.com/sql', 'sql_juhend.pdf', 'A', 1, now() - interval '85 days'),
+    (3, 'Suhtlemine', 'Professionaalsed suhtlemisoskused', 'Kirjalik ja suuline suhtlus meeskonna- ja ärikontekstis.', now(), 'https://docs.example.com/comms', 'suhtlemise_juhend.pdf', 'A', 1, now() - interval '80 days');
 
 -- ------------------------------------------------------------
 -- competence_level  (competence x level junction)
@@ -69,16 +69,16 @@ INSERT INTO competence_level (id, competence_id, level_id, status) VALUES
 -- competence_file
 -- ------------------------------------------------------------
 INSERT INTO competence_file (id, competence_id, file_name, file_type, file_data) VALUES
-    (1, 1, 'javascript_guide.pdf', 'application/pdf', decode('ZHVtbXlmaWxlZGF0YQ==', 'base64')),
-    (2, 2, 'sql_guide.pdf',        'application/pdf', decode('ZHVtbXlmaWxlZGF0YQ==', 'base64'));
+    (1, 1, 'javascripti_juhend.pdf', 'application/pdf', decode('ZHVtbXlmaWxlZGF0YQ==', 'base64')),
+    (2, 2, 'sql_juhend.pdf',        'application/pdf', decode('ZHVtbXlmaWxlZGF0YQ==', 'base64'));
 
 -- ------------------------------------------------------------
 -- "group"
 -- ------------------------------------------------------------
 INSERT INTO "group" (id, name, status, created_at, updated_at) VALUES
-    (1, 'Frontend Team', 'A', now() - interval '90 days', now()),
-    (2, 'Backend Team',  'A', now() - interval '90 days', now()),
-    (3, 'QA Team',       'A', now() - interval '90 days', now());
+    (1, 'Frontendi meeskond', 'A', now() - interval '90 days', now()),
+    (2, 'Backendi meeskond',  'A', now() - interval '90 days', now()),
+    (3, 'Testijate meeskond', 'A', now() - interval '90 days', now());
 
 -- ------------------------------------------------------------
 -- group_manager
@@ -108,7 +108,7 @@ INSERT INTO invitation (id, invited_by, user_id, token, created_at, expires_at, 
 -- ------------------------------------------------------------
 INSERT INTO profile (id, user_id, first_name, last_name, phone_number, created_at, updated_at) VALUES
     (1, 1, 'Anna',  'Admin',    '+37255512345', now() - interval '90 days', now()),
-    (2, 2, 'Marko', 'Manager',  '+37255598765', now() - interval '60 days', now()),
+    (2, 2, 'Marko', 'Haldur', '+37255598765', now() - interval '60 days', now()),
     (3, 3, 'Kati',  'Kasutaja', NULL,           now() - interval '30 days', now());
 
 -- ------------------------------------------------------------
@@ -123,32 +123,35 @@ INSERT INTO question_type (id, name) VALUES
 -- question
 -- ------------------------------------------------------------
 INSERT INTO question (id, competence_id, competence_level_id, title, description, question_type_id, score, status, created_at, created_by, updated_at) VALUES
-    (1, 1, 1, 'What is a closure?',                             'Select the best definition of a closure in JavaScript.', 1, 10, 'A', now() - interval '80 days', 1, now()),
-    (2, 1, 2, 'Which of the following are JS primitive types?', 'Select all that are JavaScript primitive types.',        2, 10, 'A', now() - interval '75 days', 1, now()),
-    (3, 2, 3, 'Is SQL case-sensitive for keywords?',             'True or false.',                                          3,  5, 'A', now() - interval '70 days', 1, now());
+    (1, 1, 1, 'Mis on sulund (closure)?',                        'Vali JavaScripti sulundi kõige täpsem definitsioon.', 1, 10, 'A', now() - interval '80 days', 1, now()),
+    (2, 1, 2, 'Millised järgnevatest on JS primitiivtüübid?',   'Vali kõik JavaScripti primitiivtüübid.',                 2, 10, 'A', now() - interval '75 days', 1, now()),
+    (3, 2, 3, 'Kas SQL-i võtmesõnad on tõstutundlikud?',        'Tõene või väär.',                                         3,  5, 'A', now() - interval '70 days', 1, now());
 
 -- ------------------------------------------------------------
 -- question_answer
 -- ------------------------------------------------------------
 INSERT INTO question_answer (id, question_id, answer_text, correct_choice, correct_position, paired_answer_id, status) VALUES
-    (1, 1, 'A function that remembers its lexical scope', true,  NULL, NULL, 'A'),
-    (2, 1, 'A loop that never ends',                       false, NULL, NULL, 'A'),
-    (3, 1, 'A CSS property',                               false, NULL, NULL, 'A'),
+    (1, 1, 'Funktsioon, mis mäletab oma leksikaalset skoopi', true,  NULL, NULL, 'A'),
+    (2, 1, 'Tsükkel, mis ei lõppe kunagi',                   false, NULL, NULL, 'A'),
+    (3, 1, 'CSS-i omadus',                                   false, NULL, NULL, 'A'),
     (4, 2, 'string',                                       true,  NULL, NULL, 'A'),
     (5, 2, 'number',                                       true,  NULL, NULL, 'A'),
-    (6, 2, 'array',                                         false, NULL, NULL, 'A'),
-    (7, 2, 'object',                                        false, NULL, NULL, 'A'),
-    (8, 3, 'True',                                          false, NULL, NULL, 'A'),
-    (9, 3, 'False',                                         true,  NULL, NULL, 'A');
+    (6, 2, 'massiiv',                                       false, NULL, NULL, 'A'),
+    (7, 2, 'objekt',                                        false, NULL, NULL, 'A'),
+    (8, 3, 'Tõene',                                         false, NULL, NULL, 'A'),
+    (9, 3, 'Väär',                                          true,  NULL, NULL, 'A');
 
 -- ------------------------------------------------------------
 -- test
 -- ------------------------------------------------------------
-INSERT INTO test (id, competence_id, competence_level_id, name, description, is_timed, timer_min, pass_percent, round_score_up, status, created_by, created_at, updated_at) VALUES
-    (1, 1, 1, 'JavaScript Basics Test',       'Entry-level JavaScript knowledge check.',  true,  30,   60.00, true,  'A', 1, now() - interval '75 days', now()),
-    (2, 1, 2, 'JavaScript Intermediate Test', 'Deeper JavaScript concepts.',              true,  45,   70.00, false, 'A', 1, now() - interval '70 days', now()),
-    (3, 2, 3, 'SQL Fundamentals Test',        'Basic SQL knowledge check.',               false, NULL, 65.00, true,  'A', 1, now() - interval '65 days', now());
-
+INSERT INTO test (id, competence_id, competence_level_id, name, short_description, description, is_timed, timer_min, pass_percent,
+                  round_score_up, status, created_by, created_at, updated_at)
+VALUES (1, 1, 1, 'JavaScripti algtaseme test', 'JavaScripti algteadmiste kontroll.', 'Test algajatele JS-i baasteadmiste kontrollimiseks.', true, 30, 60.00, true, 'A', 1,
+        now() - interval '75 days', now()),
+       (2, 1, 2, 'JavaScripti kesktaseme test', 'JavaScripti süvitsi minevad teemad.', 'Kesktaseme test JS-i süvitsi minevate teemade kohta.', true, 45, 70.00, false, 'A', 1,
+        now() - interval '70 days', now()),
+       (3, 2, 3, 'SQL-i aluste test', 'SQL-i põhiteadmiste kontroll.', 'Lühike test SQL-i põhiteadmiste hindamiseks.', false, NULL, 65.00, true, 'A', 1,
+        now() - interval '65 days', now());
 -- ------------------------------------------------------------
 -- test_question
 -- ------------------------------------------------------------
@@ -194,25 +197,25 @@ INSERT INTO test_question_answer (id, test_question_result_id, question_answer_i
     (3, 2, 5, true,  NULL, NULL),  -- picked "number" for primitive types
     (4, 3, 4, true,  NULL, NULL),  -- manager's run of test 2, same correct picks
     (5, 3, 5, true,  NULL, NULL),
-    (6, 4, 8, false, NULL, NULL);  -- picked "True" — wrong, SQL keywords aren't case-sensitive
+    (6, 4, 8, false, NULL, NULL);  -- picked "Tõene" — wrong, SQL keywords aren't case-sensitive
 
 -- ------------------------------------------------------------
 -- ai_question  (AI-suggested draft questions awaiting review)
 -- ------------------------------------------------------------
 INSERT INTO ai_question (id, title, description, competence_id, competence_level_id, question_type_id, status, created_at, created_by, updated_at, score, feedback, is_good) VALUES
-    (1, 'What does "this" refer to in an arrow function?', 'Select the best answer.', 1, 2, 1, 'P', now() - interval '1 day', 1, now() - interval '1 day', NULL, NULL, NULL),
-    (2, 'Explain the SQL JOIN types',                       'Short answer / concept check.', 2, 3, 1, 'A', now() - interval '5 days', 1, now() - interval '4 days', 8, 'Good clarity, minor wording tweak needed', true),
-    (3, 'JavaScript is dynamically typed - true or false?', 'True/false check.', 1, 1, 3, 'R', now() - interval '6 days', 1, now() - interval '5 days', 3, 'Too trivial, redundant with existing question', false);
+    (1, 'Millele viitab "this" noolefunktsioonis?', 'Vali parim vastus.', 1, 2, 1, 'P', now() - interval '1 day', 1, now() - interval '1 day', NULL, NULL, NULL),
+    (2, 'Selgita SQL-i JOIN-tüüpe',                         'Lühivastus / mõiste kontroll.', 2, 3, 1, 'A', now() - interval '5 days', 1, now() - interval '4 days', 8, 'Selge küsimus, sõnastust tuleb veidi täpsustada', true),
+    (3, 'JavaScript on dünaamiliselt tüübitud – tõene või väär?', 'Tõene/väär kontroll.', 1, 1, 3, 'R', now() - interval '6 days', 1, now() - interval '5 days', 3, 'Liiga lihtne, kattub olemasoleva küsimusega', false);
 
 -- ------------------------------------------------------------
 -- ai_question_answer
 -- ------------------------------------------------------------
 INSERT INTO ai_question_answer (id, ai_question_id, is_correct, correct_position, status, answer_text, ai_question_answer_id, score, feedback) VALUES
-    (1, 1, true,  NULL, 'P', 'The "this" value from the enclosing lexical scope', NULL, 5, 4),
-    (2, 1, false, NULL, 'P', 'The global window object always',                    NULL, 2, 2),
-    (3, 2, true,  NULL, 'A', 'INNER, LEFT, RIGHT, and FULL OUTER joins',           NULL, 5, 5),
-    (4, 3, true,  NULL, 'R', 'True',                                              NULL, 3, 3),
-    (5, 3, false, NULL, 'R', 'False',                                             NULL, 1, 1);
+    (1, 1, true,  NULL, 'P', 'Ümbritseva leksikaalse skoobi "this" väärtus', NULL, 5, 4),
+    (2, 1, false, NULL, 'P', 'Alati globaalne window-objekt',                       NULL, 2, 2),
+    (3, 2, true,  NULL, 'A', 'INNER, LEFT, RIGHT ja FULL OUTER liitmised',         NULL, 5, 5),
+    (4, 3, true,  NULL, 'R', 'Tõene',                                             NULL, 3, 3),
+    (5, 3, false, NULL, 'R', 'Väär',                                              NULL, 1, 1);
 
 -- ------------------------------------------------------------
 -- Keep sequences in sync after manual id inserts
