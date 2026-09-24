@@ -8,7 +8,7 @@ Plaan katab kaks backend teenust:
 
 ## Hetkeseis (mis on juba olemas)
 
-Baaspakett: `../../backend/src/main/java/ee/testiplatvorm`
+Baaspakett: `../../../backend/src/main/java/ee/testiplatvorm`
 
 - `persistence/user/User.java` — `user` tabeli entiteet (`id`, `email`, `passwordHash`, `role` (ManyToOne → `Role`), `status`, `createdAt`, `updatedAt`).
 - `persistence/user/UserRepository.java` — `JpaRepository<User, Integer>`, sisaldab ainult login'i päringut `findUserBy(email, passwordHash, status)`. `findById()`/`save()` on JpaRepository kaudu olemas.
@@ -22,7 +22,7 @@ Baaspakett: `../../backend/src/main/java/ee/testiplatvorm`
 - `Error.java` — enum, sisaldab ainult `INCORRECT_CREDENTIALS`.
 - `infrastructure/exception/PrimaryKeyNotFoundException.java` — genereerib ise `message` ("Ei leidnud primary keyd '<field>' väärtusega: <value>") ja `errorCode` (`PRIMARY_KEY_NOT_FOUND`); `RestExceptionHandler` kaardistab selle → HTTP 404.
 - `controller/login/LoginController.java` + `service/LoginService.java` — ainus olemasolev valmis teenus, eeskujuks kihtide ülesehitusele (DTO nimetamine `XxxRequest`/`XxxResponse`, `@RequiredArgsConstructor`, `@RestController`).
-- `../database/3_import.sql` — staatuste legendis on `user.status = 'I'` (Inactive / soft delete) juba kirjas.
+- `../../database/3_import.sql` — staatuste legendis on `user.status = 'I'` (Inactive / soft delete) juba kirjas.
 
 **Puudub:**
 - `UserController` — kontroller `/api/users` endpointide jaoks puudub täielikult.
@@ -46,7 +46,7 @@ Baaspakett: `../../backend/src/main/java/ee/testiplatvorm`
 
 ## Sammud
 
-1. **Lisa kustutatud staatus** — fail: `../../backend/src/main/java/ee/testiplatvorm/Status.java`
+1. **Lisa kustutatud staatus** — fail: `../../../backend/src/main/java/ee/testiplatvorm/Status.java`
    - Lisa enumi konstant `STATUS_DELETED("I")` (`STATUS_ACTIVE` kõrvale).
    - Kasutatakse `UserService.deleteUser()` sees; ära kasuta koodis maagilist stringi `"I"`.
 
@@ -73,7 +73,7 @@ Baaspakett: `../../backend/src/main/java/ee/testiplatvorm`
    }
    ```
 
-3. **Lisa kasutajate päring repositooriumi** — fail: `../../backend/src/main/java/ee/testiplatvorm/persistence/user/UserRepository.java`
+3. **Lisa kasutajate päring repositooriumi** — fail: `../../../backend/src/main/java/ee/testiplatvorm/persistence/user/UserRepository.java`
    - backend/CLAUDE.md: kohandatud päringud on JPQL `@Query`-ga, vajadusel konstruktori-avaldisega otse DTOsse. `Profile` on seotud `User`-iga ainult ühesuunaliselt (`User` entiteedis viidet pole), seega entity join `on`-tingimusega.
    - `profile` peab olema **left join** — ootel kasutajal (`userId` 4) profiili pole, ilma left join'ita jääks ta nimekirjast välja.
    - Gruppe siin **ei join'ita** — kasutaja võib olla mitmes grupis ja join tekitaks topeltridu. Grupid lisatakse service kihis (samm 5).
@@ -152,7 +152,7 @@ Baaspakett: `../../backend/src/main/java/ee/testiplatvorm`
    - Kontroller ei sisalda äriloogikat ega rollikontrolli (vt "Tehtud otsused"), ainult delegeerib service'ile.
    - Swaggeri `@Operation`/`@ApiResponses` annotatsioone `LoginController` ei kasuta — järgi sama stiili.
 
-7. **(Valikuline) Koristus** — fail: `../../backend/src/main/java/ee/testiplatvorm/persistence/user/UserDto.java`
+7. **(Valikuline) Koristus** — fail: `../../../backend/src/main/java/ee/testiplatvorm/persistence/user/UserDto.java`
    - Klass pole kuskil kasutusel ja võib `UserResponse`-ga segadust tekitada. Kustuta, kui meeskond on nõus.
 
 8. **Testid** — vt jaotist "Testid" allpool.
@@ -170,7 +170,7 @@ Baaspakett: `../../backend/src/main/java/ee/testiplatvorm`
 
 ## Testid
 
-Testikaust `../../backend/src/test/java/ee/testiplatvorm` on tühi — eeskuju pole, testid tuleb luua nullist.
+Testikaust `../../../backend/src/test/java/ee/testiplatvorm` on tühi — eeskuju pole, testid tuleb luua nullist.
 
 1. **`service/UserServiceTest.java`** (ühiktest, Mockito, `UserRepository` ja `GroupMemberRepository` mockitud):
    - `findAllUsers` — mitme grupiga kasutaja saab kõik `groupNames`, grupita kasutaja saab tühja listi `[]`.

@@ -56,7 +56,7 @@ backend/
 
 | Kaust/fail | Eesmärk |
 |------------|---------|
-| `../../CLAUDE.md` | Backendi juhised Claude Code'ile — Spring Boot, Java konventsioonid |
+| `../../../backend/CLAUDE.md` | Backendi juhised Claude Code'ile — Spring Boot, Java konventsioonid |
 | `build.gradle` / `settings.gradle` | Gradle build ja sõltuvuste haldus |
 | `gradle/`, `gradlew` | Gradle wrapper — projekti käivitamiseks ilma eraldi Gradle'i paigalduseta |
 | `src/main/java/.../TestiplatvormApplication.java` | Spring Boot rakenduse käivitusklass |
@@ -73,4 +73,4 @@ backend/
 | `src/main/generated/` | Build-ajal automaatselt genereeritud MapStruct mapper-implementatsioonid — ei muudeta käsitsi |
 | `src/main/resources/application.properties` | Rakenduse seadistused (port, andmebaas, logimine) |
 | `src/test/` | Ühik- ja integratsioonitestid |
-| `../database` | SQL skriptid andmebaasi skeemi loomiseks ja andmete importimiseks (vt projekti juur-CLAUDE.md) |
+| `../../database` | SQL skriptid andmebaasi skeemi loomiseks ja andmete importimiseks (vt projekti juur-CLAUDE.md) |

@@ -1,6 +1,6 @@
 ---
 name: skill-uus-balsamic-silt
-description: Pane olemasolevatest andmetest kokku Balsamiq mockup'i selgitav märkme-silt (Vaate märkmed või API märkmed) ja salvesta see docs/tasks/ kausta. Kasuta, kui kasutaja tahab luua uue balsamic sildi, balsamic märkmed, vaate märkmed, API märkmed, või soovib olemasolevat mockup silti/märget uuendada või täiendada.
+description: Pane olemasolevatest andmetest kokku Balsamiq mockup'i selgitav märkme-silt (Vaate märkmed või API märkmed) ja salvesta see docs/tasks/backend/ kausta. Kasuta, kui kasutaja tahab luua uue balsamic sildi, balsamic märkmed, vaate märkmed, API märkmed, või soovib olemasolevat mockup silti/märget uuendada või täiendada.
 ---
 
 # Loo uus Balsamiq märkme-silt
@@ -21,7 +21,7 @@ Kui pole juba selge, küsi kasutajalt:
 2. Kumb märkme tüüp — Vaate märkmed (üks vaate kohta) või API märkmed (üks backend kutse kohta). Kui vaade teeb mitu API kutset, tuleta kasutajale meelde, et iga kutse kohta tuleb eraldi API märkmete kast.
 
 Kui tegemist on uuendamisega, küsi kasutajalt (kui pole juba antud), mille põhjal olemasolevat silti leida/täiendada — kasutaja võib anda:
-- olemasoleva `.md` faili path'i `docs/tasks/` kaustas,
+- olemasoleva `.md` faili path'i `docs/tasks/backend/` kaustas,
 - vabatekstina kirjelduse/muudatuse, mida tuleb arvesse võtta,
 - screenshoti/pildi konkreetsest balsamic mocki vaatest.
 
@@ -91,14 +91,14 @@ Kogu lõplik märkme tekst (Vaate märkmed plokk ja/või iga API märkmete plokk
 
 ## 9. Salvesta fail
 
-Salvesta tulemus `.md` failina kausta `docs/tasks/` (struktuuridokument ise jääb kausta `docs/balsamic/notes/`).
+Salvesta tulemus `.md` failina kausta `docs/tasks/backend/` (struktuuridokument ise jääb kausta `docs/balsamic/notes/`).
 
 **Failinimi:**
 - Tuleta failinimi automaatselt vaate/teenuse nimest, ilma kasutajalt küsimata (v.a kui tuletus jääb ebaselgeks):
   - Vaate märkmete puhul: `<ComponentName>-markmed.md` (nt `LocationView-markmed.md`)
   - API märkmete puhul: `<METOOD>-<path-sidekriipsudega>-markmed.md` (nt `POST-atm-locations-markmed.md`)
   - Eestikeelsed täpitähed translitereeri (õ→o, ä→a, ö→o, ü→u, š→s, ž→z)
-- Uuendamise puhul: kui kasutaja andis olemasoleva faili path'i, kirjuta samasse faili. Kui kasutaja andis ainult vaate/teenuse nime või pildi, otsi kõigepealt `docs/tasks/` kaustast, kas sobiva nimega fail juba eksisteerib, ja kui jah, küsi kasutajalt kinnitust, kas seda täiendada, enne kui üle kirjutad.
+- Uuendamise puhul: kui kasutaja andis olemasoleva faili path'i, kirjuta samasse faili. Kui kasutaja andis ainult vaate/teenuse nime või pildi, otsi kõigepealt `docs/tasks/backend/` kaustast, kas sobiva nimega fail juba eksisteerib, ja kui jah, küsi kasutajalt kinnitust, kas seda täiendada, enne kui üle kirjutad.
 
 Kui samasse faili tuleb nii vaate märkmed kui mitu API märget (nt kui kasutaja soovib kogu vaate kohta korraga kõik sildid), pane need üksteise järele samas failis, iga plokk oma pealkirja all (nt `## Vaate märkmed`, `## API märkmed — POST /api/atm/locations`).
 

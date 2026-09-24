@@ -1,6 +1,6 @@
 ---
 name: skill-loo-backed-taski-implementatsiooni-plaan
-description: Loo backend taski MD failile implementatsiooni plaan — uuri taski, olemasolevat koodibaasi (controller/service/persistence), backend/CLAUDE.md konventsioone ja docs/tasks/projekti-struktuur.md. Kasuta, kui kasutaja tahab implementatsiooniplaani, tehnilist plaani, taski lahenduskäiku backend taskile, või mainib "implementatsiooni plaan", "kuidas seda taski lahendada", "tee plaan backend taskile".
+description: Loo backend taski MD failile implementatsiooni plaan — uuri taski, olemasolevat koodibaasi (controller/service/persistence), backend/CLAUDE.md konventsioone ja docs/tasks/backend/projekti-struktuur.md. Kasuta, kui kasutaja tahab implementatsiooniplaani, tehnilist plaani, taski lahenduskäiku backend taskile, või mainib "implementatsiooni plaan", "kuidas seda taski lahendada", "tee plaan backend taskile".
 ---
 
 # Loo backend taski implementatsiooni plaan
@@ -11,7 +11,7 @@ Koosta olemasoleva backend taski MD faili põhjal detailne tehniline implementat
 
 ### 1. Küsi taski faili path
 
-Kui kasutaja pole seda juba andnud, küsi, millise taski faili (`docs/tasks/*.md`) jaoks implementatsiooniplaan koostada.
+Kui kasutaja pole seda juba andnud, küsi, millise taski faili (`docs/tasks/backend/*.md`) jaoks implementatsiooniplaan koostada.
 
 Oota vastust enne kui jätkad.
 
@@ -32,7 +32,7 @@ Loe `backend/CLAUDE.md` läbi (kihtide struktuur, nimetamiskonventsioonid, veak�
 
 ### 4. Jälgi projekti struktuuri juhist
 
-Loe `../../../docs/tasks/projekti-struktuur.md` läbi. Uute failide asukoht ja nimetamine peab järgima seal kirjeldatud struktuuri (nt `controller/<ressurss>/`, `controller/<ressurss>/dto/`, `controller/common/dto/`, `persistence/<entiteet>/`, `service/`).
+Loe `../../../docs/tasks/backend/projekti-struktuur.md` läbi. Uute failide asukoht ja nimetamine peab järgima seal kirjeldatud struktuuri (nt `controller/<ressurss>/`, `controller/<ressurss>/dto/`, `controller/common/dto/`, `persistence/<entiteet>/`, `service/`).
 
 **Jagatud DTO-d** — kui plaanitav response/request DTO on (või hakkab olema) kasutusel rohkem kui ühe ressursi kontrolleris/mapperis/service'is, ei kuulu see ühegi üksiku ressursi `dto/` paketti, vaid paketti `controller/common/dto/` (vt backend/CLAUDE.md reeglit "Jagatud DTO-d"). Kontrolli olemasoleva DTO puhul alati, kas seda kasutab juba mõni teine ressurss (Grep DTO nime järgi) — kui jah, ja see asub veel ressursipõhises paketis, tuleks plaan sisaldada selle ümbertõstmist paketti `controller/common/dto/`.
 
@@ -72,7 +72,7 @@ Struktuur (järgi täpselt):
 ## Sammud
 
 <Nummerdatud sammud, igaühe juures:>
-1. **<Tegevus>** — fail: `<täielik path uuele/muudetavale failile, vastavalt docs/tasks/projekti-struktuur.md struktuurile>`
+1. **<Tegevus>** — fail: `<täielik path uuele/muudetavale failile, vastavalt docs/tasks/backend/projekti-struktuur.md struktuurile>`
    - <Mida täpselt sinna kirjutada/muuta, viidates backend/CLAUDE.md konventsioonidele (nimetamine, kihi vastutus, veakäsitlus jne)>
    - <Koodinäide või meetodi signatuur, kui aitab selgust luua>
 
@@ -99,7 +99,7 @@ Kui taskis kirjeldatud URL, DTO väljad, tabelinimi vms ei klapi täpselt olemas
 
 Salvesta implementatsiooniplaan **samasse kausta**, kus asub target taski fail, **sama failinimega**, millele on lisatud postfiks `-IMPLEMENTATSIOON` enne `.md` laiendit.
 
-Näide: task `docs/tasks/Tehingutuupide-nimekirja-paring.md` → plaan `docs/tasks/Tehingutuupide-nimekirja-paring-IMPLEMENTATSIOON.md`.
+Näide: task `docs/tasks/backend/Tehingutuupide-nimekirja-paring.md` → plaan `docs/tasks/backend/Tehingutuupide-nimekirja-paring-IMPLEMENTATSIOON.md`.
 
 ### 9. Teavita kasutajat
 
@@ -114,4 +114,4 @@ Näita:
 - Ära hakka koodi kirjutama ega faile looma/muutma — see skill toodab ainult plaani MD faili.
 - Ära oleta koodibaasi seisu — kontrolli alati Grep/Glob/Read tööriistadega, mis päriselt olemas on.
 - Järgi rangelt backend/CLAUDE.md konventsioone (nimetamine, kihtide vastutus, veakäsitlus).
-- Järgi rangelt docs/tasks/projekti-struktuur.md failide paigutust.
+- Järgi rangelt docs/tasks/backend/projekti-struktuur.md failide paigutust.
