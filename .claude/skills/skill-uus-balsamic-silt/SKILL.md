@@ -7,11 +7,11 @@ description: Pane olemasolevatest andmetest kokku Balsamiq mockup'i selgitav mä
 
 **Taust:** Seda skilli kasutavad õpilased oma tiimiprojekti **planeerimisfaasis** — pärast seda, kui nad on toorikprojektist loonud oma projekti (vt `skill-uus-projekt`), aga **enne** kui domeeni `controller`/`service` klasse on kirjutatud. Sel hetkel on olemas ainult toorikprojekti baasstruktuur (sh `infrastructure/` kaust) ja andmebaasi skeem/näidisandmed — äriloogika kood tuleb alles hiljem. Nende märkmete täpsus kandub otse edasi: need on üks kolmest omavahel süncis peetavast allikast (Balsamiq mockup, Jira task, OpenAPI spec — vt struktuuridokumendi kokkuvõtet) ning on hiljem sisendiks task-failide (`skill-loo-backend-task`) ja koodi kirjutamise (`skill-rain-ai-backend`) faasile.
 
-Eesmärk: panna olemasolevatest andmetest (andmebaasi skeem, näidisandmed, kasutaja antud info) kokku mockup vaate juurde käiv selgitav silt — kas **Vaate märkmed** või **API märkmed** — täpselt struktuuris, mis on kokku lepitud failis `docs/balsamic/notes/balsamiq-markmete-struktuur.md`.
+Eesmärk: panna olemasolevatest andmetest (andmebaasi skeem, näidisandmed, kasutaja antud info) kokku mockup vaate juurde käiv selgitav silt — kas **Vaate märkmed** või **API märkmed** — täpselt struktuuris, mis on kokku lepitud failis `../../../docs/balsamic/notes/balsamiq-markmete-struktuur.md`.
 
 ## 1. Uuri kõigepealt struktuuridokumenti
 
-Loe alati **enne** sisu koostamist läbi `docs/balsamic/notes/balsamiq-markmete-struktuur.md`. See defineerib mõlema märkme-tüübi täpse struktuuri, väljad ja reeglid. Ära tugine mällu jäänud struktuurile ega varasemale näitele — loe fail iga kord uuesti, sest struktuur võib olla vahepeal muutunud.
+Loe alati **enne** sisu koostamist läbi `../../../docs/balsamic/notes/balsamiq-markmete-struktuur.md`. See defineerib mõlema märkme-tüübi täpse struktuuri, väljad ja reeglid. Ära tugine mällu jäänud struktuurile ega varasemale näitele — loe fail iga kord uuesti, sest struktuur võib olla vahepeal muutunud.
 
 ## 2. Küsi kasutajalt, mida ta soovib
 
@@ -81,7 +81,7 @@ See kehtib nii Vaate märkmete sees mainitud andmete kui API märkmete request/r
 
 ## 7. Koosta sisu struktuuridokumendi järgi
 
-Järgi täpselt `docs/balsamic/notes/balsamiq-markmete-struktuur.md` struktuuri ja reegleid vastava märkme tüübi jaoks (Vaate märkmed või API märkmed) — väljade järjekord, tühjade ridade paigutus, `—` kasutamine kui lisainfot pole, DTO nime paiknemine vahetult body ploki kohal, veateadete kolmerealine formaat jne.
+Järgi täpselt `../../../docs/balsamic/notes/balsamiq-markmete-struktuur.md` struktuuri ja reegleid vastava märkme tüübi jaoks (Vaate märkmed või API märkmed) — väljade järjekord, tühjade ridade paigutus, `—` kasutamine kui lisainfot pole, DTO nime paiknemine vahetult body ploki kohal, veateadete kolmerealine formaat jne.
 
 Kui koostad mitut API märget sama vaate jaoks, koosta iga API kutse kohta eraldi plokk.
 
