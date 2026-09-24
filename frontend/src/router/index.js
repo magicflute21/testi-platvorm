@@ -13,7 +13,7 @@ const router = createRouter({
       component: MainLayout,
       children: [
         { path: 'dashboard', name: 'dashboardRoute', component: DashboardView },
-        { path: 'test/new', name: 'testCreateRoute', component: TestCreateView },
+        { path: 'tests/new', name: 'testCreateRoute', component: TestCreateView },
         { path: 'test', name: 'testRoute', component: TestView },
       ],
     },

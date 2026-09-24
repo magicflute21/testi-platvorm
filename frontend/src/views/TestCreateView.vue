@@ -1,9 +1,37 @@
 <script>
 import { PhPlus } from '@phosphor-icons/vue'
+import CompetenceService from '@/services/CompetenceService.js'
 
 export default {
   name: 'TestCreateView',
   components: { PhPlus },
+
+  beforeMount() {
+    this.getCompetences()
+  },
+
+  data() {
+    return {
+      errorMessage: '',
+
+      competences: [],
+      competenceId: 0,
+
+      errorResponse: {
+        message: '',
+        errorCode: '',
+      },
+    }
+  },
+
+  methods: {
+    getCompetences() {
+      CompetenceService.getCompetencesRequest()
+        .then((response) => (this.competences = response.data))
+        .catch()
+        .finally()
+    },
+  },
 }
 </script>
 
@@ -41,23 +69,22 @@ export default {
         <div class="row mb-3">
           <label for="inputTestDescription" class="col-sm-3 col-form-label">Kirjeldus</label>
           <div class="col-sm-9">
-            <textarea
-              class="form-control"
-              id="inputTestDescription"
-              rows="4"
-              placeholder="Lisa testi kirjeldus"
-            ></textarea>
+            <textarea class="form-control" rows="4" placeholder="Lisa testi kirjeldus"></textarea>
           </div>
         </div>
 
         <div class="row mb-3">
           <label for="selectTestCompetence" class="col-sm-3 col-form-label">Kompetents</label>
           <div class="col-sm-5">
-            <select id="selectTestCompetence" class="form-select">
-              <option selected>Vali kompetents...</option>
-              <option>...</option>
-              <option>...</option>
-              <option>...</option>
+            <select v-model="competenceId" class="form-select">
+              <option :value="0" disabled>Vali kompetents...</option>
+              <option
+                v-for="competence in competences"
+                :key="competence.competenceId"
+                :value="competence.competenceId"
+              >
+                {{ competence.competenceName }}
+              </option>
             </select>
           </div>
         </div>
@@ -65,7 +92,7 @@ export default {
         <div class="row mb-3">
           <label for="selectTestLevel" class="col-sm-3 col-form-label">Tase</label>
           <div class="col-sm-5">
-            <select id="selectTestLevel" class="form-select">
+            <select class="form-select">
               <option selected>Vali tase...</option>
               <option>...</option>
               <option>...</option>
@@ -77,7 +104,7 @@ export default {
         <div class="row mb-3">
           <label for="selectTestPassPercent" class="col-sm-3 col-form-label">Läbimise %</label>
           <div class="col-sm-5">
-            <select id="selectTestPassPercent" class="form-select">
+            <select class="form-select">
               <option selected>Vali läbimise %</option>
               <option>50%</option>
               <option>60%</option>
@@ -92,13 +119,7 @@ export default {
           <legend class="col-form-label col-sm-3 pt-0 text-nowrap">Punktide ümardamine</legend>
           <div class="col-sm-9">
             <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="roundScore"
-                id="radioRoundScoreUp"
-                value="true"
-              />
+              <input class="form-check-input" type="radio" name="roundScore" value="true" />
               <label class="form-check-label" for="radioRoundScoreUp">Üles</label>
             </div>
             <div class="form-check form-check-inline">

@@ -1,4 +1,4 @@
-package ee.testiplatvorm.controller.login.dto;
+package ee.testiplatvorm.controller.competence.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
