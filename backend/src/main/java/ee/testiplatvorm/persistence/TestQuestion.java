@@ -1,5 +1,6 @@
 package ee.testiplatvorm.persistence;
 
+import ee.testiplatvorm.persistence.question.Question;
 import ee.testiplatvorm.persistence.test.Test;
 import ee.testiplatvorm.persistence.user.User;
 import jakarta.persistence.*;
