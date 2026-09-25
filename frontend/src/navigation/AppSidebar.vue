@@ -14,11 +14,27 @@ export default {
         <PhHouse :size="20" />
         Töölaud
       </RouterLink>
-      <RouterLink class="nav-link d-flex align-items-center gap-2" to="/test">
+      <RouterLink class="nav-link d-flex align-items-center gap-2" to="/tests">
         <PhFlask :size="20" />
-        Test
+        Testid
       </RouterLink>
     </div>
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <button
+            class="btn btn-dark dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Dropdown
+          </button>
+          <ul class="dropdown-menu dropdown-menu-">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </li>
+      </ul>
   </nav>
 </template>
 
