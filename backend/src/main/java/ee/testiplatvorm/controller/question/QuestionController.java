@@ -18,15 +18,12 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @GetMapping("/api/questions")
-    @Operation(summary = "Tagastatakse valitud kompetentsi taseme aktiivsed küsimused (question tabeli status = 'A'). " +
-            "Näide vastab päringule competenceLevelId=1. Kui küsimusi pole, tagastatakse tühi list.")
+    @Operation(summary = "Tagastatakse valitud kompetentsi taseme aktiivsed küsimused (question tabeli status = 'A'). Kui küsimusi pole, tagastatakse tühi list.")
     @ApiResponse(
             responseCode = "200", description = "OK"
     )
-    public List<QuestionResponseDto> findQuestionsById(@RequestParam Integer questionId) {
-
-        List<QuestionResponseDto> questionResponseDtos = questionService.findQuestionsById(questionId);
+    public List<QuestionResponseDto> findQuestionsBy(@RequestParam Integer competenceLevelId) {
+        List<QuestionResponseDto> questionResponseDtos = questionService.findQuestionsBy(competenceLevelId);
         return questionResponseDtos;
-
     }
 }

@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, Integer> {
-    @Query("select q from Question q where q.id = :id and q.status = :status")
-    List<Question> findQuestionsBy(Integer id, String status);
+    @Query("select q from Question q where q.competenceLevel.id = :competenceLevelId and q.status = :status order by q.title")
+    List<Question> findQuestionsBy(Integer competenceLevelId, String status);
+
 
 }

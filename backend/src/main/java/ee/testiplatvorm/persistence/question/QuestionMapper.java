@@ -1,13 +1,18 @@
 package ee.testiplatvorm.persistence.question;
 
-import org.mapstruct.*;
+import ee.testiplatvorm.controller.question.dto.QuestionResponseDto;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.ReportingPolicy;
+
+import java.util.List;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface QuestionMapper {
-    Question toEntity(QuestionDto questionDto);
+    @Mapping(source = "id", target = "questionId")
+    @Mapping(source = "title", target = "questionTitle")
+    QuestionResponseDto toQuestionResponseDto(Question question);
 
-    QuestionDto toDto(Question question);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Question partialUpdate(QuestionDto questionDto, @MappingTarget Question question);
+    List<QuestionResponseDto> toQuestionResponseDtos(List<Question> questions);
 }
