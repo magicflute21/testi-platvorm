@@ -1,9 +1,9 @@
 <script>
-import { PhHouse, PhFlask } from '@phosphor-icons/vue'
+import { PhCaretDown, PhFlask, PhHouse } from '@phosphor-icons/vue'
 
 export default {
   name: 'AppSidebar',
-  components: { PhHouse, PhFlask },
+  components: { PhCaretDown, PhHouse, PhFlask },
 }
 </script>
 
@@ -18,23 +18,7 @@ export default {
         <PhFlask :size="20" />
         Testid
       </RouterLink>
-    </div>
-      <ul class="navbar-nav">
-        <li class="nav-item dropdown">
-          <button
-            class="btn btn-dark dropdown-toggle"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            Dropdown
-          </button>
-          <ul class="dropdown-menu dropdown-menu-">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-          </ul>
-        </li>
-      </ul>
+      </div>
   </nav>
 </template>
 
