@@ -1,3 +1,5 @@
+TP-22 GET "/user-tests/{userTestId}/attempt" - gets all the necessary info to start taking a test.
+
 TP - 18 GET /api/tests endpoint to bring necessary data from database for /tests view.
 
 TP- 8 LoginView backend + success and error response handling.
