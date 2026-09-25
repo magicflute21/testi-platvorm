@@ -1,9 +1,9 @@
 package ee.testiplatvorm.controller.user;
 
 
-import ee.testiplatvorm.controller.login.dto.LoginRequest;
+import ee.testiplatvorm.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -12,6 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 public class UserController {
 
-
     private final UserService userService;
+
+    @GetMapping("/api/users")
+    public void findAllUsers() {
+        userService.findAllUsers ();
+    }
+
+
 }
+
+
