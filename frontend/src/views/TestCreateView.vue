@@ -1,6 +1,7 @@
 <script>
 import { PhPlus } from '@phosphor-icons/vue'
 import CompetenceService from '@/services/CompetenceService.js'
+import CompetenceLevelService from '@/services/CompetenceLevelService.js'
 
 export default {
   name: 'TestCreateView',
@@ -17,6 +18,9 @@ export default {
       competences: [],
       competenceId: 0,
 
+      competenceLevels: [],
+      competenceLevelId: 0,
+
       errorResponse: {
         message: '',
         errorCode: '',
@@ -28,6 +32,14 @@ export default {
     getCompetences() {
       CompetenceService.getCompetencesRequest()
         .then((response) => (this.competences = response.data))
+        .catch()
+        .finally()
+    },
+    getCompetenceLevels() {
+      this.competenceLevelId = 0
+
+      CompetenceLevelService.getCompetenceLevelsRequest(this.competenceId)
+        .then((response) => (this.competenceLevels = response.data))
         .catch()
         .finally()
     },
@@ -76,8 +88,8 @@ export default {
         <div class="row mb-3">
           <label for="selectTestCompetence" class="col-sm-3 col-form-label">Kompetents</label>
           <div class="col-sm-5">
-            <select v-model="competenceId" class="form-select">
-              <option :value="0" disabled>Vali kompetents...</option>
+            <select v-model="competenceId" class="form-select" @change="getCompetenceLevels">
+              <option :value="0" disabled>Vali kompetents</option>
               <option
                 v-for="competence in competences"
                 :key="competence.competenceId"
@@ -92,11 +104,15 @@ export default {
         <div class="row mb-3">
           <label for="selectTestLevel" class="col-sm-3 col-form-label">Tase</label>
           <div class="col-sm-5">
-            <select class="form-select">
-              <option selected>Vali tase...</option>
-              <option>...</option>
-              <option>...</option>
-              <option>...</option>
+            <select v-model="competenceLevelId" class="form-select" :disabled="competenceId === 0">
+              <option :value="0" disabled>Vali tase</option>
+              <option
+                v-for="competenceLevel in competenceLevels"
+                :key="competenceLevel.competenceLevelId"
+                :value="competenceLevel.competenceLevelId"
+              >
+                {{ competenceLevel.levelName }}
+              </option>
             </select>
           </div>
         </div>
