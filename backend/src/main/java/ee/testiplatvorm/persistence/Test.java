@@ -72,6 +72,10 @@ public class Test {
     @NotNull
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+    @Size(max = 150)
+    @NotNull
+    @Column(name = "short_description", nullable = false, length = 150)
+    private String shortDescription;
 
 
 }
