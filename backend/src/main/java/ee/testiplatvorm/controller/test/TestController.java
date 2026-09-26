@@ -2,6 +2,7 @@ package ee.testiplatvorm.controller.test;
 
 
 import ee.testiplatvorm.controller.test.dto.TestSummaryDto;
+import ee.testiplatvorm.service.CurrentUserService;
 import ee.testiplatvorm.service.TestService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
