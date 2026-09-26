@@ -13,8 +13,9 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
 
-    public void findAllUsers() {
+    public List<UserResponse> findAllUsers() {
         List<UserResponse> allUserResponses = userRepository.findAllUserResponses();
+        return allUserResponses;
 
 
     }
