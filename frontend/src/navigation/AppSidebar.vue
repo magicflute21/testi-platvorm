@@ -1,5 +1,5 @@
 <script>
-import { PhFlask, PhHouse } from '@phosphor-icons/vue'
+import { PhHouse, PhFlask } from '@phosphor-icons/vue'
 
 export default {
   name: 'AppSidebar',

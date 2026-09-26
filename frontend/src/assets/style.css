@@ -15,3 +15,43 @@ h4 {
   background-color: green !important;
   border-style: solid;
 }
+
+.fixed-card {
+  max-width: 120px;
+}
+
+.btn-xs {
+  padding-top: 0.10rem;
+  padding-bottom: 0.10rem;
+}
+
+.badge-active {
+  background-color: #96b888;
+  colour: #394733;
+}
+
+.badge-inactive {
+  background-color: #e07670;
+  colour: #663330;
+}
+
+.badge-in-progress {
+  background-color: #f7e794;
+  colour: #c7ae30;
+}
+
+.card-title-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
