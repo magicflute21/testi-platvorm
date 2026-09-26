@@ -5,6 +5,11 @@ import TestView from '@/views/TestView.vue'
 import LoginView from '@/views/LoginView.vue'
 import TestOverview from "@/views/TestOverview.vue";
 import testOverview from "@/views/TestOverview.vue";
+import TestResultView from '@/views/TestResultView.vue'
+import TestAttemptView from '@/views/TestAttemptView.vue'
+import TestStartView from '@/views/TestStartView.vue'
+
+const toNumber = (param) => (route) => ({ [param]: Number(route.params[param]) })
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,7 +19,21 @@ const router = createRouter({
       component: MainLayout,
       children: [
         { path: 'dashboard', name: 'dashboardRoute', component: DashboardView },
-        { path: 'tests', name: 'testsRoute', component: TestOverview}
+        { path: 'tests', name: 'testsRoute', component: TestOverview },
+        { path: 'test', name: 'testRoute', component: TestView },
+        { path: 'test-result', name: 'testResultRoute', component: TestResultView },
+        {
+          path: 'tests/:testId/start',
+          name: 'testStartRoute',
+          component: TestStartView,
+          props: toNumber('testId'),
+        },
+        {
+          path: 'tests/:testId/attempt',
+          name: 'testAttemptRoute',
+          component: TestAttemptView,
+          props: toNumber('testId'),
+        },
       ],
     },
     {

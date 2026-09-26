@@ -1,5 +1,6 @@
-package ee.testiplatvorm.persistence;
+package ee.testiplatvorm.persistence.questionanswer;
 
+import ee.testiplatvorm.persistence.Question;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
