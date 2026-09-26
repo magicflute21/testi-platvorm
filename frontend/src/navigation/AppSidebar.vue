@@ -1,9 +1,9 @@
 <script>
-import { PhCaretDown, PhFlask, PhHouse } from '@phosphor-icons/vue'
+import { PhFlask, PhHouse } from '@phosphor-icons/vue'
 
 export default {
   name: 'AppSidebar',
-  components: { PhCaretDown, PhHouse, PhFlask },
+  components: { PhHouse, PhFlask },
 }
 </script>
 
@@ -18,7 +18,7 @@ export default {
         <PhFlask :size="20" />
         Testid
       </RouterLink>
-      </div>
+    </div>
   </nav>
 </template>
 

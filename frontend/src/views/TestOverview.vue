@@ -37,14 +37,15 @@ export default {
 </script>
 
 <template>
-  <div class="container text">
+  <div class="container-fluid">
     <div class="row">
       <div v-for="testSummary in testSummaries" :key="testSummary.testId" class="col-4 mb-3">
-        <div class="card h-100 shadow-sm">
+        <div class="card h-100 shadow-sm rounded-4">
           <div class="card-body d-flex flex-column">
             <div class="row d-flex flex-row mb-2">
               <h5 class="card-title justify-content-start">
-                {{ testSummary.testName }}<span class="badge ms-5" style="background-color: seagreen">{{testSummary.testStatus }}</span>
+                {{ testSummary.testName }}<span class="badge ms-5" :class="testStatus[testSummary.testStatus]
+                ?.badgeClass">{{testStatus[testSummary.testStatus]?.name }}</span>
               </h5>
             </div>
             <div class="row mb-3">
@@ -56,8 +57,8 @@ export default {
             </div>
             <div class="row">
               <div class="d-flex justify-content-start align-content-end gap-2 mb-0">
-                <button class="btn btn-primary mt-auto">Vaata testi</button>
-                <button class="btn btn-primary mt-auto">Vaata tulemusi</button>
+                <button class="btn btn-outline-primary mt-auto">Vaata testi</button>
+                <button class="btn btn-primary d-flex flex-column mt-auto">Vaata tulemusi</button>
               </div>
             </div>
           </div>
