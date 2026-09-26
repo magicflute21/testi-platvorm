@@ -1,6 +1,9 @@
 <script>
+import { PhBackspace } from '@phosphor-icons/vue'
+
 export default {
   name: 'TestQuestionCard',
+  components: { PhBackspace },
   props: {
     question: {},
     totalQuestions: Number,
@@ -12,6 +15,9 @@ export default {
     },
     isMultiple() {
       return this.question.questionTypeName === 'MULTIPLE_CHOICE'
+    },
+    isFirstQuestion() {
+      return this.questionNumber === 1
     },
   },
   methods: {
@@ -78,22 +84,22 @@ export default {
                 :checked="this.question.selectedQuestionAnswerIds.includes(answer.questionAnswerId)"
                 @change="toggleAnswer(Number($event.target.value))"
               />
-              <span class="form-check-label">
-                {{ answer.answerText }}</span
-              >
+              <span class="form-check-label"> {{ answer.answerText }}</span>
             </label>
           </div>
         </div>
         <div class="d-flex justify-content-between">
           <button
-            class="btn btn-outline-secondary"
-            :disabled="questionNumber === 1"
+            class="btn btn-light d-flex align-items-center gap-1"
+            :class="{ 'text-primary': !isFirstQuestion }"
+            :disabled="isFirstQuestion"
             @click="$emit('event-go-to-previous')"
           >
-            Tagasi
+            <PhBackspace :size="14" />
+            <span>Tagasi</span>
           </button>
           <button
-            class="btn btn-primary"
+            class="btn btn-primary d-flex align-items-center"
             :disabled="!this.question.selectedQuestionAnswerIds.length"
             @click="$emit('event-submit-answer', question)"
           >
