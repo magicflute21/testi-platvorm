@@ -1,10 +1,11 @@
 <script>
 import TestQuestionCard from '@/components/TestQuestionCard.vue'
 import TestAttemptService from '@/services/TestAttemptService.js'
+import LoadingText from '@/components/LoadingText.vue'
 
 export default {
   name: 'TestAttemptView',
-  components: { TestQuestionCard },
+  components: { LoadingText, TestQuestionCard },
   methods: {
     getTestAttempt() {
       // todo replace with real user test assignment id
@@ -56,10 +57,7 @@ export default {
   <div class="container">
     <h1 class="text-center h3">{{ testAttempt.testName }}</h1>
     <div class="d-flex flex-column align-items-center">
-      <div v-if="isLoading" class="loading-text text-primary text-lg mt-3" role="status">
-        Loading<span class="dot">.</span><span class="dot dot-two">.</span
-        ><span class="dot dot-three">.</span>
-      </div>
+      <LoadingText v-if="isLoading" />
       <div v-else>
             <TestQuestionCard
               :question="testAttempt.questions[currentQuestionIndex]"
@@ -73,35 +71,3 @@ export default {
     </div>
   </div>
 </template>
-
-<style scoped>
-.dot-two {
-  animation: dot-two 1.6s step-end infinite;
-}
-
-.dot-three {
-  animation: dot-three 1.6s step-end infinite;
-}
-
-/* Tsükkel: . → .. → ... → .. → . */
-@keyframes dot-two {
-  0% {
-    opacity: 0;
-  }
-  25% {
-    opacity: 1;
-  }
-}
-
-@keyframes dot-three {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  75% {
-    opacity: 0;
-  }
-}
-</style>

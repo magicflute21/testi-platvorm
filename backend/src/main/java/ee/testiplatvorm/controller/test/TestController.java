@@ -1,13 +1,14 @@
 package ee.testiplatvorm.controller.test;
 
 
+import ee.testiplatvorm.controller.test.dto.TestStartDto;
 import ee.testiplatvorm.controller.test.dto.TestSummaryDto;
-import ee.testiplatvorm.service.CurrentUserService;
 import ee.testiplatvorm.service.TestService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -26,5 +27,10 @@ public class TestController {
     public List<TestSummaryDto> findAllTests() {
         List<TestSummaryDto> testSummaryDtos = testService.findAllTests();
         return testSummaryDtos;
+    }
+
+    @GetMapping("/api/tests/{testId}/start-info")
+    public TestStartDto findTestStartInfo(@PathVariable Integer testId) {
+       return testService.findTestStartInfo(testId);
     }
 }

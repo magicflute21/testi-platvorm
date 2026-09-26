@@ -1,16 +1,15 @@
 <script>
 import AppSidebar from '@/navigation/AppSidebar.vue'
+import AppNavbar from '@/navigation/AppNavbar.vue'
 
 export default {
   name: 'MainLayout',
-  components: { AppSidebar },
+  components: { Navbar: AppNavbar, AppSidebar },
 }
 </script>
 
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light px-3">
-    <RouterLink class="navbar-brand" to="/">SkillScope</RouterLink>
-  </nav>
+  <Navbar />
 
   <div class="d-flex">
     <AppSidebar />
@@ -19,3 +18,5 @@ export default {
     </main>
   </div>
 </template>
+
+
