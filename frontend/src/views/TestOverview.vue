@@ -39,37 +39,30 @@ export default {
 </script>
 
 <template>
-  <div class="container-fluid d-flex flex-wrap p-3">
-    <div class="row d-flex flex-wrap p-2">
-      <div class="justify-content-start mb-4">
-        <h1>Testid</h1>
-      </div>
+  <div class="container py-4">
+    <h1 class="mb-5">Testid</h1>
+
+    <div class="test-grid">
       <div
         v-for="testSummary in testSummaries"
         :key="testSummary.testId"
-        class="col-12 col-sm-12 col-md-4 gap-3 mb-sm-4"
+        class="card preview-card shadow-sm rounded-4"
       >
-        <div class="card h-100 shadow-sm rounded-4 fixed-card card:hover">
-          <div class="card-body d-flex flex-column">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-              <div class="d-flex flex-wrap align-items-center flex-grow-1 gap-2">
-                <h4 class="card-title">
-                  {{ testSummary.testName }}
-                </h4>
-                <span
-                  class="badge flex-shink-0 ms-2"
-                  :class="testStatus[testSummary.testStatus]?.badgeClass"
-                >
-                  {{ testStatus[testSummary.testStatus]?.name }}</span
-                >
-              </div>
-              <button class="btn"><PhDotsThree :size="22" /></button>
-            </div>
-            <p class="card-text flex-grow-6">{{ testSummary.testShortDescription }}</p>
-            <div class="d-flex flex-wrap gap-2 mt-auto">
-              <button class="btn btn-outline-primary btn-sm">Vaata testi</button>
-              <button class="btn btn-primary btn-sm bt-xs">Vaata tulemusi</button>
-            </div>
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex align-items-start gap-4 mb-2">
+            <h4 class="card-title flex-grow-1 mb-0">{{ testSummary.testName }}</h4>
+            <span
+              class="badge flex-shrink-0 mt-1"
+              :class="testStatus[testSummary.testStatus]?.badgeClass"
+            >
+              {{ testStatus[testSummary.testStatus]?.name }}
+            </span>
+            <button class="btn btn-sm flex-shrink-0 p-0"><PhDotsThree :size="22" /></button>
+          </div>
+          <p class="card-text flex-grow-1">{{ testSummary.testShortDescription }}</p>
+          <div class="d-flex flex-wrap gap-2 mt-auto">
+            <button class="btn btn-color">Vaata testi</button>
+            <button class="btn btn-color">Vaata tulemusi</button>
           </div>
         </div>
       </div>
@@ -78,39 +71,55 @@ export default {
 </template>
 
 <style scoped>
-.fixed-card {
-  max-width: 820px;
-  min-width: 420px;
+.test-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(550px, 100%), 1fr));
+  gap: 1rem;
 }
 
-.btn-xs {
-  padding-top: 0.1rem;
-  padding-bottom: 0.1rem;
+@media (min-width: 1800px) {
+  .container {
+    max-width: 1760px; /* 3 kaarti */
+  }
 }
 
-.badge-active {
-  background-color: #96b888;
-  text-decoration-color: #394733;
+@media (min-width: 2400px) {
+  .container {
+    max-width: 2340px; /* 4 kaarti */
+  }
 }
 
-.badge-inactive {
-  background-color: #e07670;
-  colour: #663330;
+@media (min-width: 3000px) {
+  .container {
+    max-width: 2900px; /* 4 kaarti */
+  }
 }
 
-.badge-in-progress {
-  background-color: #f7e794;
-  colour: #c7ae30;
+.card-text {
+  min-height: 4.5rem; /* hoiab kaardid ühtlase kõrgusega ka lühikese/tühja kirjelduse korral */
 }
 
 .card {
+  min-width: 0;
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;
 }
 
-.card:hover {
+.preview-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-title,
+.card-text {
+  min-width: 0; /* lubab flex-elemendil kitseneda, et pikk pealkiri ei lükkaks badge'i välja */
+  overflow-wrap: anywhere;
+}
+
+.btn-color {
+  background-color: var(--bs-gray-200);
+  color: var(--bs-blue);
+  font-weight: bold;
 }
 </style>

@@ -27,3 +27,14 @@ a,
   }
 }
 
+.badge-active {
+  background-color: #278f6c;
+}
+
+.badge-inactive {
+  background-color: #b0502a;
+}
+
+.badge-in-progress {
+  background-color: #e6e15c;
+}

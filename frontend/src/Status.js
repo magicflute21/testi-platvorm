@@ -1,7 +1,7 @@
 export default{
 
     A: {name: 'Aktiivne', badgeClass: 'badge-active'},
-    K: {name: 'Koostamisel', badgeClass: 'text-bg-warning'},
-    M: {name: 'Mitteaktiivne', badgeClass: 'text-bg-danger'}
+    K: {name: 'Koostamisel', badgeClass: 'badge-in-progress'},
+    M: {name: 'Mitteaktiivne', badgeClass: 'badge-inactive'}
 
 }
