@@ -10,17 +10,13 @@ export default {
 
 <template>
   <Navbar />
+
   <div class="d-flex">
     <AppSidebar />
-    <main class="flex-grow-1 p-3 sidebar">
+    <main class="flex-grow-1 p-3">
       <RouterView />
     </main>
   </div>
 </template>
 
-<style scoped>
-.sidebar {
-  width: 220px;
-  min-height: 100vh;
-}
-</style>
+

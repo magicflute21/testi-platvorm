@@ -28,13 +28,13 @@ a,
 }
 
 .badge-active {
-  background-color: #278f6c;
+  background-color: rgb(6 140 52 / 0.94);
 }
 
 .badge-inactive {
-  background-color: #b0502a;
+  background-color: #96160e;
 }
 
 .badge-in-progress {
-  background-color: #e6e15c;
+  background-color: #deab3a;
 }
