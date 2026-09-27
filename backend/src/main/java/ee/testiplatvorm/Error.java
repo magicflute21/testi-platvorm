@@ -4,7 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum Error {
-    INCORRECT_CREDENTIALS("Vale emaili aadress või salasõna");
+    INCORRECT_CREDENTIALS("Vale emaili aadress või salasõna"),
+    NO_TEST_ASSIGNMENT_FOR_THIS_USER("Kasutajale ei ole vastavat testi määratud");
 
     private final String message;
 

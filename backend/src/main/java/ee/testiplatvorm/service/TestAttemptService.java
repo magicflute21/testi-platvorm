@@ -3,7 +3,7 @@ package ee.testiplatvorm.service;
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptAnswerDto;
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptQuestionDto;
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptResponseDto;
-import ee.testiplatvorm.infrastructure.exception.PrimaryKeyNotFoundException;
+import ee.testiplatvorm.infrastructure.exception.ForbiddenException;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswer;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswerMapper;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswerRepository;
@@ -19,8 +19,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ee.testiplatvorm.Error.NO_TEST_ASSIGNMENT_FOR_THIS_USER;
 import static ee.testiplatvorm.Status.STATUS_ACTIVE;
-import static ee.testiplatvorm.Status.STATUS_OPEN;
 
 @Service
 @RequiredArgsConstructor
@@ -32,12 +32,10 @@ public class TestAttemptService {
     private final QuestionAnswerMapper questionAnswerMapper;
     private final QuestionAnswerRepository questionAnswerRepository;
 
-    public TestAttemptResponseDto getTestAttempt(Integer userTestId) {
-        UserTest userTest = userTestRepository.getValidUserTestBy(userTestId, STATUS_OPEN.getCode(), STATUS_ACTIVE.getCode())
-                .orElseThrow(() -> new PrimaryKeyNotFoundException("userTestId", userTestId));
+    public TestAttemptResponseDto getTestAttempt(Integer userId, Integer testId) {
+        UserTest userTest = userTestRepository.getValidUserTestBy(userId, testId, STATUS_ACTIVE.getCode(), STATUS_ACTIVE.getCode())
+                .orElseThrow(() -> new ForbiddenException(NO_TEST_ASSIGNMENT_FOR_THIS_USER.getMessage() , NO_TEST_ASSIGNMENT_FOR_THIS_USER.name()));
         TestAttemptResponseDto testAttemptResponseDto = userTestMapper.toTestAttemptResponseDto(userTest);
-
-        Integer testId = userTest.getTest().getId();
 
         handleAddQuestions(testAttemptResponseDto, testId);
 
@@ -61,6 +59,5 @@ public class TestAttemptService {
         List<TestAttemptAnswerDto> testAttemptAnswerDtos = questionAnswerMapper.toQuestionAnswerDtos(questionAnswers);
 
         testAttemptQuestionDto.setAnswers(testAttemptAnswerDtos);
-
     }
 }

@@ -3,10 +3,11 @@ import NavigationService from '@/services/NavigationService.js'
 import TestStartService from '@/services/TestStartService.js'
 import LoadingText from '@/components/LoadingText.vue'
 import { PhTimer, PhInfinity, PhPlay, PhWarningCircle } from '@phosphor-icons/vue'
+import TestNotFoundCard from '@/components/TestNotFoundCard.vue'
 
 export default {
   name: 'TestStartView',
-  components: { LoadingText, PhTimer, PhInfinity, PhPlay, PhWarningCircle },
+  components: { TestNotFoundCard, LoadingText, PhTimer, PhInfinity, PhPlay, PhWarningCircle },
   props: {
     testId: { type: Number, required: true },
   },
@@ -32,7 +33,8 @@ export default {
     }
   },
   methods: {
-    goToTestAttempt() {
+    startTheTest() {
+
       NavigationService.navigateToTestAttempt(this.testId)
     },
     getTestStart() {
@@ -43,7 +45,6 @@ export default {
     },
     handleGetTestStartErrorResponse(error) {
       this.errorResponse = error.response.data
-      console.log(error.response)
       if (
         error.response.status === 404 &&
         this.errorResponse.errorCode === 'PRIMARY_KEY_NOT_FOUND'
@@ -62,14 +63,7 @@ export default {
 <template>
   <div class="container d-flex flex-column align-items-center">
     <LoadingText v-if="isLoading" />
-
-    <div v-else-if="errorMessage.length" class="card my-4 shadow-sm p-4 text-center start-card">
-      <div class="card-body">
-        <PhWarningCircle :size="48" class="text-secondary mb-3" />
-        <h1 class="h4 fw-semibold mb-2">Testi ei leitud</h1>
-        <p class="text-secondary mb-0">{{ errorMessage }}</p>
-      </div>
-    </div>
+    <TestNotFoundCard v-else-if=errorMessage.length :message="errorMessage" />
 
     <div v-else class="card my-4 shadow p-4 start-card">
       <div class="card-body">
@@ -105,7 +99,7 @@ export default {
         </div>
 
         <button
-          @click="goToTestAttempt"
+          @click="startTheTest"
           class="btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center gap-2"
         >
           <PhPlay :size="20" weight="fill" />

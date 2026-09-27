@@ -1,6 +1,7 @@
 package ee.testiplatvorm.controller.testattempt;
 
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptResponseDto;
+import ee.testiplatvorm.service.CurrentUserService;
 import ee.testiplatvorm.service.TestAttemptService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,14 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/tests/{testId}")
 
 public class TestAttemptController {
 
     private final TestAttemptService testAttemptService;
+    private final CurrentUserService currentUserService;
 
-    @GetMapping("/user-tests/{userTestId}/attempt")
-    @Operation(summary = "Tagastab testi info koos küsimuste ja vastusevariantidega. Parameetrina võtab sisse user_test id ")
+    @GetMapping("/attempt")
+    @Operation(summary = "Tagastab testi info koos küsimuste ja vastusevariantidega. Parameetrina võtab sisse testi id ")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "OK"
@@ -31,7 +33,8 @@ public class TestAttemptController {
             )
 
     })
-    public TestAttemptResponseDto getTestAttempt(@PathVariable Integer userTestId) {
-        return testAttemptService.getTestAttempt(userTestId);
+    public TestAttemptResponseDto getTestAttempt(@PathVariable Integer testId) {
+        Integer userId = currentUserService.getUserId();
+        return testAttemptService.getTestAttempt(userId, testId);
     }
 }
