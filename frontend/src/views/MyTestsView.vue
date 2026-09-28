@@ -1,16 +1,79 @@
 <script>
 import PreviewCard from '@/components/PreviewCard.vue'
+import LoadingText from '@/components/LoadingText.vue'
+import UserTestService from '@/services/UserTestService.js'
+import Status from '@/Status.js'
+import TestNotFoundCard from '@/components/TestNotFoundCard.vue'
+import AlertDanger from '@/components/AlertDanger.vue'
 
 export default {
   name: 'MyTestsView',
-  components: { PreviewCard },
+  components: { AlertDanger, TestNotFoundCard, LoadingText, PreviewCard },
+  beforeMount() {
+    this.getUserTests()
+  },
+
+  data() {
+    return {
+      errorMessage: '',
+      userTestStatus: Status,
+      isLoading: true,
+      userTestSummaries: [
+        {
+          userTestId: 0,
+          testId: 0,
+          testName: '',
+          testShortDescription: '',
+          userTestStatus: '',
+        },
+      ],
+    }
+  },
+
+  methods: {
+    getUserTests() {
+      UserTestService.getUserTests()
+        .then((response) => this.handleGetUserTests(response))
+        .catch((error) => this.handleErrorMessage())
+        .finally(() => (this.isLoading = false))
+    },
+
+    handleGetUserTests(response) {
+      this.userTestSummaries = response.data
+    },
+
+    handleErrorMessage() {
+      this.errorMessage = 'Testide laadimine ebaõnnestus'
+    },
+  },
 }
 </script>
 
 <template>
   <div class="container-fluid py-4">
-    <div class="preview-test-card-grid">
-      <PreviewCard></PreviewCard>
+    <LoadingText v-if="isLoading" />
+    <div v-else-if="errorMessage">
+          <AlertDanger :error-message="errorMessage" />
+    </div>
+    <div v-else-if="userTestSummaries.length === 0">
+      <TestNotFoundCard :message="'Sulle pole ühtki testi määratud'" />
+    </div>
+    <div v-else>
+      <h5>Minu testid</h5>
+      <div class="preview-test-card-grid">
+        <PreviewCard
+          v-for="userTestSummary in userTestSummaries"
+          :key="userTestSummary.userTestId"
+          :status-badge="userTestStatus[userTestSummary.userTestStatus]"
+        >
+          <template #title>{{ userTestSummary.testName }}</template>
+          <template #description>{{ userTestSummary.testShortDescription }}</template>
+          <template #actions>
+            <button class="btn btn-primary">Soorita test</button>
+            <button class="btn btn-color">Vaata tulemusi</button>
+          </template>
+        </PreviewCard>
+      </div>
     </div>
   </div>
 </template>

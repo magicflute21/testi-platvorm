@@ -38,3 +38,7 @@ a,
 .badge-in-progress {
   background-color: #deab3a;
 }
+
+.badge-completed{
+  background-color: #5f4842;
+}
