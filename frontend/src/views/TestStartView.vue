@@ -2,18 +2,20 @@
 import NavigationService from '@/services/NavigationService.js'
 import TestStartService from '@/services/TestStartService.js'
 import LoadingText from '@/components/LoadingText.vue'
-import { PhTimer, PhInfinity, PhPlay } from '@phosphor-icons/vue'
-import TestNotFoundCard from '@/components/TestNotFoundCard.vue'
+import { PhInfinity, PhPlay, PhTimer } from '@phosphor-icons/vue'
+import aloeVeraImage from '@/assets/images/aloe vera-cuate.svg'
+import TestNotFoundIllustration from '@/components/TestNotFoundIllustration.vue'
 
 export default {
   name: 'TestStartView',
-  components: { TestNotFoundCard, LoadingText, PhTimer, PhInfinity, PhPlay },
+  components: { TestNotFoundIllustration, LoadingText, PhTimer, PhInfinity, PhPlay },
   props: {
     testId: { type: Number, required: true },
   },
   data() {
     return {
       isLoading: true,
+      aloeVeraImage,
       errorMessage: '',
       test: {
         title: '',
@@ -44,7 +46,9 @@ export default {
     },
     handleGetTestStartErrorResponse(error) {
       this.errorResponse = error.response.data
-      if (error.response.status === 403 && this.errorResponse.errorCode === 'NO_TEST_ASSIGNMENT_FOR_THIS_USER'
+      if (
+        error.response.status === 403 &&
+        this.errorResponse.errorCode === 'NO_TEST_ASSIGNMENT_FOR_THIS_USER'
       ) {
         this.errorMessage = this.errorResponse.message
         this.test = {}
@@ -60,11 +64,12 @@ export default {
 <template>
   <div class="container d-flex flex-column align-items-center">
     <LoadingText v-if="isLoading" />
-    <TestNotFoundCard v-else-if="errorMessage.length" :message="errorMessage" />
+
+    <TestNotFoundIllustration v-else-if="errorMessage.length" :message="errorMessage" />
 
     <div v-else class="card my-4 shadow p-4 start-card">
       <div class="card-body">
-        <p class="eyebrow text-primary mb-2">{{ test.competence }}</p>
+        <p class="eyebrow text-brand mb-2">{{ test.competence }}</p>
         <h1 class="h2 fw-bold mb-3">{{ test.title }}</h1>
 
         <div class="d-flex flex-wrap gap-2 mb-4">

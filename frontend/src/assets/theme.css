@@ -1,0 +1,82 @@
+/*
+  Brändi teema — kirjutab üle Bootstrapi primary värvi.
+  Peab olema imporditud PÄRAST bootstrap.min.css-i (vt main.js), muidu Bootstrap kirjutab selle üle.
+
+  Palett (aaloe illustratsioonist) — üks värv + neutraalne:
+    tumehall  #37474f  — primary: nupud, lingid, valitud olek, progressiriba, külgmenüü päis
+    roheline  #1f8a4c  — AINUS aktsentvärv: logo, mõned pealkirjad (.text-brand), tulemustes "sooritatud"
+    münt      #92e3a9  — heledad rohelised aktsendid
+
+  Rohelist EI kasutata testi sooritamise ajal valitud vastuse märkimiseks — see mõjuks nagu "õige vastus".
+*/
+
+:root {
+  --bs-primary: #37474f;
+  --bs-primary-rgb: 55, 71, 79;
+  --bs-primary-text-emphasis: #1c262b;
+  --bs-primary-bg-subtle: #eceff1;
+  --bs-primary-border-subtle: #b0bec5;
+
+  --bs-link-color: #37474f;
+  --bs-link-color-rgb: 55, 71, 79;
+  --bs-link-hover-color: #1c262b;
+  --bs-link-hover-color-rgb: 28, 38, 43;
+  --bs-focus-ring-color: rgba(55, 71, 79, 0.25);
+
+  --brand-green: #1f8a4c;
+  --brand-green-rgb: 31, 138, 76;
+  --brand-slate: #37474f;
+  --brand-mint: #92e3a9;
+}
+
+/* Brändi roheline pealkirjadele ja aktsentidele */
+.text-brand {
+  color: var(--brand-green) !important;
+}
+
+.btn-primary {
+  --bs-btn-bg: #37474f;
+  --bs-btn-border-color: #37474f;
+  --bs-btn-hover-bg: #263238;
+  --bs-btn-hover-border-color: #263238;
+  --bs-btn-active-bg: #1c262b;
+  --bs-btn-active-border-color: #1c262b;
+  --bs-btn-disabled-bg: #37474f;
+  --bs-btn-disabled-border-color: #37474f;
+  --bs-btn-focus-shadow-rgb: 55, 71, 79;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #37474f;
+  --bs-btn-border-color: #37474f;
+  --bs-btn-hover-bg: #37474f;
+  --bs-btn-hover-border-color: #37474f;
+  --bs-btn-active-bg: #1c262b;
+  --bs-btn-active-border-color: #1c262b;
+  --bs-btn-disabled-color: #37474f;
+  --bs-btn-disabled-border-color: #37474f;
+  --bs-btn-focus-shadow-rgb: 55, 71, 79;
+}
+
+.nav-pills {
+  --bs-nav-pills-link-active-bg: #37474f;
+}
+
+/* Bootstrapis on progressiriba värv kõvasti kirjas, mitte --bs-primary kaudu.
+   Mündiroheline: edenemine on positiivne ja ei tähenda "õiget vastust". */
+.progress,
+.progress-stacked {
+  --bs-progress-bar-bg: var(--brand-mint);
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: #b0bec5;
+  box-shadow: 0 0 0 0.25rem rgba(55, 71, 79, 0.25);
+}
+
+.form-check-input:checked {
+  background-color: #37474f;
+  border-color: #37474f;
+}

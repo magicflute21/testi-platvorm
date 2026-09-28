@@ -10,6 +10,8 @@ import router from './router'
 // Bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.js'
+// Brändi teema — peab tulema pärast Bootstrapi CSS-i
+import './assets/theme.css'
 
 // Extra imports
 // leafleti css kujindused
