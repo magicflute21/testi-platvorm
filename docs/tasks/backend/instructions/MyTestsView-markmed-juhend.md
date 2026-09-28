@@ -1,6 +1,6 @@
-# Juhend: GET /api/user-tests
+# Juhend: GET /api/me/user-tests
 
-**Taski fail:** `docs/balsamic/notes/MyTestsView-markmed.md` (sektsioon "API märkmed — GET /api/user-tests")
+**Taski fail:** `docs/balsamic/notes/MyTestsView-markmed.md` (sektsioon "API märkmed — GET /api/me/user-tests")
 **Kontroller:** `UserTestController.java` (uus, paketis `controller/usertest/`)
 **Implementeerimise voog:** RestController → Service → Repository → Service → Mapper → RestController
 
@@ -20,7 +20,7 @@ Selle harjutuse käigus õpid:
 | | |
 |---|---|
 | HTTP meetod | `GET` |
-| API tee | `/api/user-tests` (parameetreid pole — userId tuleb sessioonist) |
+| API tee | `/api/me/user-tests` (parameetreid pole — userId tuleb sessioonist) |
 | RequestBody | puudub |
 | ResponseBody | `List<UserTestSummaryDto>` — väljad `userTestId`, `testId`, `testName`, `testShortDescription`, `userTestStatus` |
 | Tingimused | `user_test.user_id` = sisse logitud kasutaja **ja** seotud `test.status = 'A'` |

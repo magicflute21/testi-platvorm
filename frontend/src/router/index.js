@@ -1,16 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainLayout from '@/navigation/MainLayout.vue'
 import DashboardView from '@/views/DashboardView.vue'
-import TestView from '@/views/TestView.vue'
 import LoginView from '@/views/LoginView.vue'
-import TestOverview from "@/views/TestOverview.vue";
-import testOverview from "@/views/TestOverview.vue";
+import TestOverview from '@/views/TestOverview.vue'
 import TestResultView from '@/views/TestResultView.vue'
 import TestAttemptView from '@/views/TestAttemptView.vue'
 import TestStartView from '@/views/TestStartView.vue'
 import CompetenceView from '@/views/CompetenceView.vue'
 import MyTestsView from '@/views/MyTestsView.vue'
-import myTestsView from '@/views/MyTestsView.vue'
 
 const toNumber = (param) => (route) => ({ [param]: Number(route.params[param]) })
 

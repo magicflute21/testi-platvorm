@@ -2,7 +2,10 @@ package ee.testiplatvorm.persistence.usertest;
 
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptResponseDto;
 import ee.testiplatvorm.controller.usertest.dto.UserTestSummaryDto;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
