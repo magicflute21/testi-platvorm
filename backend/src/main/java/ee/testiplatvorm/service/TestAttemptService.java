@@ -9,6 +9,8 @@ import ee.testiplatvorm.persistence.question.Question;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswer;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswerMapper;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswerRepository;
+import ee.testiplatvorm.persistence.result.Result;
+import ee.testiplatvorm.persistence.test.Test;
 import ee.testiplatvorm.persistence.testquestion.TestQuestion;
 import ee.testiplatvorm.persistence.testquestion.TestQuestionMapper;
 import ee.testiplatvorm.persistence.testquestion.TestQuestionRepository;
@@ -19,11 +21,12 @@ import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 import static ee.testiplatvorm.Error.NO_TEST_ASSIGNMENT_FOR_THIS_USER;
-import static ee.testiplatvorm.Status.STATUS_ACTIVE;
-import static ee.testiplatvorm.Status.STATUS_OPEN;
+import static ee.testiplatvorm.Status.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +38,8 @@ public class TestAttemptService {
     private final QuestionAnswerMapper questionAnswerMapper;
     private final QuestionAnswerRepository questionAnswerRepository;
     private final CurrentUserService currentUserService;
+
+    private static final int DECIMAL_POINTS = 2;
 
     public TestAttemptResponseDto getTestAttempt(Integer userId, Integer testId) {
         UserTest userTest = userTestRepository.getValidUserTestBy(userId, testId, STATUS_OPEN.getCode(), STATUS_ACTIVE.getCode(), STATUS_ACTIVE.getCode())
@@ -66,16 +71,44 @@ public class TestAttemptService {
     }
 
     public void submitTest(Integer testId, List<SubmittedAnswersDto> submittedAnswers) {
-        System.out.println(submittedAnswers);
-
         Integer userId = currentUserService.getUserId();
         UserTest userTest = userTestRepository.getValidUserTestBy(userId, testId, STATUS_OPEN.getCode(), STATUS_ACTIVE.getCode(), STATUS_ACTIVE.getCode())
                 .orElseThrow(() -> new ForbiddenException(NO_TEST_ASSIGNMENT_FOR_THIS_USER.getMessage(), NO_TEST_ASSIGNMENT_FOR_THIS_USER.name()));
 
-        calculateScore(testId, submittedAnswers);
+        Result result = new Result();
+        handleCalculateScore(testId, submittedAnswers, result);
+        handleResultStatus(userTest, result);
     }
 
-    private void calculateScore(Integer testId, List<SubmittedAnswersDto> submittedAnswers) {
+    private void handleResultStatus(UserTest userTest, Result result) {
+        Test test = userTest.getTest();
+
+        BigDecimal testPassPercent = test.getPassPercent();
+        boolean roundScoreUp = test.getRoundScoreUp();
+        BigDecimal userScore = BigDecimal.valueOf(result.getScoreTotal());
+        BigDecimal maxScore = BigDecimal.valueOf(result.getMaxScore());
+
+        if (maxScore.compareTo(BigDecimal.ZERO) == 0) {
+            // kui maxScore on 0, siis loeme testi automaatselt läbituks, mitte läbikukkunuks.
+            result.setStatus(STATUS_PASSED.getCode());
+            return;
+        }
+
+        BigDecimal userAchievedPercentage = userScore.multiply(BigDecimal.valueOf(100)).divide(maxScore, DECIMAL_POINTS, RoundingMode.HALF_UP);
+        BigDecimal userAchievedEndResultPercentage = userAchievedPercentage;
+
+        if (roundScoreUp) {
+            userAchievedEndResultPercentage = userAchievedPercentage.setScale(0, RoundingMode.HALF_UP);
+        }
+
+        if (userAchievedEndResultPercentage.compareTo(testPassPercent) >= 0) {
+            result.setStatus(STATUS_PASSED.getCode());
+        } else {
+            result.setStatus(STATUS_FAILED.getCode());
+        }
+    }
+
+    private void handleCalculateScore(Integer testId, List<SubmittedAnswersDto> submittedAnswers, Result result) {
         Integer maxScore = 0;
         Integer userScore = 0;
 
@@ -92,7 +125,11 @@ public class TestAttemptService {
             if (isUserAnswerCorrect(question, userAnswerIdsByQuestionId)) {
                 userScore += questionScore;
             }
+
         }
+        result.setScoreTotal(userScore);
+        result.setMaxScore(maxScore);
+        result.setTotalQuestions(testQuestions.size());
     }
 
     private static @NonNull Map<Integer, List<Integer>> getUserAnswerIdsByQuestionId(List<SubmittedAnswersDto> submittedAnswers) {
