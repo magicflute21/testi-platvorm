@@ -10,6 +10,7 @@ import ee.testiplatvorm.persistence.questionanswer.QuestionAnswer;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswerMapper;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswerRepository;
 import ee.testiplatvorm.persistence.result.Result;
+import ee.testiplatvorm.persistence.result.ResultRepository;
 import ee.testiplatvorm.persistence.test.Test;
 import ee.testiplatvorm.persistence.testquestion.TestQuestion;
 import ee.testiplatvorm.persistence.testquestion.TestQuestionMapper;
@@ -20,9 +21,11 @@ import ee.testiplatvorm.persistence.usertest.UserTestRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 import static ee.testiplatvorm.Error.NO_TEST_ASSIGNMENT_FOR_THIS_USER;
@@ -31,6 +34,8 @@ import static ee.testiplatvorm.Status.*;
 @Service
 @RequiredArgsConstructor
 public class TestAttemptService {
+    private static final int DECIMAL_POINTS = 2;
+
     private final UserTestRepository userTestRepository;
     private final UserTestMapper userTestMapper;
     private final TestQuestionRepository testQuestionRepository;
@@ -38,8 +43,8 @@ public class TestAttemptService {
     private final QuestionAnswerMapper questionAnswerMapper;
     private final QuestionAnswerRepository questionAnswerRepository;
     private final CurrentUserService currentUserService;
+    private final ResultRepository resultRepository;
 
-    private static final int DECIMAL_POINTS = 2;
 
     public TestAttemptResponseDto getTestAttempt(Integer userId, Integer testId) {
         UserTest userTest = userTestRepository.getValidUserTestBy(userId, testId, STATUS_OPEN.getCode(), STATUS_ACTIVE.getCode(), STATUS_ACTIVE.getCode())
@@ -70,14 +75,28 @@ public class TestAttemptService {
         testAttemptQuestionDto.setAnswers(testAttemptAnswerDtos);
     }
 
+    @Transactional
     public void submitTest(Integer testId, List<SubmittedAnswersDto> submittedAnswers) {
         Integer userId = currentUserService.getUserId();
         UserTest userTest = userTestRepository.getValidUserTestBy(userId, testId, STATUS_OPEN.getCode(), STATUS_ACTIVE.getCode(), STATUS_ACTIVE.getCode())
                 .orElseThrow(() -> new ForbiddenException(NO_TEST_ASSIGNMENT_FOR_THIS_USER.getMessage(), NO_TEST_ASSIGNMENT_FOR_THIS_USER.name()));
 
         Result result = new Result();
+        userTest.setStatus(STATUS_CLOSED.getCode());
+        result.setUserTest(userTest);
+
         handleCalculateScore(testId, submittedAnswers, result);
         handleResultStatus(userTest, result);
+        handleResultTimeStamp(result);
+
+        resultRepository.save(result);
+        userTestRepository.save(userTest);
+    }
+
+    private void handleResultTimeStamp(Result result) {
+        OffsetDateTime timestamp = OffsetDateTime.now();
+        result.setStartedAt(timestamp);
+        result.setCompletedAt(timestamp);
     }
 
     private void handleResultStatus(UserTest userTest, Result result) {
@@ -111,6 +130,7 @@ public class TestAttemptService {
     private void handleCalculateScore(Integer testId, List<SubmittedAnswersDto> submittedAnswers, Result result) {
         Integer maxScore = 0;
         Integer userScore = 0;
+        Integer questionsAnsweredCount = 0;
 
         Map<Integer, List<Integer>> userAnswerIdsByQuestionId = getUserAnswerIdsByQuestionId(submittedAnswers);
 
@@ -118,18 +138,23 @@ public class TestAttemptService {
 
         for (TestQuestion testQuestion : testQuestions) {
             Question question = testQuestion.getQuestion();
+            List<Integer> userAnswerIds = userAnswerIdsByQuestionId.get(question.getId());
             Integer questionScore = question.getScore();
 
             maxScore += questionScore;
 
-            if (isUserAnswerCorrect(question, userAnswerIdsByQuestionId)) {
+            if (isUserAnswerCorrect(question, userAnswerIds)) {
                 userScore += questionScore;
+            }
+            if (isQuestionAnswered(userAnswerIds)) {
+                questionsAnsweredCount++;
             }
 
         }
         result.setScoreTotal(userScore);
         result.setMaxScore(maxScore);
         result.setTotalQuestions(testQuestions.size());
+        result.setQuestionsAnswered(questionsAnsweredCount);
     }
 
     private static @NonNull Map<Integer, List<Integer>> getUserAnswerIdsByQuestionId(List<SubmittedAnswersDto> submittedAnswers) {
@@ -143,10 +168,12 @@ public class TestAttemptService {
         return userAnswerIdsByQuestionId;
     }
 
-    private boolean isUserAnswerCorrect(Question question, Map<Integer, List<Integer>> userAnswerIdsByQuestionId) {
-        List<Integer> userAnswerIds = userAnswerIdsByQuestionId.get(question.getId());
+    private boolean isQuestionAnswered(List<Integer> userAnswerIds) {
+        return userAnswerIds != null && !userAnswerIds.isEmpty();
+    }
 
-        if (userAnswerIds == null || userAnswerIds.isEmpty()) {
+    private boolean isUserAnswerCorrect(Question question, List<Integer> userAnswerIds) {
+        if (!isQuestionAnswered(userAnswerIds)) {
             return false;
         }
 
