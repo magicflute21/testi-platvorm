@@ -16,6 +16,7 @@ import ee.testiplatvorm.persistence.usertest.UserTest;
 import ee.testiplatvorm.persistence.usertest.UserTestMapper;
 import ee.testiplatvorm.persistence.usertest.UserTestRepository;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -78,30 +79,41 @@ public class TestAttemptService {
         Integer maxScore = 0;
         Integer userScore = 0;
 
-//        make a map of question : (user) answerIds
-        Map<Integer, List<Integer>> userAnswerIdsByQuestionId = new HashMap<>();
+        Map<Integer, List<Integer>> userAnswerIdsByQuestionId = getUserAnswerIdsByQuestionId(submittedAnswers);
+
         List<TestQuestion> testQuestions = testQuestionRepository.findQuestionsBy(testId);
+
+        for (TestQuestion testQuestion : testQuestions) {
+            Question question = testQuestion.getQuestion();
+            Integer questionScore = question.getScore();
+
+            maxScore += questionScore;
+
+            if (isUserAnswerCorrect(question, userAnswerIdsByQuestionId)) {
+                userScore += questionScore;
+            }
+        }
+    }
+
+    private static @NonNull Map<Integer, List<Integer>> getUserAnswerIdsByQuestionId(List<SubmittedAnswersDto> submittedAnswers) {
+        // make a map of question : userAnswerIds
+        Map<Integer, List<Integer>> userAnswerIdsByQuestionId = new HashMap<>();
 
         for (SubmittedAnswersDto submittedAnswersDto : submittedAnswers) {
             userAnswerIdsByQuestionId.put(submittedAnswersDto.getQuestionId(), submittedAnswersDto.getAnswerIds());
         }
 
-        for (TestQuestion testQuestion : testQuestions) {
-            Question question = testQuestion.getQuestion();
-            List<Integer> correctAnswerIds = questionAnswerRepository.findCorrectAnswerIdsBy(question.getId(), STATUS_ACTIVE.getCode());
-            List<Integer> userAnswerIds = userAnswerIdsByQuestionId.get(question.getId());
-            System.out.println("correctAnswerIds " + correctAnswerIds);
-            System.out.println("userAnswerIds " + userAnswerIds);
+        return userAnswerIdsByQuestionId;
+    }
 
-            boolean isCorrect = new HashSet<>(correctAnswerIds).equals(new HashSet<>(userAnswerIds));
-            if (isCorrect) {
-                Integer questionScore = question.getScore();
-                maxScore += questionScore;
+    private boolean isUserAnswerCorrect(Question question, Map<Integer, List<Integer>> userAnswerIdsByQuestionId) {
+        List<Integer> userAnswerIds = userAnswerIdsByQuestionId.get(question.getId());
 
-            }
+        if (userAnswerIds == null || userAnswerIds.isEmpty()) {
+            return false;
         }
 
-        System.out.println(maxScore);
-
+        List<Integer> correctAnswerIds = questionAnswerRepository.findCorrectAnswerIdsBy(question.getId(), STATUS_ACTIVE.getCode());
+        return new HashSet<>(correctAnswerIds).equals(new HashSet<>(userAnswerIds));
     }
 }
