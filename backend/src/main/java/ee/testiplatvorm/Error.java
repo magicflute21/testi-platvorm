@@ -4,11 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum Error {
-    INCORRECT_CREDENTIALS("Vale emaili aadress või salasõna");
+    INCORRECT_CREDENTIALS("Vale emaili aadress või salasõna"),
+    NO_PERMISSION("Sul puudub õigus testi luua");
 
     private final String message;
 
     Error(String message) {
         this.message = message;
     }
+
 }
