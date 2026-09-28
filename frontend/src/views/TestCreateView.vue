@@ -3,10 +3,12 @@ import { PhPlus } from '@phosphor-icons/vue'
 import CompetenceService from '@/services/CompetenceService.js'
 import CompetenceLevelService from '@/services/CompetenceLevelService.js'
 import QuestionService from '@/services/QuestionService.js'
+import TestCreateService from '@/services/TestCreateService.js'
+import AlertDanger from '@/components/AlertDanger.vue'
 
 export default {
   name: 'TestCreateView',
-  components: { PhPlus },
+  components: { PhPlus, AlertDanger },
 
   beforeMount() {
     this.getCompetences()
@@ -80,10 +82,61 @@ export default {
     },
     removeQuestionRow(index) {
       if (this.selectedQuestionIds.length === 1) {
-        this.selectedQuestionIds = [0] // always keep one row
+        this.selectedQuestionIds = [0]
       } else {
         this.selectedQuestionIds.splice(index, 1)
       }
+    },
+    addNewTest() {
+      this.resetErrorMessage()
+      this.checkTestFormForErrors()
+
+      if (this.errorMessageIsEmpty()) {
+        const test = {
+          userId: sessionStorage.getItem('userId'),
+          competenceId: this.competenceId,
+          competenceLevelId: this.competenceLevelId,
+          testName: this.testName,
+          testShortDescription: this.testShortDescription,
+          testDescription: this.testDescription,
+          isTimed: this.isTimed,
+          timerMin: this.timerMin,
+          passPercent: this.passPercent,
+          roundScoreUp: this.roundScoreUp,
+          questions: this.selectedQuestionIds.map((id) => ({ questionId: id })),
+        }
+
+        TestCreateService.postNewTest(test)
+          .then()
+          .catch((error) => this.handleTestCreateError(error))
+      }
+    },
+    handleTestCreateError(error) {
+      this.errorResponse = error.response.data
+      this.errorMessage = this.errorResponse.message
+    },
+    checkTestFormForErrors() {
+      if (this.testName === '') {
+        this.errorMessage = 'Lisa testi nimi'
+      } else if (this.testShortDescription === '') {
+        this.errorMessage = 'Lisa testi lühikirjeldus'
+      } else if (this.testDescription === '') {
+        this.errorMessage = 'Lisa testi kirjeldus'
+      } else if (this.competenceId === 0) {
+        this.errorMessage = 'Vali testile kompetents'
+      } else if (this.competenceLevelId === 0) {
+        this.errorMessage = 'Lisa testile kompetentsi tase'
+      } else if (this.passPercent === 0) {
+        this.errorMessage = 'Lisa testile läbimise %'
+      } else if (this.selectedQuestionIds.includes(0)) {
+        this.errorMessage = 'Lisa testile vähemalt 1 küsimus'
+      }
+    },
+    errorMessageIsEmpty() {
+      return this.errorMessage === ''
+    },
+    resetErrorMessage() {
+      this.errorMessage = ''
     },
   },
 }
@@ -276,9 +329,15 @@ export default {
           </div>
         </div>
 
+        <div class="container text-start col-5 mt-5">
+          <AlertDanger :error-message="errorMessage" />
+        </div>
+
         <div class="d-flex justify-content-center gap-3 mt-4">
           <button type="button" class="btn btn-link text-body text-decoration-none">Tühista</button>
-          <button type="submit" class="btn btn-info text-white">Loo test</button>
+          <button type="button" @click="addNewTest" class="btn btn-info text-white">
+            Loo test
+          </button>
         </div>
       </form>
     </div>
