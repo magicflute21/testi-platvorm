@@ -28,8 +28,8 @@ public class TestAttemptController {
                     responseCode = "200", description = "OK"
             ),
             @ApiResponse(
-                    responseCode = "404",
-                    description = "Kui userTestId-le ei ole andmebaasis vastet, siis 'message': Ei leidnud primary keyd 'userTestId' väärtusega: {userTestId}, 'errorCode': PRIMARY_KEY_NOT_FOUND"
+                    responseCode = "403",
+                    description = "Kui sisselogitud kasutajale ei ole seda testi määratud (või määramine/test/kasutaja pole aktiivne), siis 'message': Kasutajale ei ole vastavat testi määratud, 'errorCode': NO_TEST_ASSIGNMENT_FOR_THIS_USER"
             )
 
     })
@@ -40,6 +40,16 @@ public class TestAttemptController {
 
     @PostMapping("/complete")
     @Operation(summary = "Hindab testi tulemust ja märgib selle lõpetatuks")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "OK"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Kui sisselogitud kasutajale ei ole seda testi määratud (või määramine/test/kasutaja pole aktiivne), siis 'message': Kasutajale ei ole vastavat testi määratud, 'errorCode': NO_TEST_ASSIGNMENT_FOR_THIS_USER"
+            )
+
+    })
     public void submitTest(@PathVariable Integer testId, @RequestBody List<SubmittedAnswersDto> submittedAnswers) {
         testAttemptService.submitTest(testId, submittedAnswers);
     }
