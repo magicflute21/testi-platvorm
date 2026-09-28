@@ -1,5 +1,6 @@
 package ee.testiplatvorm.persistence;
 
+import ee.testiplatvorm.persistence.usertest.UserTest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

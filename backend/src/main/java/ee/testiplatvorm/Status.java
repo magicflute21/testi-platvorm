@@ -4,7 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum Status {
-    STATUS_ACTIVE("A");
+    STATUS_ACTIVE("A"),
+    STATUS_OPEN("O"),
+    STATUS_CLOSED("C");
 
     private final String code;
 

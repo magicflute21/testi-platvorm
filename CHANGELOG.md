@@ -1,3 +1,12 @@
+TP-22 upgrade navbar styling and add accountIcon to the right. 
+Route:  http://localhost:8081/tests/1/start <- load data from backend.
+Store userId in backend session. getUserId method.
+
+
+TP-22 Connect TestAttemptView with the actual test data. User test assignment id is yet hardcoded. Route: http://localhost:8081/tests/1/attempt 
+
+TP-22 GET "/user-tests/{userTestId}/attempt" - gets all the necessary info to start taking a test.
+
 TP - 21 GET /api/competence-levels to bring active competence levels for TestCreateView
 
 TP - 21 GET /api/competences endpoint to bring active competences for TestCreateView
