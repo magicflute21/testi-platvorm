@@ -9,6 +9,8 @@ import TestResultView from '@/views/TestResultView.vue'
 import TestAttemptView from '@/views/TestAttemptView.vue'
 import TestStartView from '@/views/TestStartView.vue'
 import CompetenceView from '@/views/CompetenceView.vue'
+import MyTestsView from '@/views/MyTestsView.vue'
+import myTestsView from '@/views/MyTestsView.vue'
 
 const toNumber = (param) => (route) => ({ [param]: Number(route.params[param]) })
 
@@ -21,9 +23,9 @@ const router = createRouter({
       children: [
         { path: 'dashboard', name: 'dashboardRoute', component: DashboardView },
         { path: 'tests', name: 'testsRoute', component: TestOverview },
-        { path: 'test', name: 'testRoute', component: TestView },
+        { path: 'my-tests', name: 'myTestsRoute', component: MyTestsView },
         { path: 'test-result', name: 'testResultRoute', component: TestResultView },
-        { path: 'competences', name: 'competenceView', component: CompetenceView},
+        { path: 'competences', name: 'competenceView', component: CompetenceView },
         {
           path: 'tests/:testId/start',
           name: 'testStartRoute',
@@ -42,16 +44,6 @@ const router = createRouter({
       path: '/login',
       name: 'loginRoute',
       component: LoginView,
-    },
-    {
-      path: '/tests',
-      name: 'testOverviewRoute',
-      component: testOverview,
-    },
-    {
-      path: '/competences',
-      name: 'testOverviewRoute',
-      component: testOverview,
     },
   ],
 })

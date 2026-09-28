@@ -18,6 +18,9 @@ export default {
         <PhFlask :size="20" />
         Testid
       </RouterLink>
+      <RouterLink class="nav-link d-flex align-items-center gap-2" to="/my-tests">
+        Minu testid
+      </RouterLink>
     </div>
   </nav>
 </template>
