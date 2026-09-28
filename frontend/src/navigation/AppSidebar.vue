@@ -14,9 +14,9 @@ export default {
         <PhHouse :size="20" />
         Töölaud
       </RouterLink>
-      <RouterLink class="nav-link d-flex align-items-center gap-2" to="/test">
+      <RouterLink class="nav-link d-flex align-items-center gap-2" to="/tests">
         <PhFlask :size="20" />
-        Test
+        Testid
       </RouterLink>
     </div>
   </nav>
