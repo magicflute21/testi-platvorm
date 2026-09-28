@@ -16,12 +16,17 @@ export default {
     return {
       errorMessage: '',
 
+      testName: '',
+      testShortDescription: '',
+      testDescription: '',
       competences: [],
       competenceId: 0,
 
       competenceLevels: [],
       competenceLevelId: 0,
-
+      roundScoreUp: true,
+      timerMin: null,
+      passPercent: 0,
       questions: [],
       selectedQuestionIds: [0],
 
@@ -36,6 +41,9 @@ export default {
     canAddQuestionRow() {
       const lastQuestionId = this.selectedQuestionIds[this.selectedQuestionIds.length - 1]
       return lastQuestionId !== 0 && this.selectedQuestionIds.length < this.questions.length
+    },
+    isTimed() {
+      return this.timerMin > 0
     },
   },
 
@@ -89,12 +97,13 @@ export default {
 
       <form>
         <div class="row mb-3">
-          <label for="inputTestHeading" class="col-sm-3 col-form-label">Pealkiri</label>
+          <label for="inputTestName" class="col-sm-3 col-form-label">Pealkiri</label>
           <div class="col-sm-9">
             <input
+              v-model="testName"
               type="text"
               class="form-control"
-              id="inputTestHeading"
+              id="inputTestName"
               placeholder="Sisesta testi pealkiri"
             />
           </div>
@@ -105,6 +114,7 @@ export default {
           >
           <div class="col-sm-9">
             <input
+              v-model="testShortDescription"
               type="text"
               class="form-control"
               id="inputTestShortDescription"
@@ -115,7 +125,13 @@ export default {
         <div class="row mb-3">
           <label for="inputTestDescription" class="col-sm-3 col-form-label">Kirjeldus</label>
           <div class="col-sm-9">
-            <textarea class="form-control" rows="4" placeholder="Lisa testi kirjeldus"></textarea>
+            <textarea
+              v-model="testDescription"
+              class="form-control"
+              id="inputTestDescription"
+              rows="4"
+              placeholder="Lisa testi kirjeldus"
+            ></textarea>
           </div>
         </div>
 
@@ -159,13 +175,13 @@ export default {
         <div class="row mb-3">
           <label for="selectTestPassPercent" class="col-sm-3 col-form-label">Läbimise %</label>
           <div class="col-sm-5">
-            <select class="form-select">
-              <option selected>Vali läbimise %</option>
-              <option>50%</option>
-              <option>60%</option>
-              <option>70%</option>
-              <option>80%</option>
-              <option>90%</option>
+            <select v-model="passPercent" class="form-select" id="selectTestPassPercent">
+              <option :value="0" disabled>Vali läbimise %</option>
+              <option :value="50">50%</option>
+              <option :value="60">60%</option>
+              <option :value="70">70%</option>
+              <option :value="80">80%</option>
+              <option :value="90">90%</option>
             </select>
           </div>
         </div>
@@ -174,16 +190,24 @@ export default {
           <legend class="col-form-label col-sm-3 pt-0 text-nowrap">Punktide ümardamine</legend>
           <div class="col-sm-9">
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="roundScore" value="true" />
+              <input
+                v-model="roundScoreUp"
+                :value="true"
+                class="form-check-input"
+                type="radio"
+                name="roundScoreRadioInput"
+                id="radioRoundScoreUp"
+              />
               <label class="form-check-label" for="radioRoundScoreUp">Üles</label>
             </div>
             <div class="form-check form-check-inline">
               <input
+                v-model="roundScoreUp"
+                :value="false"
                 class="form-check-input"
                 type="radio"
-                name="roundScore"
+                name="roundScoreRadioInput"
                 id="radioRoundScoreDown"
-                value="false"
               />
               <label class="form-check-label" for="radioRoundScoreDown">Alla</label>
             </div>
@@ -193,12 +217,14 @@ export default {
         <div class="row mb-3">
           <label for="selectTestTimer" class="col-sm-3 col-form-label">Taimer</label>
           <div class="col-sm-5">
-            <select id="selectTestTimer" class="form-select">
-              <option selected>Ilma taimerita</option>
-              <option>15 min</option>
-              <option>30 min</option>
-              <option>45 min</option>
-              <option>60 min</option>
+            <select v-model="timerMin" id="selectTestTimer" class="form-select">
+              <option :value="null">Ilma taimerita</option>
+              <option :value="15">15 min</option>
+              <option :value="30">30 min</option>
+              <option :value="45">45 min</option>
+              <option :value="60">60 min</option>
+              <option :value="90">90 min</option>
+              <option :value="120">120 min</option>
             </select>
           </div>
         </div>
