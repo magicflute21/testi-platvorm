@@ -2,6 +2,7 @@
 import { PhPlus } from '@phosphor-icons/vue'
 import CompetenceService from '@/services/CompetenceService.js'
 import CompetenceLevelService from '@/services/CompetenceLevelService.js'
+import QuestionService from '@/services/QuestionService.js'
 
 export default {
   name: 'TestCreateView',
@@ -21,11 +22,21 @@ export default {
       competenceLevels: [],
       competenceLevelId: 0,
 
+      questions: [],
+      selectedQuestionIds: [0],
+
       errorResponse: {
         message: '',
         errorCode: '',
       },
     }
+  },
+
+  computed: {
+    canAddQuestionRow() {
+      const lastQuestionId = this.selectedQuestionIds[this.selectedQuestionIds.length - 1]
+      return lastQuestionId !== 0 && this.selectedQuestionIds.length < this.questions.length
+    },
   },
 
   methods: {
@@ -37,11 +48,34 @@ export default {
     },
     getCompetenceLevels() {
       this.competenceLevelId = 0
+      this.questions = []
+      this.selectedQuestionIds = [0]
 
       CompetenceLevelService.getCompetenceLevelsRequest(this.competenceId)
         .then((response) => (this.competenceLevels = response.data))
         .catch()
         .finally()
+    },
+    getQuestions() {
+      this.selectedQuestionIds = [0]
+
+      QuestionService.getQuestionsRequest(this.competenceLevelId)
+        .then((response) => (this.questions = response.data))
+        .catch()
+        .finally()
+    },
+    isSelectedInOtherRow(questionId, index) {
+      return this.selectedQuestionIds.some((id, i) => i !== index && id === questionId)
+    },
+    addQuestionRow() {
+      this.selectedQuestionIds.push(0)
+    },
+    removeQuestionRow(index) {
+      if (this.selectedQuestionIds.length === 1) {
+        this.selectedQuestionIds = [0] // always keep one row
+      } else {
+        this.selectedQuestionIds.splice(index, 1)
+      }
     },
   },
 }
@@ -104,7 +138,12 @@ export default {
         <div class="row mb-3">
           <label for="selectTestLevel" class="col-sm-3 col-form-label">Tase</label>
           <div class="col-sm-5">
-            <select v-model="competenceLevelId" class="form-select" :disabled="competenceId === 0">
+            <select
+              v-model="competenceLevelId"
+              class="form-select"
+              :disabled="competenceId === 0"
+              @change="getQuestions"
+            >
               <option :value="0" disabled>Vali tase</option>
               <option
                 v-for="competenceLevel in competenceLevels"
@@ -166,17 +205,45 @@ export default {
 
         <div class="row mb-3">
           <label for="selectTestQuestion" class="col-sm-3 col-form-label">Küsimused</label>
-          <div class="col-sm-9 d-flex align-items-center gap-2">
-            <select id="selectTestQuestion" class="form-select">
-              <option selected>Vali küsimus...</option>
-              <option>...</option>
-              <option>...</option>
-              <option>...</option>
-            </select>
+          <div class="col-sm-9">
+            <div
+              v-for="(questionId, index) in selectedQuestionIds"
+              :key="index"
+              class="d-flex align-items-center gap-2 mb-2"
+            >
+              <select
+                :id="index === 0 ? 'selectTestQuestion' : undefined"
+                v-model="selectedQuestionIds[index]"
+                class="form-select"
+                :disabled="competenceLevelId === 0"
+              >
+                <option :value="0" disabled>Vali küsimus</option>
+                <option
+                  v-for="question in questions"
+                  :key="question.questionId"
+                  :value="question.questionId"
+                  :disabled="isSelectedInOtherRow(question.questionId, index)"
+                >
+                  {{ question.questionTitle }}
+                </option>
+              </select>
+              <button
+                v-if="questionId !== 0"
+                type="button"
+                class="btn btn-link text-body text-decoration-none"
+                title="Eemalda küsimus"
+                @click="removeQuestionRow(index)"
+              >
+                ×
+              </button>
+            </div>
+
             <button
               type="button"
-              class="btn btn-outline-secondary rounded-circle btn-circle"
-              title="Lisa uus küsimus"
+              class="btn btn-outline-secondary w-100"
+              title="Lisa küsimus"
+              :disabled="!canAddQuestionRow"
+              @click="addQuestionRow"
             >
               <PhPlus :size="16" />
             </button>
@@ -191,15 +258,3 @@ export default {
     </div>
   </div>
 </template>
-
-<style scoped>
-.btn-circle {
-  width: 38px;
-  height: 38px;
-  flex-shrink: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-</style>
