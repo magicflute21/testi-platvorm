@@ -1,12 +1,17 @@
 package ee.testiplatvorm.service;
 
+import ee.testiplatvorm.controller.testattempt.dto.SubmittedAnswersDto;
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptAnswerDto;
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptQuestionDto;
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptResponseDto;
-import ee.testiplatvorm.infrastructure.exception.PrimaryKeyNotFoundException;
+import ee.testiplatvorm.infrastructure.exception.ForbiddenException;
+import ee.testiplatvorm.persistence.question.Question;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswer;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswerMapper;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswerRepository;
+import ee.testiplatvorm.persistence.result.Result;
+import ee.testiplatvorm.persistence.result.ResultRepository;
+import ee.testiplatvorm.persistence.test.Test;
 import ee.testiplatvorm.persistence.testquestion.TestQuestion;
 import ee.testiplatvorm.persistence.testquestion.TestQuestionMapper;
 import ee.testiplatvorm.persistence.testquestion.TestQuestionRepository;
@@ -14,30 +19,37 @@ import ee.testiplatvorm.persistence.usertest.UserTest;
 import ee.testiplatvorm.persistence.usertest.UserTestMapper;
 import ee.testiplatvorm.persistence.usertest.UserTestRepository;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.OffsetDateTime;
+import java.util.*;
 
-import static ee.testiplatvorm.Status.STATUS_ACTIVE;
-import static ee.testiplatvorm.Status.STATUS_OPEN;
+import static ee.testiplatvorm.Error.NO_TEST_ASSIGNMENT_FOR_THIS_USER;
+import static ee.testiplatvorm.Status.*;
 
 @Service
 @RequiredArgsConstructor
 public class TestAttemptService {
+    private static final int DECIMAL_POINTS = 2;
+
     private final UserTestRepository userTestRepository;
     private final UserTestMapper userTestMapper;
     private final TestQuestionRepository testQuestionRepository;
     private final TestQuestionMapper testQuestionMapper;
     private final QuestionAnswerMapper questionAnswerMapper;
     private final QuestionAnswerRepository questionAnswerRepository;
+    private final CurrentUserService currentUserService;
+    private final ResultRepository resultRepository;
 
-    public TestAttemptResponseDto getTestAttempt(Integer userTestId) {
-        UserTest userTest = userTestRepository.getValidUserTestBy(userTestId, STATUS_OPEN.getCode(), STATUS_ACTIVE.getCode())
-                .orElseThrow(() -> new PrimaryKeyNotFoundException("userTestId", userTestId));
+
+    public TestAttemptResponseDto getTestAttempt(Integer userId, Integer testId) {
+        UserTest userTest = userTestRepository.getValidUserTestBy(userId, testId, STATUS_OPEN.getCode(), STATUS_ACTIVE.getCode(), STATUS_ACTIVE.getCode())
+                .orElseThrow(() -> new ForbiddenException(NO_TEST_ASSIGNMENT_FOR_THIS_USER.getMessage(), NO_TEST_ASSIGNMENT_FOR_THIS_USER.name()));
         TestAttemptResponseDto testAttemptResponseDto = userTestMapper.toTestAttemptResponseDto(userTest);
-
-        Integer testId = userTest.getTest().getId();
 
         handleAddQuestions(testAttemptResponseDto, testId);
 
@@ -48,7 +60,7 @@ public class TestAttemptService {
         List<TestQuestion> testQuestions = testQuestionRepository.findQuestionsBy(testId);
         List<TestAttemptQuestionDto> testAttemptQuestionDtos = testQuestionMapper.toTestAttemptQuestionDtos(testQuestions);
 
-        for (TestAttemptQuestionDto testAttemptQuestionDto : testAttemptQuestionDtos){
+        for (TestAttemptQuestionDto testAttemptQuestionDto : testAttemptQuestionDtos) {
             handleAddQuestionAnswers(testAttemptQuestionDto);
             List<Integer> selectedQuestionAnswerIds = new ArrayList<>();
             testAttemptQuestionDto.setSelectedQuestionAnswerIds(selectedQuestionAnswerIds);
@@ -61,6 +73,111 @@ public class TestAttemptService {
         List<TestAttemptAnswerDto> testAttemptAnswerDtos = questionAnswerMapper.toQuestionAnswerDtos(questionAnswers);
 
         testAttemptQuestionDto.setAnswers(testAttemptAnswerDtos);
+    }
 
+    @Transactional
+    public void submitTest(Integer testId, List<SubmittedAnswersDto> submittedAnswers) {
+        Integer userId = currentUserService.getUserId();
+        UserTest userTest = userTestRepository.getValidUserTestBy(userId, testId, STATUS_OPEN.getCode(), STATUS_ACTIVE.getCode(), STATUS_ACTIVE.getCode())
+                .orElseThrow(() -> new ForbiddenException(NO_TEST_ASSIGNMENT_FOR_THIS_USER.getMessage(), NO_TEST_ASSIGNMENT_FOR_THIS_USER.name()));
+
+        Result result = new Result();
+        userTest.setStatus(STATUS_CLOSED.getCode());
+        result.setUserTest(userTest);
+
+        handleCalculateScore(testId, submittedAnswers, result);
+        handleResultStatus(userTest, result);
+        handleResultTimeStamp(result);
+
+        resultRepository.save(result);
+        userTestRepository.save(userTest);
+    }
+
+    private void handleResultTimeStamp(Result result) {
+        OffsetDateTime timestamp = OffsetDateTime.now();
+        result.setStartedAt(timestamp);
+        result.setCompletedAt(timestamp);
+    }
+
+    private void handleResultStatus(UserTest userTest, Result result) {
+        Test test = userTest.getTest();
+
+        BigDecimal testPassPercent = test.getPassPercent();
+        boolean roundScoreUp = test.getRoundScoreUp();
+        BigDecimal userScore = BigDecimal.valueOf(result.getScoreTotal());
+        BigDecimal maxScore = BigDecimal.valueOf(result.getMaxScore());
+
+        if (maxScore.compareTo(BigDecimal.ZERO) == 0) {
+            // kui maxScore on 0, siis loeme testi automaatselt läbituks, mitte läbikukkunuks.
+            result.setStatus(STATUS_PASSED.getCode());
+            return;
+        }
+
+        BigDecimal userAchievedPercentage = userScore.multiply(BigDecimal.valueOf(100)).divide(maxScore, DECIMAL_POINTS, RoundingMode.HALF_UP);
+        BigDecimal userAchievedEndResultPercentage = userAchievedPercentage;
+
+        if (roundScoreUp) {
+            userAchievedEndResultPercentage = userAchievedPercentage.setScale(0, RoundingMode.HALF_UP);
+        }
+
+        if (userAchievedEndResultPercentage.compareTo(testPassPercent) >= 0) {
+            result.setStatus(STATUS_PASSED.getCode());
+        } else {
+            result.setStatus(STATUS_FAILED.getCode());
+        }
+    }
+
+    private void handleCalculateScore(Integer testId, List<SubmittedAnswersDto> submittedAnswers, Result result) {
+        Integer maxScore = 0;
+        Integer userScore = 0;
+        Integer questionsAnsweredCount = 0;
+
+        Map<Integer, List<Integer>> userAnswerIdsByQuestionId = getUserAnswerIdsByQuestionId(submittedAnswers);
+
+        List<TestQuestion> testQuestions = testQuestionRepository.findQuestionsBy(testId);
+
+        for (TestQuestion testQuestion : testQuestions) {
+            Question question = testQuestion.getQuestion();
+            List<Integer> userAnswerIds = userAnswerIdsByQuestionId.get(question.getId());
+            Integer questionScore = question.getScore();
+
+            maxScore += questionScore;
+
+            if (isUserAnswerCorrect(question, userAnswerIds)) {
+                userScore += questionScore;
+            }
+            if (isQuestionAnswered(userAnswerIds)) {
+                questionsAnsweredCount++;
+            }
+
+        }
+        result.setScoreTotal(userScore);
+        result.setMaxScore(maxScore);
+        result.setTotalQuestions(testQuestions.size());
+        result.setQuestionsAnswered(questionsAnsweredCount);
+    }
+
+    private static @NonNull Map<Integer, List<Integer>> getUserAnswerIdsByQuestionId(List<SubmittedAnswersDto> submittedAnswers) {
+        // make a map of question : userAnswerIds
+        Map<Integer, List<Integer>> userAnswerIdsByQuestionId = new HashMap<>();
+
+        for (SubmittedAnswersDto submittedAnswersDto : submittedAnswers) {
+            userAnswerIdsByQuestionId.put(submittedAnswersDto.getQuestionId(), submittedAnswersDto.getAnswerIds());
+        }
+
+        return userAnswerIdsByQuestionId;
+    }
+
+    private boolean isQuestionAnswered(List<Integer> userAnswerIds) {
+        return userAnswerIds != null && !userAnswerIds.isEmpty();
+    }
+
+    private boolean isUserAnswerCorrect(Question question, List<Integer> userAnswerIds) {
+        if (!isQuestionAnswered(userAnswerIds)) {
+            return false;
+        }
+
+        List<Integer> correctAnswerIds = questionAnswerRepository.findCorrectAnswerIdsBy(question.getId(), STATUS_ACTIVE.getCode());
+        return new HashSet<>(correctAnswerIds).equals(new HashSet<>(userAnswerIds));
     }
 }

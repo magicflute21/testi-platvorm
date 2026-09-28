@@ -1,7 +1,10 @@
 import axios from 'axios'
 
 export default {
-  getTestAttemptRequest(userTestId) {
-    return axios.get(`/api/user-tests/${userTestId}/attempt`)
+  getTestAttemptRequest(testId) {
+    return axios.get(`/api/tests/${testId}/attempt`)
+  },
+  postCompleteTest(testId, submittedAnswers) {
+    return axios.post(`/api/tests/${testId}/complete`, submittedAnswers)
   }
 }

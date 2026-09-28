@@ -6,6 +6,7 @@ import ee.testiplatvorm.controller.test.dto.TestSummaryDto;
 import ee.testiplatvorm.service.TestService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,17 @@ public class TestController {
     }
 
     @GetMapping("/api/tests/{testId}/start-info")
+    @Operation(summary = "Tagastab andmebaasist konkreetse kasutajale määratud testi")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "OK"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Kui sisselogitud kasutajale ei ole seda testi määratud (või määramine/test/kasutaja pole aktiivne), siis 'message': Kasutajale ei ole vastavat testi määratud, 'errorCode': NO_TEST_ASSIGNMENT_FOR_THIS_USER"
+            )
+
+    })
     public TestStartDto findTestStartInfo(@PathVariable Integer testId) {
        return testService.findTestStartInfo(testId);
     }

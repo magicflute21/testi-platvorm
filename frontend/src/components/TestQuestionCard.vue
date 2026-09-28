@@ -22,6 +22,7 @@ export default {
   },
   methods: {
     toggleAnswer(id) {
+      console.log('answer id', id)
       let selectedAnswerIds
       const currentSelectedIds = this.question.selectedQuestionAnswerIds
 

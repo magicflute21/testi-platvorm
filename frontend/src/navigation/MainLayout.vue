@@ -13,10 +13,8 @@ export default {
 
   <div class="d-flex">
     <AppSidebar />
-    <main class="flex-grow-1 p-3">
+    <main class="flex-grow-1 p-3 bg-light">
       <RouterView />
     </main>
   </div>
 </template>
-
-

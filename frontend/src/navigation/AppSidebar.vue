@@ -8,7 +8,7 @@ export default {
 </script>
 
 <template>
-  <nav class="sidebar navbar-light d-flex flex-column p-3">
+  <nav class="sidebar navbar-light d-flex flex-column p-1 pt-3">
     <div class="nav nav-pills flex-column">
       <RouterLink class="nav-link d-flex align-items-center gap-2" to="/">
         <PhHouse :size="20" />
