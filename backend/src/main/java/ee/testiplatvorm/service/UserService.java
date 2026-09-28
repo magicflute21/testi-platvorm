@@ -2,8 +2,10 @@ package ee.testiplatvorm.service;
 
 
 import ee.testiplatvorm.controller.user.dto.UserResponse;
+import ee.testiplatvorm.infrastructure.exception.PrimaryKeyNotFoundException;
 import ee.testiplatvorm.persistence.groupmember.GroupMember;
 import ee.testiplatvorm.persistence.groupmember.GroupMemberRepository;
+import ee.testiplatvorm.persistence.user.User;
 import ee.testiplatvorm.persistence.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,5 +36,15 @@ public class UserService {
         }
     }
 
+
+    public void deleteUser(Integer userId) {
+        User user = getValidUserBy(userId);
+
+    }
+
+    public User getValidUserBy(Integer userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new PrimaryKeyNotFoundException("userId", userId));
+        return user;
+    }
 
 }
