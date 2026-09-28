@@ -25,10 +25,10 @@ public class TestService {
     }
 
     public TestStartDto findTestStartInfo(Integer testId) {
+//        todo when test is already completed...
        Test test =  testRepository.findById(testId)
                .orElseThrow(() -> new PrimaryKeyNotFoundException("testId", testId));
-        TestStartDto testStartDto = testMapper.toTestStartDto(test);
-        return testStartDto;
+        return testMapper.toTestStartDto(test);
     }
 
 }
