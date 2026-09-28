@@ -19,6 +19,11 @@ public class UserService {
     public List<UserResponse> findAllUsers() {
         List<UserResponse> allUserResponses = userRepository.findAllUserResponses();
         List<GroupMember> groupMembers = groupMemberRepository.findAllGroupMembers();
+        handleAddGroupNames(allUserResponses, groupMembers);
+        return allUserResponses;
+    }
+
+    private void handleAddGroupNames(List<UserResponse> allUserResponses, List<GroupMember> groupMembers) {
         for (UserResponse userResponse : allUserResponses) {
             for (GroupMember groupMember : groupMembers) {
                 if (userResponse.getUserId().equals(groupMember.getUser().getId())) {
@@ -27,9 +32,6 @@ public class UserService {
             }
 
         }
-
-
-        return allUserResponses;
     }
 
 
