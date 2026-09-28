@@ -20,8 +20,8 @@ public class UserController {
     @GetMapping("/api/users")
     public List<UserResponse> findAllUsers() {
 
-        List<UserResponse> allUsers = userService.findAllUsers();
-        return allUsers;
+        List<UserResponse> allUsersResponses = userService.findAllUsers();
+        return allUsersResponses;
     }
 
 
