@@ -1,9 +1,11 @@
 package ee.testiplatvorm.service;
 
+import ee.testiplatvorm.controller.testattempt.dto.SubmittedAnswersDto;
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptAnswerDto;
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptQuestionDto;
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptResponseDto;
 import ee.testiplatvorm.infrastructure.exception.ForbiddenException;
+import ee.testiplatvorm.persistence.question.Question;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswer;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswerMapper;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswerRepository;
@@ -16,11 +18,11 @@ import ee.testiplatvorm.persistence.usertest.UserTestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static ee.testiplatvorm.Error.NO_TEST_ASSIGNMENT_FOR_THIS_USER;
 import static ee.testiplatvorm.Status.STATUS_ACTIVE;
+import static ee.testiplatvorm.Status.STATUS_OPEN;
 
 @Service
 @RequiredArgsConstructor
@@ -31,10 +33,11 @@ public class TestAttemptService {
     private final TestQuestionMapper testQuestionMapper;
     private final QuestionAnswerMapper questionAnswerMapper;
     private final QuestionAnswerRepository questionAnswerRepository;
+    private final CurrentUserService currentUserService;
 
     public TestAttemptResponseDto getTestAttempt(Integer userId, Integer testId) {
-        UserTest userTest = userTestRepository.getValidUserTestBy(userId, testId, STATUS_ACTIVE.getCode(), STATUS_ACTIVE.getCode())
-                .orElseThrow(() -> new ForbiddenException(NO_TEST_ASSIGNMENT_FOR_THIS_USER.getMessage() , NO_TEST_ASSIGNMENT_FOR_THIS_USER.name()));
+        UserTest userTest = userTestRepository.getValidUserTestBy(userId, testId, STATUS_OPEN.getCode(), STATUS_ACTIVE.getCode(), STATUS_ACTIVE.getCode())
+                .orElseThrow(() -> new ForbiddenException(NO_TEST_ASSIGNMENT_FOR_THIS_USER.getMessage(), NO_TEST_ASSIGNMENT_FOR_THIS_USER.name()));
         TestAttemptResponseDto testAttemptResponseDto = userTestMapper.toTestAttemptResponseDto(userTest);
 
         handleAddQuestions(testAttemptResponseDto, testId);
@@ -46,7 +49,7 @@ public class TestAttemptService {
         List<TestQuestion> testQuestions = testQuestionRepository.findQuestionsBy(testId);
         List<TestAttemptQuestionDto> testAttemptQuestionDtos = testQuestionMapper.toTestAttemptQuestionDtos(testQuestions);
 
-        for (TestAttemptQuestionDto testAttemptQuestionDto : testAttemptQuestionDtos){
+        for (TestAttemptQuestionDto testAttemptQuestionDto : testAttemptQuestionDtos) {
             handleAddQuestionAnswers(testAttemptQuestionDto);
             List<Integer> selectedQuestionAnswerIds = new ArrayList<>();
             testAttemptQuestionDto.setSelectedQuestionAnswerIds(selectedQuestionAnswerIds);
@@ -59,5 +62,46 @@ public class TestAttemptService {
         List<TestAttemptAnswerDto> testAttemptAnswerDtos = questionAnswerMapper.toQuestionAnswerDtos(questionAnswers);
 
         testAttemptQuestionDto.setAnswers(testAttemptAnswerDtos);
+    }
+
+    public void submitTest(Integer testId, List<SubmittedAnswersDto> submittedAnswers) {
+        System.out.println(submittedAnswers);
+
+        Integer userId = currentUserService.getUserId();
+        UserTest userTest = userTestRepository.getValidUserTestBy(userId, testId, STATUS_OPEN.getCode(), STATUS_ACTIVE.getCode(), STATUS_ACTIVE.getCode())
+                .orElseThrow(() -> new ForbiddenException(NO_TEST_ASSIGNMENT_FOR_THIS_USER.getMessage(), NO_TEST_ASSIGNMENT_FOR_THIS_USER.name()));
+
+        calculateScore(testId, submittedAnswers);
+    }
+
+    private void calculateScore(Integer testId, List<SubmittedAnswersDto> submittedAnswers) {
+        Integer maxScore = 0;
+        Integer userScore = 0;
+
+//        make a map of question : (user) answerIds
+        Map<Integer, List<Integer>> userAnswerIdsByQuestionId = new HashMap<>();
+        List<TestQuestion> testQuestions = testQuestionRepository.findQuestionsBy(testId);
+
+        for (SubmittedAnswersDto submittedAnswersDto : submittedAnswers) {
+            userAnswerIdsByQuestionId.put(submittedAnswersDto.getQuestionId(), submittedAnswersDto.getAnswerIds());
+        }
+
+        for (TestQuestion testQuestion : testQuestions) {
+            Question question = testQuestion.getQuestion();
+            List<Integer> correctAnswerIds = questionAnswerRepository.findCorrectAnswerIdsBy(question.getId(), STATUS_ACTIVE.getCode());
+            List<Integer> userAnswerIds = userAnswerIdsByQuestionId.get(question.getId());
+            System.out.println("correctAnswerIds " + correctAnswerIds);
+            System.out.println("userAnswerIds " + userAnswerIds);
+
+            boolean isCorrect = new HashSet<>(correctAnswerIds).equals(new HashSet<>(userAnswerIds));
+            if (isCorrect) {
+                Integer questionScore = question.getScore();
+                maxScore += questionScore;
+
+            }
+        }
+
+        System.out.println(maxScore);
+
     }
 }

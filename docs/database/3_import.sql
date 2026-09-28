@@ -179,7 +179,7 @@ VALUES (1, 1, 1, 1, 1, now() - interval '75 days', now()),
 INSERT INTO user_test (id, test_id, user_id, opens_at, closes_at, status, group_id, assigned_by, created_at)
 VALUES (1, 1, 3, now(), now() + interval '7 days', 'O', 1, 2, now()),
        (2, 3, 3, now() - interval '3 days', now() + interval '4 days', 'O', 1, 2, now() - interval '3 days'),
-       (3, 1, 1, now() - interval '10 days', now() - interval '3 days', 'C', 2, 2, now() - interval '10 days'),
+       (3, 1, 1, now() - interval '10 days', now() - interval '3 days', 'O', 2, 2, now() - interval '10 days'),
        (4, 2, 2, now() - interval '15 days', now() - interval '8 days', 'C', 2, 1, now() - interval '15 days'),
        (5, 3, 1, now() - interval '20 days', now() - interval '13 days', 'C', 1, 2, now() - interval '20 days');
 

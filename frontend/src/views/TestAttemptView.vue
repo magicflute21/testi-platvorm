@@ -59,7 +59,7 @@ export default {
     completeTest() {
       const submittedAnswers = this.testAttempt.questions.map((question) => ({
         questionId: question.questionId,
-        answers: question.selectedQuestionAnswerIds,
+        answerIds: question.selectedQuestionAnswerIds,
       }))
       console.log(submittedAnswers)
       TestAttemptService.postCompleteTest(this.testId, submittedAnswers)
