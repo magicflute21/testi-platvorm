@@ -1,3 +1,15 @@
+TP-23 Update GET /api/tests/{testId}/start-info -> user can't open the /start page without a valid                                                                                                                                                                
+(open) test assignment. Returns HTTP 403 with errorCode NO_TEST_ASSIGNMENT_FOR_THIS_USER, so                                                                                                                                                                      
+TestAttemptView and TestStartView show the same kind of "Test not found" page.
+
+TP-23 Add POST /api/tests/{testId}/complete -> triggered when user clicks "Finish test" in the UI.                                                                                                                                                                
+Selected answerIds per questionId are sent to backend, which checks correctness (unanswered                                                                                                                                                                       
+question = wrong), calculates user score and max score (sum of all question scores) and sets                                                                                                                                                                      
+status P/F based on test pass_percent (and round_score_up). Saves a result row and sets                                                                                                                                                                           
+user_test status to 'C' - after that /start-info and /attempt return 403 for this test.                                                                                                                                                                           
+Simplified version: test_question_result / test_question_answer rows are not saved yet.                                                                                                                                                                           
+Result is not yet shown in the UI - will be added in next step (separate GET endpoint).
+
 TP-20  PreviewCard component creation for three separate views. Used currently only on route: http://localhost:8081/tests
 created CompetenceView.vue to test if the card element shows up. Added Status.js file to translate database status values into words.
 

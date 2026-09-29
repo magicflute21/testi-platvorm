@@ -3,8 +3,7 @@ import MainLayout from '@/navigation/MainLayout.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import TestView from '@/views/TestView.vue'
 import LoginView from '@/views/LoginView.vue'
-import TestOverview from "@/views/TestOverview.vue";
-import testOverview from "@/views/TestOverview.vue";
+import TestOverview from '@/views/TestOverview.vue'
 import TestResultView from '@/views/TestResultView.vue'
 import TestAttemptView from '@/views/TestAttemptView.vue'
 import TestStartView from '@/views/TestStartView.vue'
@@ -25,7 +24,7 @@ const router = createRouter({
         { path: 'tests', name: 'testsRoute', component: TestOverview },
         { path: 'test', name: 'testRoute', component: TestView },
         { path: 'test-result', name: 'testResultRoute', component: TestResultView },
-        { path: 'competences', name: 'competenceView', component: CompetenceView},
+        { path: 'competences', name: 'competenceView', component: CompetenceView },
         {
           path: 'tests/:testId/start',
           name: 'testStartRoute',

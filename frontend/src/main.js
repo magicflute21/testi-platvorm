@@ -23,4 +23,16 @@ app.use(router)
 // Axios globaalselt kättesaadavaks
 app.config.globalProperties.$axios = axios
 
+// Sessiooni aegumisel suunatakse sisselogimise lehele
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 401) {
+      sessionStorage.clear()
+      router.push({ name: 'loginRoute' })
+    }
+    return Promise.reject(error)
+  }
+)
+
 app.mount('#app')
