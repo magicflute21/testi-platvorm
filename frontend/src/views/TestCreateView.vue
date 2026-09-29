@@ -5,10 +5,11 @@ import CompetenceLevelService from '@/services/CompetenceLevelService.js'
 import QuestionService from '@/services/QuestionService.js'
 import TestCreateService from '@/services/TestCreateService.js'
 import AlertDanger from '@/components/AlertDanger.vue'
+import AlertSuccess from '@/components/AlertSuccess.vue'
 
 export default {
   name: 'TestCreateView',
-  components: { PhPlus, AlertDanger },
+  components: { AlertSuccess, PhPlus, AlertDanger },
 
   beforeMount() {
     this.getCompetences()
@@ -17,6 +18,7 @@ export default {
   data() {
     return {
       errorMessage: '',
+      successMessage: '',
 
       testName: '',
       testShortDescription: '',
@@ -31,11 +33,6 @@ export default {
       passPercent: 0,
       questions: [],
       selectedQuestionIds: [0],
-
-      errorResponse: {
-        message: '',
-        errorCode: '',
-      },
     }
   },
 
@@ -87,7 +84,7 @@ export default {
         this.selectedQuestionIds.splice(index, 1)
       }
     },
-    addNewTest() {
+    createTest() {
       this.resetErrorMessage()
       this.checkTestFormForErrors()
 
@@ -107,14 +104,20 @@ export default {
         }
 
         TestCreateService.postNewTest(test)
-          .then()
+          .then(() => this.handleCreateTestResponse())
           .catch((error) => this.handleTestCreateError(error))
       }
     },
-    handleTestCreateError(error) {
-      this.errorResponse = error.response.data
-      this.errorMessage = this.errorResponse.message
+
+    handleCreateTestResponse() {
+      this.successMessage = 'Test "' + this.testName + '" on lisatud'
+      this.resetAllFields()
     },
+
+    handleTestCreateError(error) {
+      this.errorMessage = error.response?.data?.message ?? 'Testi loomine ebaõnnestus'
+    },
+
     checkTestFormForErrors() {
       if (this.testName === '') {
         this.errorMessage = 'Lisa testi nimi'
@@ -131,6 +134,16 @@ export default {
       } else if (this.selectedQuestionIds.includes(0)) {
         this.errorMessage = 'Lisa testile vähemalt 1 küsimus'
       }
+    },
+    resetAllFields() {
+      this.testName = ''
+      this.testShortDescription = ''
+      this.testDescription = ''
+      this.competenceId = 0
+      this.competenceLevelId = 0
+      this.passPercent = 0
+      this.timerMin = null
+      this.selectedQuestionIds = [0]
     },
     errorMessageIsEmpty() {
       return this.errorMessage === ''
@@ -331,11 +344,12 @@ export default {
 
         <div class="container text-start col-5 mt-5">
           <AlertDanger :error-message="errorMessage" />
+          <AlertSuccess :success-message="successMessage" />
         </div>
 
         <div class="d-flex justify-content-center gap-3 mt-4">
           <button type="button" class="btn btn-link text-body text-decoration-none">Tühista</button>
-          <button type="button" @click="addNewTest" class="btn btn-info text-white">
+          <button type="button" @click="createTest" class="btn btn-info text-white">
             Loo test
           </button>
         </div>

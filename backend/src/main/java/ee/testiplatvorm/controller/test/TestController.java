@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +34,7 @@ public class TestController {
         return testSummaryDtos;
     }
 
-    @GetMapping("/api/tests/{testId}/start-info")
+    @GetMapping("/tests/{testId}/start-info")
     @Operation(summary = "Tagastab andmebaasist konkreetse kasutajale määratud testi")
     @ApiResponses(value = {
             @ApiResponse(
@@ -45,11 +44,9 @@ public class TestController {
                     responseCode = "403",
                     description = "Kui sisselogitud kasutajale ei ole seda testi määratud (või määramine/test/kasutaja pole aktiivne), siis 'message': Kasutajale ei ole vastavat testi määratud, 'errorCode': NO_TEST_ASSIGNMENT_FOR_THIS_USER"
             )
-
     })
-    @GetMapping("/tests/{testId}/start-info")
     public TestStartDto findTestStartInfo(@PathVariable Integer testId) {
-       return testService.findTestStartInfo(testId);
+        return testService.findTestStartInfo(testId);
     }
 
     @PostMapping("/tests")
@@ -75,8 +72,8 @@ public class TestController {
             )
 
     })
-    public void addNewTest(@RequestBody @Valid TestCreateRequestDto testCreateRequestDto) {
-        testService.addNewTest(testCreateRequestDto);
+    public void createTest(@RequestBody @Valid TestCreateRequestDto testCreateRequestDto) {
+        testService.createTest(testCreateRequestDto);
 
     }
 }
