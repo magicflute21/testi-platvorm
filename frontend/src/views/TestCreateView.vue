@@ -159,7 +159,11 @@ export default {
   <div>
     <div class="container text-start col-6 mt-5 mb-5">
       <h1>Loo uus test</h1>
-      <p class="mb-5">Täida kõik väljad ja loo uus test.</p>
+      <p class="mb-3 mt-3">
+        Pane kokku test, mis aitab kasutajatel oma oskusi proovile panna. Vali kompetents ja tase,
+        lisa küsimused ning määra, kui palju on vaja testi läbimiseks õigesti vastata. Kõik väljad
+        on kohustuslikud.
+      </p>
 
       <form>
         <div class="row mb-3">
@@ -347,9 +351,9 @@ export default {
           <AlertSuccess :success-message="successMessage" />
         </div>
 
-        <div class="d-flex justify-content-center gap-3 mt-4">
+        <div class="d-flex justify-content-center gap-3 mt-4 mb-5">
           <button type="button" class="btn btn-link text-body text-decoration-none">Tühista</button>
-          <button type="button" @click="createTest" class="btn btn-info text-white">
+          <button type="button" @click="createTest" class="btn btn-primary text-white">
             Loo test
           </button>
         </div>
