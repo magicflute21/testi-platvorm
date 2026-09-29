@@ -34,7 +34,7 @@ export default {
     getUserTests() {
       UserTestService.getUserTests()
         .then((response) => this.handleGetUserTests(response))
-        .catch((error) => this.handleErrorMessage())
+        .catch(() => this.handleErrorMessage())
         .finally(() => (this.isLoading = false))
     },
 
@@ -84,4 +84,7 @@ export default {
   grid-template-columns: repeat(auto-fill, minmax(min(500px, 100%), 1fr));
   gap: 1rem;
 }
+
+
+
 </style>
