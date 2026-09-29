@@ -4,6 +4,12 @@ import AccountIcon from '@/navigation/AccountIcon.vue'
 export default {
   name: 'AppNavbar',
   components: { AccountIcon: AccountIcon },
+  props: {
+    showAccountIcon: {
+      type: Boolean,
+      default: true,
+    },
+  },
 }
 </script>
 
@@ -13,7 +19,7 @@ export default {
       <span class="brand-mark" aria-hidden="true"></span>
       <span class="brand-skill">Skill</span><span class="brand-scope">Scope</span>
     </RouterLink>
-    <AccountIcon />
+    <AccountIcon v-if="showAccountIcon" />
   </nav>
 </template>
 
@@ -34,7 +40,7 @@ export default {
   left: 0;
   width: 360px;
   height: 100%;
-  /* Sama täpivõrk ja alatoon nagu lehe taustal (MainLayout.vue .layout) —
+  /* Sama täpivõrk ja alatoon nagu lehe taustal (theme.css .layout) —
      fixed-kinnitusega joonduvad täpid lehe taustaga. Kaare kuju tuleb maskist. */
   background-color: #e4ede7;
   background-image: radial-gradient(rgba(55, 71, 79, 0.12) 1px, transparent 1px);

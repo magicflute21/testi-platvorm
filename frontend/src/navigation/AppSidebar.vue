@@ -10,15 +10,15 @@ export default {
 <template>
   <aside class="sidebar-wrapper">
     <nav class="sidebar">
-      <p class="sidebar-label">Navigatsioon</p>
+      <div class="sidebar-label"></div>
       <div class="nav flex-column gap-1">
         <RouterLink class="nav-link d-flex align-items-center gap-2" to="/">
           <PhHouse :size="20" />
-          Töölaud
+          <span class="nav-text">Töölaud</span>
         </RouterLink>
         <RouterLink class="nav-link d-flex align-items-center gap-2" to="/tests">
           <PhFlask :size="20" />
-          Testid
+          <span class="nav-text">Testid</span>
         </RouterLink>
       </div>
     </nav>
@@ -30,7 +30,11 @@ export default {
   flex-shrink: 0;
   padding: 1.5rem 0 1.5rem 1.5rem;
 }
-
+.nav-text {
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: bold;
+}
 .sidebar {
   position: sticky;
   top: 1.5rem;
@@ -48,13 +52,13 @@ export default {
 /* Aaloe illustratsiooni tumeda kivi värvi päiseriba üle kogu kaardi laiuse (negatiivsed marginid tühistavad .sidebar paddingu) */
 .sidebar-label {
   margin: -1.25rem -0.75rem 0.75rem;
-  padding: 0.85rem 1.5rem;
   background: #37474f;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #fff;
+  height: 3px;
 }
 
 .nav-link {

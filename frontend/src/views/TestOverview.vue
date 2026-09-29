@@ -46,7 +46,7 @@ export default {
   <div class="container py-4">
     <LoadingText v-if="isLoading" />
     <div v-else>
-      <h1 class="mb-5">Testid</h1>
+      <h1 class="mb-5 text-uppercase text-primary fw-bold h2">Testid</h1>
       <div class="preview-test-card-grid">
         <PreviewCard
           v-for="testSummary in testSummaries"
@@ -63,8 +63,8 @@ export default {
             </li>
           </template>
           <template #actions>
-            <button class="btn btn-color rounded-2">Vaata testi</button>
-            <button class="btn btn-color rounded-2">Vaata tulemusi</button>
+            <button class="btn btn-primary fw-bold rounded-2">Vaata testi</button>
+            <button class="btn btn-light fw-bold rounded-2">Vaata tulemusi</button>
           </template>
         </PreviewCard>
       </div>
