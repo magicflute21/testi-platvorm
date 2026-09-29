@@ -1,3 +1,20 @@
+TP-21 TestCreateView form for creating a new test. Route: http://localhost:8081/tests/new                                                                                                                                          
+Admin/manager fills in test name, short description, description, competence, competence level,                                                                                                                                    
+pass percent, score rounding (up/down) and optional timer, then selects questions. Competence                                                                                                                                      
+levels are loaded after competence is selected and questions after level is selected. Question                                                                                                                                     
+rows can be added/removed and the same question can't be selected twice. Frontend validation                                                                                                                                       
+shows an error for each empty field;
+
+TP-21 POST /api/tests -> creates a new test. Only users with role ADMIN or HALDUR can create                                                                                                                                       
+a test, others get HTTP 403 with errorCode NO_PERMISSION. Saves the test row (status 'A',                                                                                                                                          
+competence taken from the selected competence level) and a test_question row for every selected                                                                                                                                    
+question with its position (1, 2, 3...). Runs in one transaction, so if a question is not found                                                                                                                                    
+nothing is saved. Returns HTTP 400 INCORRECT_INPUT for missing required fields and HTTP 404                                                                                                                                        
+PRIMARY_KEY_NOT_FOUND for unknown userId, competenceLevelId or questionId.
+
+TP-21 GET /api/questions?competenceLevelId={id} -> brings active questions of the selected                                                                                                                                         
+competence level for TestCreateView.
+
 TP-23 Update GET /api/tests/{testId}/start-info -> user can't open the /start page without a valid                                                                                                                                                                
 (open) test assignment. Returns HTTP 403 with errorCode NO_TEST_ASSIGNMENT_FOR_THIS_USER, so                                                                                                                                                                      
 TestAttemptView and TestStartView show the same kind of "Test not found" page.
@@ -20,7 +37,12 @@ Store userId in backend session. getUserId method.
 
 
 TP-22 Connect TestAttemptView with the actual test data. User test assignment id is yet hardcoded. Route: http://localhost:8081/tests/1/attempt 
+
 TP-22 GET "/user-tests/{userTestId}/attempt" - gets all the necessary info to start taking a test.
+
+TP - 21 GET /api/competence-levels to bring active competence levels for TestCreateView
+
+TP - 21 GET /api/competences endpoint to bring active competences for TestCreateView
 
 TP - 18 GET /api/tests endpoint to bring necessary data from database for /tests view.
 
