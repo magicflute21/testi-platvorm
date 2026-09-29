@@ -9,7 +9,7 @@ import AlertSuccess from '@/components/AlertSuccess.vue'
 
 export default {
   name: 'TestCreateView',
-  components: { AlertSuccess, PhPlus, AlertDanger },
+  components: {  AlertSuccess, PhPlus, AlertDanger },
 
   beforeMount() {
     this.getCompetences()
@@ -158,7 +158,7 @@ export default {
 <template>
   <div>
     <div class="container text-start col-6 mt-5 mb-5">
-      <h1>Loo uus test</h1>
+      <h1 class="text-uppercase fw-bold h3">Loo uus test</h1>
       <p class="mb-3 mt-3">
         Pane kokku test, mis aitab kasutajatel oma oskusi proovile panna. Vali kompetents ja tase,
         lisa küsimused ning määra, kui palju on vaja testi läbimiseks õigesti vastata. Kõik väljad

@@ -3,10 +3,11 @@ import TestService from '@/services/TestService.js'
 import Status from '@/Status.js'
 import PreviewCard from '@/components/PreviewCard.vue'
 import LoadingText from '@/components/LoadingText.vue'
+import MainTitle from '@/components/MainTitle.vue'
 
 export default {
   name: 'TestOverview',
-  components: { LoadingText, PreviewCard },
+  components: { LoadingText, PreviewCard, MainTitle },
 
   beforeMount() {
     this.getAllTests()
@@ -46,7 +47,7 @@ export default {
   <div class="container py-4">
     <LoadingText v-if="isLoading" />
     <div v-else>
-      <h1 class="mb-5 text-uppercase text-primary fw-bold h2">Testid</h1>
+      <MainTitle title="Testid" />
       <div class="preview-test-card-grid">
         <PreviewCard
           v-for="testSummary in testSummaries"

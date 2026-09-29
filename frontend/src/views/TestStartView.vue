@@ -70,7 +70,7 @@ export default {
     <div v-else class="card my-4 shadow p-4 start-card">
       <div class="card-body">
         <p class="eyebrow text-brand mb-2">{{ test.competence }}</p>
-        <h1 class="h2 fw-bold mb-3">{{ test.title }}</h1>
+        <h1 class="text-uppercase fw-bold h3">{{ test.title }}</h1>
 
         <div class="d-flex flex-wrap gap-2 mb-4">
           <span class="badge rounded-pill text-bg-light border">

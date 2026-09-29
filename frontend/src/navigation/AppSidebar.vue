@@ -1,34 +1,35 @@
 <script>
-import { PhHouse, PhFlask, PhFilePlus, PhGraduationCap, PhStack } from '@phosphor-icons/vue'
+import { PhHouse, PhFlask, PhFilePlus, PhStack } from '@phosphor-icons/vue'
 
 export default {
   name: 'AppSidebar',
-  components: { PhStack, PhGraduationCap, PhFilePlus, PhHouse, PhFlask },
+  components: { PhStack, PhFilePlus, PhHouse, PhFlask },
 }
 </script>
 
 <template>
   <aside class="sidebar-wrapper">
-  <nav class="sidebar navbar-light d-flex flex-column p-1 pt-3">
-    <div class="nav nav-pills flex-column">
-      <RouterLink class="nav-link d-flex align-items-center gap-2" to="/">
-        <PhHouse :size="20" />
-        Töölaud
-      </RouterLink>
-      <RouterLink class="nav-link d-flex align-items-center gap-2" to="/tests">
-        <PhFlask :size="20" />
-        <span class="nav-text">Testid</span>
-      </RouterLink>
-      <RouterLink class="nav-link d-flex align-items-center gap-2" to="/tests/new">
-        <PhFilePlus :size="20" />
-        Loo uus test
-      </RouterLink>
-      <RouterLink class="nav-link d-flex align-items-center gap-2" to="/competences">
-        <PhStack :size="20" />
-        Kompetentsid
-      </RouterLink>
-    </div>
-  </nav>
+    <nav class="sidebar navbar-light d-flex flex-column p-1 pt-3">
+      <div class="nav nav-pills flex-column">
+      <p class="sidebar-label">p</p>
+        <RouterLink class="nav-link d-flex align-items-center gap-2" to="/dashboard">
+          <PhHouse :size="20" />
+          <span class="nav-text">Töölaud</span>
+        </RouterLink>
+        <RouterLink class="nav-link d-flex align-items-center gap-2" to="/tests">
+          <PhFlask :size="20" />
+          <span class="nav-text">Testid</span>
+        </RouterLink>
+        <RouterLink class="nav-link d-flex align-items-center gap-2" to="/tests/new">
+          <PhFilePlus :size="20" />
+          <span class="nav-text">Loo uus test</span>
+        </RouterLink>
+        <RouterLink class="nav-link d-flex align-items-center gap-2" to="/competences">
+          <PhStack :size="20" />
+          <span class="nav-text">Kompetentsid</span>
+        </RouterLink>
+      </div>
+    </nav>
   </aside>
 </template>
 
@@ -58,7 +59,7 @@ export default {
 
 /* Aaloe illustratsiooni tumeda kivi värvi päiseriba üle kogu kaardi laiuse (negatiivsed marginid tühistavad .sidebar paddingu) */
 .sidebar-label {
-  margin: -1.25rem -0.75rem 0.75rem;
+  margin: -1.05rem -0.75rem 0.75rem;
   background: #37474f;
   font-size: 0.75rem;
   font-weight: 700;
