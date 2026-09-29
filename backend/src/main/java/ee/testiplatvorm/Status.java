@@ -8,8 +8,9 @@ public enum Status {
     STATUS_OPEN("O"),
     STATUS_CLOSED("C"),
     STATUS_PASSED("P"),
-    STATUS_FAILED("F");
-    STATUS_INACTIVE("I");
+    STATUS_FAILED("F"),
+    STATUS_INACTIVE("I"),
+    STATUS_PENDING("P");
 
 
     private final String code;
