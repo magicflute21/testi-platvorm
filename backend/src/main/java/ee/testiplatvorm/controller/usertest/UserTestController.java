@@ -17,9 +17,7 @@ import java.util.List;
 
 public class UserTestController {
 
-
     private final UserTestService userTestService;
-
 
     @Operation(summary = "Tagastab sisse logitud kasutajale kõik tema userId-ga seotud testid")
     @ApiResponses(value = {

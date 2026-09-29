@@ -24,7 +24,7 @@ public class UserTestService {
 
     public List<UserTestSummaryDto> findUserTests() {
         Integer userId = currentUserService.getUserId();
-        List<UserTest> userTests = userTestRepository.findUserTestsBy(STATUS_ACTIVE.getCode(), userId);
+        List<UserTest> userTests = userTestRepository.findUserTestsBy(userId, STATUS_ACTIVE.getCode());
         List<UserTestSummaryDto> userTestSummaryDtos = userTestMapper.toUserTestSummaryDtos(userTests);
         return userTestSummaryDtos;
 

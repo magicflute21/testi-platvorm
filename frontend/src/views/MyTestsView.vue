@@ -40,6 +40,7 @@ export default {
 
     handleGetUserTests(response) {
       this.userTestSummaries = response.data
+      console.log(this.userTestSummaries)
     },
 
     handleErrorMessage() {
@@ -52,8 +53,8 @@ export default {
 <template>
   <div class="container-fluid py-4">
     <LoadingText v-if="isLoading" />
-    <div v-else-if="errorMessage">
-          <AlertDanger :error-message="errorMessage" />
+    <div v-else-if="errorMessage" class="text-center">
+      <AlertDanger :error-message="errorMessage" />
     </div>
     <div v-else-if="userTestSummaries.length === 0">
       <TestNotFoundCard :message="'Sulle pole ühtki testi määratud'" />
@@ -69,8 +70,12 @@ export default {
           <template #title>{{ userTestSummary.testName }}</template>
           <template #description>{{ userTestSummary.testShortDescription }}</template>
           <template #actions>
-            <button class="btn btn-primary">Soorita test</button>
-            <button class="btn btn-color">Vaata tulemusi</button>
+            <button v-if="userTestSummary.userTestStatus === 'O'" class="btn btn-color">
+              Soorita test
+            </button>
+            <button v-if="userTestSummary.userTestStatus === 'C'" class="btn btn-color">
+              Vaata tulemusi
+            </button>
           </template>
         </PreviewCard>
       </div>
@@ -84,7 +89,4 @@ export default {
   grid-template-columns: repeat(auto-fill, minmax(min(500px, 100%), 1fr));
   gap: 1rem;
 }
-
-
-
 </style>

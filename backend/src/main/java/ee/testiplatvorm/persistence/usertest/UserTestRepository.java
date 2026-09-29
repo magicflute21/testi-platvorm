@@ -13,10 +13,10 @@ public interface UserTestRepository extends JpaRepository<UserTest, Integer> {
     Optional<UserTest> getValidUserTestBy(Integer userId, Integer testId, String userTestStatus, String testStatus, String userStatus);
 
 
-
     @Query("""
             select u from UserTest u
-            where  u.test.status = :testStatus and u.user.id = :userId""")
-    List<UserTest> findUserTestsBy(String testStatus, Integer userId);
+            where u.user.id = :userId and u.test.status = :testStatus
+            order by u.status DESC, u.closesAt ASC""")
+    List<UserTest> findUserTestsBy(Integer userId, String testStatus);
 
 }
