@@ -13,14 +13,14 @@ import java.time.Instant;
 @Setter
 @Entity
 @Table(name = "group_member", schema = "testi_platvorm")
-public class GroupMember {
+public class  GroupMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 
