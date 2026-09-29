@@ -1,5 +1,6 @@
 package ee.testiplatvorm.persistence.test;
 
+import ee.testiplatvorm.controller.test.dto.TestCreateRequestDto;
 import ee.testiplatvorm.controller.test.dto.TestStartDto;
 import ee.testiplatvorm.controller.test.dto.TestSummaryDto;
 import org.mapstruct.Mapper;
@@ -30,4 +31,20 @@ public interface TestMapper {
     @Mapping(source = "timerMin", target ="timerMin")
     @Mapping(source = "isTimed", target ="isTimed")
     TestStartDto toTestStartDto(Test test);
+
+    @Mapping(ignore = true, target = "id")
+    @Mapping(ignore = true, target = "competence")
+    @Mapping(ignore = true, target = "competenceLevel")
+    @Mapping(source = "testName", target = "name")
+    @Mapping(source = "testDescription", target = "description")
+    @Mapping(source = "testShortDescription", target = "shortDescription")
+    @Mapping(source = "isTimed", target = "isTimed")
+    @Mapping(source = "timerMin", target = "timerMin")
+    @Mapping(source = "passPercent", target = "passPercent")
+    @Mapping(source = "roundScoreUp", target = "roundScoreUp")
+    @Mapping(ignore = true, target = "status")
+    @Mapping(ignore = true, target = "createdBy")
+    @Mapping(ignore = true, target = "createdAt")
+    @Mapping(ignore = true, target = "updatedAt")
+    Test toTest(TestCreateRequestDto testCreateRequestDto);
 }

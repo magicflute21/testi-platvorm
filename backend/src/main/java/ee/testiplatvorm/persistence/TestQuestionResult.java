@@ -1,6 +1,7 @@
 package ee.testiplatvorm.persistence;
 
 import ee.testiplatvorm.persistence.question.Question;
+import ee.testiplatvorm.persistence.question.Question;
 import ee.testiplatvorm.persistence.result.Result;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

@@ -1,9 +1,9 @@
 <script>
-import { PhHouse, PhFlask } from '@phosphor-icons/vue'
+import { PhHouse, PhFlask, PhFilePlus, PhGraduationCap, PhStack } from '@phosphor-icons/vue'
 
 export default {
   name: 'AppSidebar',
-  components: { PhHouse, PhFlask },
+  components: { PhStack, PhGraduationCap, PhFilePlus, PhHouse, PhFlask },
 }
 </script>
 
@@ -17,6 +17,14 @@ export default {
       <RouterLink class="nav-link d-flex align-items-center gap-2" to="/tests">
         <PhFlask :size="20" />
         Testid
+      </RouterLink>
+      <RouterLink class="nav-link d-flex align-items-center gap-2" to="/tests/new">
+        <PhFilePlus :size="20" />
+        Loo uus test
+      </RouterLink>
+      <RouterLink class="nav-link d-flex align-items-center gap-2" to="/competences">
+        <PhStack :size="20" />
+        Kompetentsid
       </RouterLink>
     </div>
   </nav>
