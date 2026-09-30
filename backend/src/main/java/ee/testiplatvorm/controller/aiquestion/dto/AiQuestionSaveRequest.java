@@ -1,5 +1,6 @@
 package ee.testiplatvorm.controller.aiquestion.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -20,5 +21,6 @@ public class AiQuestionSaveRequest {
     @Size(max = 1000)
     private String description;
     @NotEmpty
-    private List<GeneratedAnswerDto> answers;
+    @Size(min = 2, max = 5)
+    private List<@Valid GeneratedAnswerDto> answers;
 }

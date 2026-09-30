@@ -2,20 +2,29 @@
 import { PhSparkle, PhX, PhPaperPlaneRight, PhCheckCircle } from '@phosphor-icons/vue'
 import AiQuestionService from '@/services/AiQuestionService.js'
 
+const MAX_INPUT_LENGTH = 500
+const MAX_QUESTIONS_PER_HOUR = 30
+
 const WELCOME_MESSAGE =
-  'Tere! Kirjelda, millist küsimust soovid luua — nt "JavaScripti algajatele valikvastustega küsimus massiivide kohta".'
+  'Tere! Kirjelda, milliseid küsimusi soovid luua — nt "2 küsimust JavaScripti algajatele massiivide kohta ja 1 tõene/väär küsimus SQL algajatele". Korraga saab luua kuni 5 küsimust, ka eri kompetentsidele.'
+
+// Backendi veateated, mida võib kasutajale otse näidata
+const STATUSES_WITH_USER_MESSAGE = [400, 403, 429]
 
 export default {
   name: 'AiChatWidget',
   components: { PhSparkle, PhX, PhPaperPlaneRight, PhCheckCircle },
   data() {
     return {
+      maxInputLength: MAX_INPUT_LENGTH,
+      maxQuestionsPerHour: MAX_QUESTIONS_PER_HOUR,
       isOpen: false,
       isLoading: false,
       userInput: '',
-      // Kui AI küsis täpsustust, pannakse eelmine soov ja vastus kokku üheks päringuks
-      pendingInstructions: '',
-      messages: [{ sender: 'ai', text: WELCOME_MESSAGE, question: null, isDecided: false }],
+      // Kui AI küsis täpsustust, hoitakse meeles kasutaja esialgne soov
+      originalInstructions: '',
+      remainingQuestionCount: null,
+      messages: [{ sender: 'ai', text: WELCOME_MESSAGE, questions: [] }],
     }
   },
   computed: {
@@ -35,38 +44,51 @@ export default {
       const userText = this.userInput.trim()
       this.userInput = ''
       this.addMessage('user', userText)
-
-      const instructions =
-        this.pendingInstructions === '' ? userText : `${this.pendingInstructions}\n${userText}`
-      this.generateQuestion(instructions)
+      this.generateQuestions(this.createInstructions(userText))
     },
 
-    generateQuestion(instructions) {
+    // Täpsustuse korral saadetakse täpsustus + esialgne soov, kokku kuni 500 märki
+    createInstructions(userText) {
+      if (this.originalInstructions === '') {
+        return userText
+      }
+      const instructions = `Täpsustus: ${userText}\nAlgne soov: ${this.originalInstructions}`
+      return instructions.slice(0, MAX_INPUT_LENGTH)
+    },
+
+    generateQuestions(instructions) {
       this.isLoading = true
       AiQuestionService.sendGenerateQuestionRequest(instructions)
-        .then((response) => this.handleGenerateQuestionResponse(response.data, instructions))
+        .then((response) => this.handleGenerateQuestionsResponse(response.data, instructions))
         .catch((error) => this.handleRequestError(error))
         .finally(() => (this.isLoading = false))
     },
 
-    handleGenerateQuestionResponse(generatedQuestion, instructions) {
-      if (generatedQuestion.clarifyingQuestion) {
-        this.pendingInstructions = instructions
-        this.addMessage('ai', generatedQuestion.clarifyingQuestion)
+    handleGenerateQuestionsResponse(generationResponse, instructions) {
+      this.remainingQuestionCount = generationResponse.remainingQuestionCount
+
+      if (generationResponse.clarifyingQuestion) {
+        if (this.originalInstructions === '') {
+          this.originalInstructions = instructions
+        }
+        this.addMessage('ai', generationResponse.clarifyingQuestion)
         return
       }
-      this.pendingInstructions = ''
-      this.addMessage(
-        'ai',
-        'Koostasin sellise küsimuse. Kas soovid selle andmebaasi lisada?',
-        generatedQuestion,
-      )
+
+      this.originalInstructions = ''
+      const questions = generationResponse.questions.map((question) => ({
+        ...question,
+        status: 'pending',
+      }))
+      const text =
+        questions.length === 1
+          ? 'Koostasin sellise küsimuse. Kas soovid selle andmebaasi lisada?'
+          : `Koostasin ${questions.length} küsimust. Vali, milliseid soovid andmebaasi lisada.`
+      this.addMessage('ai', text, questions)
     },
 
-    saveQuestion(message) {
-      message.isDecided = true
-      this.isLoading = true
-      const question = message.question
+    saveQuestion(question) {
+      question.status = 'saving'
       AiQuestionService.sendSaveQuestionRequest({
         competenceLevelId: question.competenceLevelId,
         questionTypeId: question.questionTypeId,
@@ -74,43 +96,36 @@ export default {
         description: question.description,
         answers: question.answers,
       })
-        .then(() => this.handleSaveQuestionResponse())
-        .catch((error) => this.handleSaveQuestionError(error, message))
-        .finally(() => (this.isLoading = false))
+        .then(() => (question.status = 'saved'))
+        .catch((error) => this.handleSaveQuestionError(error, question))
     },
 
-    handleSaveQuestionResponse() {
-      this.addMessage(
-        'ai',
-        'Küsimus on salvestatud ja ootab ülevaatust. Millist küsimust järgmiseks teeme?',
-      )
-    },
-
-    handleSaveQuestionError(error, message) {
+    handleSaveQuestionError(error, question) {
       // Lubame uuesti proovida
-      message.isDecided = false
+      question.status = 'pending'
       this.handleRequestError(error)
     },
 
-    rejectQuestion(message) {
-      message.isDecided = true
-      this.addMessage('ai', 'Selge, seda küsimust ei salvestatud. Kirjelda, mida soovid teisiti.')
+    rejectQuestion(question) {
+      question.status = 'rejected'
     },
 
     handleRequestError(error) {
       // 401 korral suunab globaalne axios interceptor sisselogimise lehele
-      if (error.response?.status === 401) {
+      const statusCode = error.response?.status
+      if (statusCode === 401) {
         return
       }
-      if (error.response?.status === 403) {
-        this.addMessage('ai', error.response.data.message)
+      const backendMessage = error.response?.data?.message
+      if (STATUSES_WITH_USER_MESSAGE.includes(statusCode) && backendMessage) {
+        this.addMessage('ai', backendMessage)
         return
       }
       this.addMessage('ai', 'Midagi läks valesti. Palun proovi uuesti.')
     },
 
-    addMessage(sender, text, question = null) {
-      this.messages.push({ sender, text, question, isDecided: false })
+    addMessage(sender, text, questions = []) {
+      this.messages.push({ sender, text, questions })
       this.$nextTick(() => this.scrollToBottom())
     },
 
@@ -154,17 +169,21 @@ export default {
         >
           <div class="ai-chat-bubble">{{ message.text }}</div>
 
-          <div v-if="message.question" class="ai-question-preview card mt-2">
+          <div
+            v-for="(question, questionIndex) in message.questions"
+            :key="questionIndex"
+            class="ai-question-preview card mt-2"
+          >
             <div class="card-body p-2">
               <div class="small text-muted mb-1">
-                {{ message.question.competenceName }} · {{ message.question.levelName }} ·
-                {{ message.question.questionTypeName }}
+                {{ questionIndex + 1 }}. {{ question.competenceName }} · {{ question.levelName }} ·
+                {{ question.questionTypeName }}
               </div>
-              <div class="fw-semibold">{{ message.question.title }}</div>
-              <div class="small mb-2">{{ message.question.description }}</div>
+              <div class="fw-semibold">{{ question.title }}</div>
+              <div class="ai-question-description small mb-2">{{ question.description }}</div>
               <ul class="list-unstyled small mb-2">
                 <li
-                  v-for="(answer, answerIndex) in message.question.answers"
+                  v-for="(answer, answerIndex) in question.answers"
                   :key="answerIndex"
                   class="d-flex align-items-start gap-1"
                   :class="{ 'fw-semibold text-success': answer.isCorrect }"
@@ -174,24 +193,30 @@ export default {
                   <span>{{ answer.answerText }}</span>
                 </li>
               </ul>
-              <div v-if="!message.isDecided" class="d-flex gap-2">
+
+              <div v-if="question.status === 'pending'" class="d-flex gap-2">
                 <button
                   type="button"
                   class="btn btn-sm btn-success"
-                  :disabled="isLoading"
-                  @click="saveQuestion(message)"
+                  @click="saveQuestion(question)"
                 >
                   Lisa andmebaasi
                 </button>
                 <button
                   type="button"
                   class="btn btn-sm btn-outline-secondary"
-                  :disabled="isLoading"
-                  @click="rejectQuestion(message)"
+                  @click="rejectQuestion(question)"
                 >
                   Ei soovi
                 </button>
               </div>
+              <div v-else-if="question.status === 'saving'" class="small text-muted fst-italic">
+                Salvestan…
+              </div>
+              <div v-else-if="question.status === 'saved'" class="small text-success fw-semibold">
+                Salvestatud, ootab ülevaatust
+              </div>
+              <div v-else class="small text-muted">Ei salvestatud</div>
             </div>
           </div>
         </div>
@@ -201,23 +226,32 @@ export default {
         </div>
       </div>
 
-      <div class="card-footer d-flex gap-2">
-        <textarea
-          v-model="userInput"
-          class="form-control form-control-sm"
-          rows="2"
-          maxlength="1000"
-          placeholder="Kirjelda soovitud küsimust…"
-          @keydown.enter="handleEnterKey"
-        ></textarea>
-        <button
-          type="button"
-          class="btn btn-primary btn-sm"
-          :disabled="!canSend"
-          @click="sendMessage"
-        >
-          <PhPaperPlaneRight :size="18" />
-        </button>
+      <div class="card-footer">
+        <div class="d-flex gap-2">
+          <textarea
+            v-model="userInput"
+            class="form-control form-control-sm"
+            rows="2"
+            :maxlength="maxInputLength"
+            placeholder="Kirjelda soovitud küsimusi…"
+            @keydown.enter="handleEnterKey"
+          ></textarea>
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            :disabled="!canSend"
+            @click="sendMessage"
+          >
+            <PhPaperPlaneRight :size="18" />
+          </button>
+        </div>
+        <div class="d-flex justify-content-between small text-muted mt-1">
+          <span v-if="remainingQuestionCount !== null">
+            Sel tunnil alles: {{ remainingQuestionCount }}/{{ maxQuestionsPerHour }}
+          </span>
+          <span v-else></span>
+          <span>{{ userInput.length }}/{{ maxInputLength }}</span>
+        </div>
       </div>
     </div>
 
@@ -254,9 +288,9 @@ export default {
 }
 
 .ai-chat-panel {
-  width: 360px;
+  width: 380px;
   max-width: calc(100vw - 2rem);
-  height: 520px;
+  height: 560px;
   max-height: calc(100vh - 7rem);
   border-radius: 1rem;
   overflow: hidden;
@@ -304,6 +338,11 @@ export default {
 
 .from-ai .ai-chat-bubble {
   background: var(--bs-primary-bg-subtle);
+}
+
+/* Koodinäited kirjelduses säilitavad reavahetused ja taanded */
+.ai-question-description {
+  white-space: pre-wrap;
 }
 
 .answer-bullet {

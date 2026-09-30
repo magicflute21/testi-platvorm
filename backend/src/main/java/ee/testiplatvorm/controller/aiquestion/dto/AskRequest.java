@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 public class AskRequest {
     @NotBlank
-    @Size(max = 1000)
+    @Size(max = 500)
     private String instructions;
 }
