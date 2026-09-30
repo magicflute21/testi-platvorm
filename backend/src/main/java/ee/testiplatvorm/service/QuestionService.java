@@ -23,4 +23,10 @@ public class QuestionService {
         List<QuestionResponseDto> questionResponseDtos = questionMapper.toQuestionResponseDtos(questions);
         return questionResponseDtos;
     }
+
+    public List <AllQuestionsResponseDto> findAllQuestionsBy(Integer competenceId) {
+        List <Question> allQuestions = questionRepository.findAllQuestionsBy(competenceId);
+        List <AllQuestionsResponseDto> allQuestionsResponseDtos = questionMapper.toAllQuestionsResponseDtos(allQuestions);
+        return allQuestionsResponseDtos;
+    }
 }

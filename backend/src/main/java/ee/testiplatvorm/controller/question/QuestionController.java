@@ -26,4 +26,14 @@ public class QuestionController {
         List<QuestionResponseDto> questionResponseDtos = questionService.findQuestionsBy(competenceLevelId);
         return questionResponseDtos;
     }
+
+    @GetMapping("/api/question-bank")
+    @Operation(summary = "Tagastatakse kõik küsimused olenemata staatusest, koos vastusevariantidega. competenceId on valikuline - kui see puudub, tagastatakse kõigi kompetentside küsimused.")
+    @ApiResponse(
+            responseCode = "200", description = "OK"
+    )
+    public void findAllQuestionsBy(@RequestParam(required = false) Integer competenceId) {
+        questionService.findAllQuestionsBy(competenceId);
+
+    }
 }
