@@ -1,16 +1,16 @@
 <script>
-import PreviewCard from '@/components/PreviewCard.vue'
+import MainTitle from '@/components/MainTitle.vue'
 
 export default {
   name: 'CompetenceView',
-  components: { PreviewCard },
+  components: { MainTitle },
 }
 </script>
 
 <template>
   <div class="container-fluid py-4">
+    <MainTitle title="Kompetentsid" />
     <div class="preview-test-card-grid">
-      <PreviewCard></PreviewCard>
     </div>
   </div>
 </template>

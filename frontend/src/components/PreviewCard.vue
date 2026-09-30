@@ -63,22 +63,10 @@ export default {
   min-height: 4.5rem;
 }
 
-:slotted(.btn-color) {
-  --bs-btn-bg: var(--bs-gray-200);
-  --bs-btn-color: var(--bs-blue);
-  font-weight: bold;
-  --bs-btn-hover-bg: var(--bs-blue);
-  --bs-btn-hover-color: var(--bs-light);
-  --bs-btn-active-bg: var(--bs-gray-400);
-}
-
 .dropdown-menu-custom {
   --bs-dropdown-min-width: 10rem;
   --bs-dropdown-bg: var(--bs-gray-100);
   --bs-dropdown-border-radius: 0.75rem;
   --bs-dropdown-link-color: var(--bs-black);
-  --bs-dropdown-link-hover-bg: var(--bs-gray-200);
-  --bs-dropdown-link-hover-color: var(--bs-blue);
-  --bs-dropdown-link-active-bg: var(--bs-blue);
 }
 </style>

@@ -1,15 +1,14 @@
 <script>
-import TestComponent from '@/components/TestComponent.vue'
+import MainTitle from '@/components/MainTitle.vue'
 
 export default {
   name: 'HomeView',
-  components: { TestComponent },
+  components: { MainTitle },
 }
 </script>
 
 <template>
-  <div class="container text-center">
-    <div class="alert alert-primary" role="alert">See on koduvaade, see asub rajal (/)</div>
-    <TestComponent />
+  <div class="container-fluid py-4">
+    <MainTitle title="Töölaud" />
   </div>
 </template>

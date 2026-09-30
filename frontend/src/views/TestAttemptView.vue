@@ -2,11 +2,15 @@
 import TestQuestionCard from '@/components/TestQuestionCard.vue'
 import TestAttemptService from '@/services/TestAttemptService.js'
 import LoadingText from '@/components/LoadingText.vue'
-import TestNotFoundCard from '@/components/TestNotFoundCard.vue'
+import TestNotFoundIllustration from '@/components/TestNotFoundIllustration.vue'
 
 export default {
   name: 'TestAttemptView',
-  components: { NotFoundCard: TestNotFoundCard, LoadingText, TestQuestionCard },
+  components: {
+    TestNotFoundIllustration,
+    LoadingText,
+    TestQuestionCard,
+  },
   props: {
     testId: { type: Number, required: true },
   },
@@ -83,7 +87,6 @@ export default {
       }
     },
     submitAnswer() {
-      //   todo send user answer to backend
       const totalQuestions = this.testAttempt.questions.length
       const currentQuestionNumber = this.currentQuestionIndex + 1
 
@@ -108,8 +111,8 @@ export default {
 </script>
 
 <template>
-  <div class="container">
-    <NotFoundCard v-if="errorMessage" :message="errorMessage" />
+  <div class="container d-flex flex-column align-items-center">
+    <TestNotFoundIllustration v-if="errorMessage.length" />
     <div v-else>
       <h1 class="text-center h3">{{ testAttempt.testName }}</h1>
       <div class="d-flex flex-column align-items-center">

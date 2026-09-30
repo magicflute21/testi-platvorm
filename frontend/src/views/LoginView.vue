@@ -1,11 +1,12 @@
 <script>
 import AlertDanger from '@/components/AlertDanger.vue'
+import AppNavbar from '@/navigation/AppNavbar.vue'
 import LoginService from '@/services/LoginService.js'
 import NavigationService from '@/services/NavigationService.js'
 
 export default {
   name: 'LoginView',
-  components: { AlertDanger },
+  components: { AlertDanger, AppNavbar },
 
   data() {
     return {
@@ -59,7 +60,8 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="layout">
+    <AppNavbar :show-account-icon="false" />
     <div class="container text-start col-5 mt-5">
       <AlertDanger :error-message="errorMessage" />
     </div>
