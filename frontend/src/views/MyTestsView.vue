@@ -70,10 +70,16 @@ export default {
           <template #title>{{ userTestSummary.testName }}</template>
           <template #description>{{ userTestSummary.testShortDescription }}</template>
           <template #actions>
-            <button v-if="userTestSummary.userTestStatus === 'O'" class="btn btn-color">
+            <button
+              v-if="userTestSummary.userTestStatus === 'O'"
+              class="btn btn-primary fw-bold rounded-2"
+            >
               Soorita test
             </button>
-            <button v-if="userTestSummary.userTestStatus === 'C'" class="btn btn-color">
+            <button
+              v-if="userTestSummary.userTestStatus === 'C'"
+              class="btn btn-light fw-bold rounded-2"
+            >
               Vaata tulemusi
             </button>
           </template>
