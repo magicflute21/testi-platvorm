@@ -17,6 +17,13 @@ repositories {
 	mavenCentral()
 }
 
+dependencyManagement {
+    imports {
+        // Spring AI BOM - annab versiooni spring-ai-starter-model-google-genai sõltuvusele
+        mavenBom 'org.springframework.ai:spring-ai-bom:2.0.1'
+    }
+}
+
 dependencies {
     // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -26,6 +33,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testImplementation 'org.springframework:spring-test'
+    implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
 
     // Swagger - Updated to compatible version for Spring Boot 3.5.x
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3'
