@@ -18,4 +18,10 @@ export default {
       query: { userTestId: userTestId },
     })
   },
+  navigateToTestStartView(testId){
+    router.push({
+      name: 'testStartRoute',
+      params: { testId },
+    })
+  },
 }
