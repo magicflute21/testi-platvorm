@@ -1,3 +1,9 @@
+TP-24 http://localhost:8081/tests route view and GET /api/me/my-test endpoint. Using same PreviewCard component,
+User must be logged in to see their own tests, Completed and Open tests are both shown with a different status badge,
+The order is open status tests that will close the soonest to completed status tests. If the test is open the user will
+see only the button 'Soorita test', if it's completed then they will see 'Vaata tulemusi'
+
+
 TP-21 TestCreateView form for creating a new test. Route: http://localhost:8081/tests/new                                                                                                                                          
 Admin/manager fills in test name, short description, description, competence, competence level,                                                                                                                                    
 pass percent, score rounding (up/down) and optional timer, then selects questions. Competence                                                                                                                                      

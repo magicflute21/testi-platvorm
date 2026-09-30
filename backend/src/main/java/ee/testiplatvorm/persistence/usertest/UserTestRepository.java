@@ -3,6 +3,7 @@ package ee.testiplatvorm.persistence.usertest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserTestRepository extends JpaRepository<UserTest, Integer> {
@@ -12,5 +13,10 @@ public interface UserTestRepository extends JpaRepository<UserTest, Integer> {
     Optional<UserTest> getValidUserTestBy(Integer userId, Integer testId, String userTestStatus, String testStatus, String userStatus);
 
 
+    @Query("""
+            select u from UserTest u
+            where u.user.id = :userId and u.test.status = :testStatus
+            order by u.status DESC, u.closesAt ASC""")
+    List<UserTest> findUserTestsBy(Integer userId, String testStatus);
 
 }

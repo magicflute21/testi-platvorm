@@ -20,6 +20,9 @@ export default {
           <PhFlask :size="20" />
           <span class="nav-text">Testid</span>
         </RouterLink>
+        <RouterLink class="nav-link d-flex align-items-center gap-2" to="/my-tests">
+          Minu testid
+        </RouterLink>
         <RouterLink class="nav-link d-flex align-items-center gap-2" to="/tests/new">
           <PhFilePlus :size="20" />
           <span class="nav-text">Loo uus test</span>
