@@ -8,6 +8,7 @@ import TestResultView from '@/views/TestResultView.vue'
 import TestAttemptView from '@/views/TestAttemptView.vue'
 import TestStartView from '@/views/TestStartView.vue'
 import CompetenceView from '@/views/CompetenceView.vue'
+import UsersView from '@/views/UsersView.vue'
 
 const toNumber = (param) => (route) => ({ [param]: Number(route.params[param]) })
 
@@ -23,6 +24,7 @@ const router = createRouter({
         { path: 'test', name: 'testRoute', component: TestView },
         { path: 'test-result', name: 'testResultRoute', component: TestResultView },
         { path: 'competences', name: 'competenceView', component: CompetenceView },
+        { path: 'users', name: 'usersRoute', component: UsersView },
         {
           path: 'tests/:testId/start',
           name: 'testStartRoute',
