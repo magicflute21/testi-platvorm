@@ -9,6 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,4 +39,7 @@ public class NewUserRequest {
     @NotBlank
     @Pattern(regexp = "[AP]", message = "lubatud väärtused on A (aktiivne) või P (ootel)")
     private String status;
+
+    @NotNull
+    private List<@NotNull Integer> groupIds = new ArrayList<>();
 }

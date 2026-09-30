@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @PostMapping("/api/users")
-    @Operation(summary = "Lisab uue kasutaja koos parooli ja profiiliga (ees- ja perekonnanimi), valitud rolli ja staatusega (A - aktiivne või P - ootel).")
+    @Operation(summary = "Lisab uue kasutaja koos parooli ja profiiliga (ees- ja perekonnanimi), valitud rolli ja staatusega (A - aktiivne või P - ootel) ning lisab ta valitud gruppidesse (groupIds, võib olla tühi).")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "OK"
@@ -54,7 +54,7 @@ public class UserController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Ei leidnud primary keyd 'roleId' väärtusega ?",
+                    description = "Ei leidnud primary keyd 'roleId' või 'groupId' väärtusega ?",
                     content = @Content(schema = @Schema(implementation = ApiError.class))
             )
     })

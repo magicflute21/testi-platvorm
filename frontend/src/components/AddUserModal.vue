@@ -1,13 +1,14 @@
 <script>
 import UserService from '@/services/UserService.js'
 import RoleService from '@/services/RoleService.js'
+import GroupService from '@/services/GroupService.js'
 import AlertDanger from '@/components/AlertDanger.vue'
 import Status from '@/Status.js'
-import { PhEye, PhEyeSlash, PhX } from '@phosphor-icons/vue'
+import { PhCheck, PhEye, PhEyeSlash, PhX } from '@phosphor-icons/vue'
 
 export default {
   name: 'AddUserModal',
-  components: { AlertDanger, PhEye, PhEyeSlash, PhX },
+  components: { AlertDanger, PhCheck, PhEye, PhEyeSlash, PhX },
 
   props: {
     isOpen: Boolean,
@@ -21,6 +22,7 @@ export default {
       isPasswordVisible: false,
       errorMessage: '',
       roles: [],
+      groups: [],
       userStatus: Status,
       statusCodes: ['A', 'P'],
       newUser: {
@@ -30,6 +32,7 @@ export default {
         password: '',
         roleId: null,
         status: 'A',
+        groupIds: [],
       },
     }
   },
@@ -47,6 +50,11 @@ export default {
       RoleService.getAllRoles()
         .then((response) => (this.roles = response.data))
         .catch(() => (this.errorMessage = 'Rollide laadimine ebaõnnestus'))
+    },
+    getActiveGroups() {
+      GroupService.getActiveGroups()
+        .then((response) => (this.groups = response.data))
+        .catch(() => (this.errorMessage = 'Gruppide laadimine ebaõnnestus'))
     },
     addUser() {
       this.isSaving = true
@@ -69,12 +77,14 @@ export default {
         password: '',
         roleId: null,
         status: 'A',
+        groupIds: [],
       }
     },
   },
 
   beforeMount() {
     this.getAllRoles()
+    this.getActiveGroups()
   },
 }
 </script>
@@ -183,6 +193,28 @@ export default {
                 </label>
               </div>
             </div>
+            <div class="mt-3">
+              <span class="form-label fw-semibold d-block">Grupid</span>
+              <div v-if="groups.length > 0" class="d-flex flex-wrap gap-2">
+                <label
+                  v-for="group in groups"
+                  :key="group.groupId"
+                  class="group-option rounded-pill d-inline-flex align-items-center gap-1"
+                  :class="{ selected: newUser.groupIds.includes(group.groupId) }"
+                >
+                  <input
+                    v-model="newUser.groupIds"
+                    type="checkbox"
+                    class="visually-hidden"
+                    :value="group.groupId"
+                  />
+                  <PhCheck v-if="newUser.groupIds.includes(group.groupId)" :size="14" />
+                  {{ group.groupName }}
+                </label>
+              </div>
+              <div v-else class="text-body-secondary">Aktiivseid gruppe pole</div>
+              <div class="form-text">Valikuline. Võid valida mitu gruppi.</div>
+            </div>
           </div>
           <div class="modal-footer border-0 px-4 pb-4">
             <button type="button" class="btn btn-light rounded-2" @click="$emit('event-close')">
@@ -211,6 +243,25 @@ export default {
 .status-option.selected {
   border-color: var(--bs-blue);
   opacity: 1;
+}
+
+.group-option {
+  padding: 0.3rem 0.85rem;
+  border: 2px solid var(--bs-gray-200);
+  background-color: var(--bs-gray-100);
+  color: var(--bs-gray-700);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.group-option.selected {
+  border-color: var(--bs-blue);
+  background-color: var(--bs-gray-200);
+  color: var(--bs-blue);
 }
 
 .status-option .badge {

@@ -9,6 +9,7 @@ import ee.testiplatvorm.infrastructure.exception.PrimaryKeyNotFoundException;
 import ee.testiplatvorm.persistence.Profile;
 import ee.testiplatvorm.persistence.ProfileRepository;
 import ee.testiplatvorm.persistence.Role;
+import ee.testiplatvorm.persistence.group.Group;
 import ee.testiplatvorm.persistence.groupmember.GroupMember;
 import ee.testiplatvorm.persistence.groupmember.GroupMemberRepository;
 import ee.testiplatvorm.persistence.user.User;
@@ -29,6 +30,8 @@ public class UserService {
     private final GroupMemberRepository groupMemberRepository;
     private final ProfileRepository profileRepository;
     private final RoleService roleService;
+    private final GroupService groupService;
+    private final CurrentUserService currentUserService;
 
     public List<UserResponse> findAllUsers() {
         List<UserResponse> allUserResponses = userRepository.findAllUserResponses();
@@ -49,6 +52,8 @@ public class UserService {
 
         Profile profile = createProfile(user, newUserRequest.getFirstName().trim(), newUserRequest.getLastName().trim(), now);
         profileRepository.save(profile);
+
+        handleAddGroupMembers(user, newUserRequest.getGroupIds(), now);
     }
 
     public void updateUserStatus(Integer userId, String status) {
@@ -96,6 +101,28 @@ public class UserService {
         profile.setCreatedAt(now);
         profile.setUpdatedAt(now);
         return profile;
+    }
+
+    private void handleAddGroupMembers(User user, List<Integer> groupIds, Instant now) {
+        if (groupIds.isEmpty()) {
+            return;
+        }
+        User addedBy = getValidUserBy(currentUserService.getUserId());
+        for (Integer groupId : groupIds.stream().distinct().toList()) {
+            Group group = groupService.getValidGroupBy(groupId);
+            GroupMember groupMember = createGroupMember(group, user, addedBy, now);
+            groupMemberRepository.save(groupMember);
+        }
+    }
+
+    private GroupMember createGroupMember(Group group, User user, User addedBy, Instant now) {
+        GroupMember groupMember = new GroupMember();
+        groupMember.setGroup(group);
+        groupMember.setUser(user);
+        groupMember.setAddedBy(addedBy);
+        groupMember.setCreatedAt(now);
+        groupMember.setUpdatedAt(now);
+        return groupMember;
     }
 
     private void handleAddGroupNames(List<UserResponse> allUserResponses, List<GroupMember> groupMembers) {
