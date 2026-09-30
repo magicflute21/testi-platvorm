@@ -31,9 +31,10 @@
 
 ## AI küsimuste loomine (teadlikud kompromissid)
 
-- [ ] **Tunnilimiit (30 küsimust) on backendi mälus** (`AiQuestionLimitService`)
-  - Backendi taaskäivitamisel loendur nullitakse; mõjutab ainult AI kulusid, mitte andmete turvalisust
-  - Parandus vajadusel: hoida loendurit andmebaasis (nt `ai_question.created_at` põhjal)
+- [ ] **AI küsimuste genereerimisel pole tunnilimiiti** (`POST /api/ai-questions/generate`)
+  - ADMIN/HALDUR saab AI-d kutsuda piiramatult (kuni 5 küsimust päringu kohta) — mõjutab AI kulusid, mitte andmete turvalisust
+  - Tunnilimiit (30 küsimust tunnis, `AiQuestionLimitService`) on praeguseks eemaldatud; vana lahendus on git ajaloos commitis `4841b18`
+  - Tagasi lisamisel kaaluda loenduri hoidmist andmebaasis, et see taaskäivitamisel ei nulliks
 
 - [ ] **Google'ile saadetakse andmeid** (`AiQuestionService` promptid)
   - Kompetentside nimed ja kirjeldused, olemasolevate küsimuste pealkirjad ja kasutaja sisestatud tekst; kasutajate isikuandmeid ei saadeta

@@ -5,7 +5,6 @@ import ee.testiplatvorm.infrastructure.exception.BadRequestException;
 import ee.testiplatvorm.infrastructure.exception.DataNotFoundException;
 import ee.testiplatvorm.infrastructure.exception.ForbiddenException;
 import ee.testiplatvorm.infrastructure.exception.PrimaryKeyNotFoundException;
-import ee.testiplatvorm.infrastructure.exception.TooManyRequestsException;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -50,14 +49,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         apiError.setMessage(exception.getMessage());
         apiError.setErrorCode(exception.getErrorCode());
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ApiError> handleTooManyRequestsException(TooManyRequestsException exception) {
-        ApiError apiError = new ApiError();
-        apiError.setMessage(exception.getMessage());
-        apiError.setErrorCode(exception.getErrorCode());
-        return new ResponseEntity<>(apiError, HttpStatus.TOO_MANY_REQUESTS);
     }
 
     @Override

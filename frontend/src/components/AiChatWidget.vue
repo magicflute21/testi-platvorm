@@ -3,13 +3,12 @@ import { PhSparkle, PhX, PhPaperPlaneRight, PhCheckCircle } from '@phosphor-icon
 import AiQuestionService from '@/services/AiQuestionService.js'
 
 const MAX_INPUT_LENGTH = 500
-const MAX_QUESTIONS_PER_HOUR = 30
 
 const WELCOME_MESSAGE =
   'Tere! Kirjelda, milliseid küsimusi soovid luua — nt "2 küsimust JavaScripti algajatele massiivide kohta ja 1 tõene/väär küsimus SQL algajatele". Korraga saab luua kuni 5 küsimust, ka eri kompetentsidele.'
 
 // Backendi veateated, mida võib kasutajale otse näidata
-const STATUSES_WITH_USER_MESSAGE = [400, 403, 429]
+const STATUSES_WITH_USER_MESSAGE = [400, 403]
 
 export default {
   name: 'AiChatWidget',
@@ -17,13 +16,11 @@ export default {
   data() {
     return {
       maxInputLength: MAX_INPUT_LENGTH,
-      maxQuestionsPerHour: MAX_QUESTIONS_PER_HOUR,
       isOpen: false,
       isLoading: false,
       userInput: '',
       // Kui AI küsis täpsustust, hoitakse meeles kasutaja esialgne soov
       originalInstructions: '',
-      remainingQuestionCount: null,
       messages: [{ sender: 'ai', text: WELCOME_MESSAGE, questions: [] }],
     }
   },
@@ -65,8 +62,6 @@ export default {
     },
 
     handleGenerateQuestionsResponse(generationResponse, instructions) {
-      this.remainingQuestionCount = generationResponse.remainingQuestionCount
-
       if (generationResponse.clarifyingQuestion) {
         if (this.originalInstructions === '') {
           this.originalInstructions = instructions
@@ -245,11 +240,7 @@ export default {
             <PhPaperPlaneRight :size="18" />
           </button>
         </div>
-        <div class="d-flex justify-content-between small text-muted mt-1">
-          <span v-if="remainingQuestionCount !== null">
-            Sel tunnil alles: {{ remainingQuestionCount }}/{{ maxQuestionsPerHour }}
-          </span>
-          <span v-else></span>
+        <div class="d-flex justify-content-end small text-muted mt-1">
           <span>{{ userInput.length }}/{{ maxInputLength }}</span>
         </div>
       </div>

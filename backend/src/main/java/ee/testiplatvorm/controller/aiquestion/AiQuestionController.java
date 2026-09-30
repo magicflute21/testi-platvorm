@@ -19,11 +19,10 @@ public class AiQuestionController {
     private final AiQuestionService aiQuestionService;
 
     @PostMapping("/api/ai-questions/generate")
-    @Operation(summary = "AI tuvastab vabatekstist kompetentsi, taseme, küsimuse tüübi ja küsimuste arvu (kuni 5) ning genereerib küsimused koos vastusevariantidega. Kasutaja saab tunnis genereerida kuni 30 küsimust. Midagi ei salvestata - salvestamiseks tuleb kasutada POST /api/ai-questions. Kui kompetentsi või taset ei õnnestu tuvastada, tagastatakse ainult clarifyingQuestion.")
+    @Operation(summary = "AI tuvastab vabatekstist kompetentsi, taseme, küsimuse tüübi ja küsimuste arvu (kuni 5) ning genereerib küsimused koos vastusevariantidega. Midagi ei salvestata - salvestamiseks tuleb kasutada POST /api/ai-questions. Kui kompetentsi või taset ei õnnestu tuvastada, tagastatakse ainult clarifyingQuestion.")
     @ApiResponse(responseCode = "200", description = "OK - kas genereeritud küsimused (questions) või täpsustav küsimus (clarifyingQuestion)")
     @ApiResponse(responseCode = "401", description = "Kasutaja pole sisse logitud")
     @ApiResponse(responseCode = "403", description = "Kasutajal puudub õigus küsimusi luua (lubatud ainult ADMIN ja HALDUR rollile)")
-    @ApiResponse(responseCode = "429", description = "Tunnilimiit (30 küsimust) on täis")
     public AiQuestionGenerationResponse generateQuestions(@RequestBody @Valid AskRequest askRequest) {
         AiQuestionGenerationResponse aiQuestionGenerationResponse = aiQuestionService.generateQuestions(askRequest);
         return aiQuestionGenerationResponse;

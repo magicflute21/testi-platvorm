@@ -148,7 +148,6 @@ public class AiQuestionService {
     private final AiQuestionAnswerRepository aiQuestionAnswerRepository;
     private final CurrentUserService currentUserService;
     private final UserRepository userRepository;
-    private final AiQuestionLimitService aiQuestionLimitService;
 
     public AiQuestionService(ChatClient.Builder builder,
                              CompetenceLevelRepository competenceLevelRepository,
@@ -157,8 +156,7 @@ public class AiQuestionService {
                              AiQuestionRepository aiQuestionRepository,
                              AiQuestionAnswerRepository aiQuestionAnswerRepository,
                              CurrentUserService currentUserService,
-                             UserRepository userRepository,
-                             AiQuestionLimitService aiQuestionLimitService) {
+                             UserRepository userRepository) {
         this.chatClient = builder.build();
         this.competenceLevelRepository = competenceLevelRepository;
         this.questionTypeRepository = questionTypeRepository;
@@ -167,13 +165,11 @@ public class AiQuestionService {
         this.aiQuestionAnswerRepository = aiQuestionAnswerRepository;
         this.currentUserService = currentUserService;
         this.userRepository = userRepository;
-        this.aiQuestionLimitService = aiQuestionLimitService;
     }
 
     public AiQuestionGenerationResponse generateQuestions(AskRequest askRequest) {
-        // Õigused ja limiit kontrollitakse enne AI päringut, et asjatutele päringutele raha ei kuluks
-        Integer userId = getValidQuestionAuthorId();
-        aiQuestionLimitService.validateLimitNotReached(userId);
+        // Õigused kontrollitakse enne AI päringut, et ilma õiguseta päringutele raha ei kuluks
+        getValidQuestionAuthorId();
         String instructions = askRequest.getInstructions();
 
         List<CompetenceLevel> competenceLevels = competenceLevelRepository.findAllCompetenceLevelsBy(STATUS_ACTIVE.getCode());
@@ -182,22 +178,13 @@ public class AiQuestionService {
         QuestionTargets questionTargets = selectQuestionTargets(instructions, competenceLevels, questionTypes);
         Optional<List<ValidQuestionTarget>> validQuestionTargets = getValidQuestionTargets(questionTargets, competenceLevels, questionTypes);
         if (validQuestionTargets.isEmpty()) {
-            return createClarifyingResponse(questionTargets.clarifyingQuestion(), userId);
+            return createClarifyingResponse(questionTargets.clarifyingQuestion());
         }
-
-        int questionCount = validQuestionTargets.get().stream().mapToInt(ValidQuestionTarget::questionCount).sum();
-        aiQuestionLimitService.handleReserveQuestions(userId, questionCount);
 
         List<GeneratedQuestionDto> generatedQuestionDtos = new ArrayList<>();
-        try {
-            for (ValidQuestionTarget validQuestionTarget : validQuestionTargets.get()) {
-                generatedQuestionDtos.addAll(generateQuestionDtosFor(validQuestionTarget, instructions));
-            }
-        } catch (RuntimeException exception) {
-            aiQuestionLimitService.releaseQuestions(userId, questionCount);
-            throw exception;
+        for (ValidQuestionTarget validQuestionTarget : validQuestionTargets.get()) {
+            generatedQuestionDtos.addAll(generateQuestionDtosFor(validQuestionTarget, instructions));
         }
-        aiQuestionLimitService.releaseQuestions(userId, questionCount - generatedQuestionDtos.size());
 
         if (generatedQuestionDtos.isEmpty()) {
             throw new IllegalStateException("AI ei suutnud korrektseid küsimusi genereerida, proovi uuesti");
@@ -205,7 +192,6 @@ public class AiQuestionService {
 
         AiQuestionGenerationResponse aiQuestionGenerationResponse = new AiQuestionGenerationResponse();
         aiQuestionGenerationResponse.setQuestions(generatedQuestionDtos);
-        aiQuestionGenerationResponse.setRemainingQuestionCount(aiQuestionLimitService.getRemainingQuestionCount(userId));
         return aiQuestionGenerationResponse;
     }
 
@@ -306,11 +292,10 @@ public class AiQuestionService {
         return createQuestionDtos(aiGeneratedQuestions, questionCount, competenceLevel, questionType);
     }
 
-    private AiQuestionGenerationResponse createClarifyingResponse(String clarifyingQuestion, Integer userId) {
+    private AiQuestionGenerationResponse createClarifyingResponse(String clarifyingQuestion) {
         AiQuestionGenerationResponse aiQuestionGenerationResponse = new AiQuestionGenerationResponse();
         boolean hasClarifyingQuestion = clarifyingQuestion != null && !clarifyingQuestion.isBlank();
         aiQuestionGenerationResponse.setClarifyingQuestion(hasClarifyingQuestion ? clarifyingQuestion : DEFAULT_CLARIFYING_QUESTION);
-        aiQuestionGenerationResponse.setRemainingQuestionCount(aiQuestionLimitService.getRemainingQuestionCount(userId));
         return aiQuestionGenerationResponse;
     }
 
