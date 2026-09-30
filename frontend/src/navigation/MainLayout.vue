@@ -11,9 +11,9 @@ export default {
 <template>
   <Navbar />
 
-  <div class="d-flex">
+  <div class="d-flex layout">
     <AppSidebar />
-    <main class="flex-grow-1 p-3 bg-light">
+    <main class="flex-grow-1 p-3">
       <RouterView />
     </main>
   </div>

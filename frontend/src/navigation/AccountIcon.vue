@@ -15,10 +15,17 @@ export default {
 <template>
   <button
     type="button"
-    class="me-3 btn p-1 text-secondary"
+    class="me-3 btn p-1 account-btn"
     aria-label="Account"
     @click="openAccountMenu"
   >
-    <PhUserCircle :size="24" />
+    <PhUserCircle :size="28" />
   </button>
 </template>
+
+<style scoped>
+.account-btn,
+.account-btn:hover {
+  color: #37474f;
+}
+</style>

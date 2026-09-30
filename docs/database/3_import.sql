@@ -27,10 +27,10 @@ BEGIN;
 -- ------------------------------------------------------------
 -- role
 -- ------------------------------------------------------------
-INSERT INTO role (id, name)
-VALUES (1, 'ADMIN'),
-       (2, 'HALDUR'),
-       (3, 'KASUTAJA');
+INSERT INTO role (id, name) VALUES
+    (1, 'ADMIN'),
+    (2, 'HALDUR'),
+    (3, 'KASUTAJA');
 
 -- ------------------------------------------------------------
 -- "user"  (4th row = pending invite, not yet completed registration)
@@ -69,8 +69,8 @@ VALUES (1, 'JavaScript', 'JavaScripti keele alused', 'JavaScripti põhisüntaks,
 INSERT INTO competence_level (id, competence_id, level_id, status)
 VALUES (1, 1, 1, 'A'), -- JavaScript / Beginner
        (2, 1, 2, 'A'), -- JavaScript / Intermediate
-       (3, 2, 1, 'A');
--- SQL / Beginner
+       (3, 2, 1, 'A'), -- SQL / Beginner
+       (4, 3, 1, 'A'); -- Suhtlemine / Beginner
 
 -- ------------------------------------------------------------
 -- competence_file
@@ -137,7 +137,18 @@ VALUES (1, 1, 1, 'Mis on sulund (closure)?', 'Vali JavaScripti sulundi kõige t�
        (2, 1, 2, 'Millised järgnevatest on JS primitiivtüübid?', 'Vali kõik JavaScripti primitiivtüübid.', 2, 10, 'A',
         now() - interval '75 days', 1, now()),
        (3, 2, 3, 'Kas SQL-i võtmesõnad on tõstutundlikud?', 'Tõene või väär.', 3, 5, 'A', now() - interval '70 days', 1,
-        now());
+        now()),
+       (4, 1, 1, 'Mis vahe on let ja const vahel?', 'Vali õige väide.', 1, 10, 'A', now() - interval '60 days', 1,
+        now()),
+       (5, 1, 1, 'Mida tagastab typeof null?', 'Vali õige vastus.', 1, 10, 'A', now() - interval '60 days', 1, now()),
+       (6, 2, 3, 'Milline käsk tagastab tabelist andmeid?', 'Vali õige SQL-i käsk.', 1, 10, 'A',
+        now() - interval '55 days', 1, now()),
+       (7, 2, 3, 'Kas WHERE-tingimus filtreerib ridu enne GROUP BY-d?', 'Tõene või väär.', 3, 5, 'A',
+        now() - interval '55 days', 1, now()),
+       (8, 3, 4, 'Mis on aktiivne kuulamine?', 'Vali kõige täpsem kirjeldus.', 1, 10, 'A', now() - interval '50 days', 1,
+        now()),
+       (9, 3, 4, 'Milline e-kirja pealkiri on kõige selgem?', 'Vali parim näide.', 1, 10, 'A',
+        now() - interval '50 days', 1, now());
 
 -- ------------------------------------------------------------
 -- question_answer
@@ -151,7 +162,24 @@ VALUES (1, 1, 'Funktsioon, mis mäletab oma leksikaalset skoopi', true, NULL, NU
        (6, 2, 'massiiv', false, NULL, NULL, 'A'),
        (7, 2, 'objekt', false, NULL, NULL, 'A'),
        (8, 3, 'Tõene', false, NULL, NULL, 'A'),
-       (9, 3, 'Väär', true, NULL, NULL, 'A');
+       (9, 3, 'Väär', true, NULL, NULL, 'A'),
+       (10, 4, 'const muutujale ei saa uut väärtust omistada', true, NULL, NULL, 'A'),
+       (11, 4, 'let muutuja on alati globaalne', false, NULL, NULL, 'A'),
+       (12, 4, 'Nende vahel ei ole vahet', false, NULL, NULL, 'A'),
+       (13, 5, '"object"', true, NULL, NULL, 'A'),
+       (14, 5, '"null"', false, NULL, NULL, 'A'),
+       (15, 5, '"undefined"', false, NULL, NULL, 'A'),
+       (16, 6, 'SELECT', true, NULL, NULL, 'A'),
+       (17, 6, 'INSERT', false, NULL, NULL, 'A'),
+       (18, 6, 'UPDATE', false, NULL, NULL, 'A'),
+       (19, 7, 'Tõene', true, NULL, NULL, 'A'),
+       (20, 7, 'Väär', false, NULL, NULL, 'A'),
+       (21, 8, 'Kõnelejale täielik keskendumine ja tagasiside andmine', true, NULL, NULL, 'A'),
+       (22, 8, 'Vestluskaaslase katkestamine oma mõtte jagamiseks', false, NULL, NULL, 'A'),
+       (23, 8, 'Samal ajal e-kirjadele vastamine', false, NULL, NULL, 'A'),
+       (24, 9, 'Kohtumise aja muutus: neljapäev kell 14', true, NULL, NULL, 'A'),
+       (25, 9, 'Küsimus', false, NULL, NULL, 'A'),
+       (26, 9, 'Tere!', false, NULL, NULL, 'A');
 
 -- ------------------------------------------------------------
 -- test
