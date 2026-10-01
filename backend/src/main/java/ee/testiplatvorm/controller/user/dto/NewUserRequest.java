@@ -3,7 +3,6 @@ package ee.testiplatvorm.controller.user.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,10 +34,6 @@ public class NewUserRequest {
 
     @NotNull
     private Integer roleId;
-
-    @NotBlank
-    @Pattern(regexp = "[AP]", message = "lubatud väärtused on A (aktiivne) või P (ootel)")
-    private String status;
 
     @NotNull
     private List<@NotNull Integer> groupIds = new ArrayList<>();

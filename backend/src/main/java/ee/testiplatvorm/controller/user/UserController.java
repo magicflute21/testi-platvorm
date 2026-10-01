@@ -37,14 +37,14 @@ public class UserController {
     }
 
     @PostMapping("/api/users")
-    @Operation(summary = "Lisab uue kasutaja koos parooli ja profiiliga (ees- ja perekonnanimi), valitud rolli ja staatusega (A - aktiivne või P - ootel) ning lisab ta valitud gruppidesse (groupIds, võib olla tühi).")
+    @Operation(summary = "Lisab uue kasutaja koos parooli ja profiiliga (ees- ja perekonnanimi), valitud rolliga ja aktiivse staatusega (A) ning lisab ta valitud gruppidesse (groupIds, võib olla tühi).")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200", description = "OK"
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Vigane sisend (nt puudub e-post, parool, nimi, roll või staatus, e-post on vales vormingus, parool on lühem kui 6 märki), 'errorCode': INCORRECT_INPUT",
+                    description = "Vigane sisend (nt puudub e-post, parool, nimi või roll, e-post on vales vormingus, parool on lühem kui 6 märki), 'errorCode': INCORRECT_INPUT",
                     content = @Content(schema = @Schema(implementation = ApiError.class))
             ),
             @ApiResponse(

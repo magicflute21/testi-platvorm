@@ -3,7 +3,6 @@ import UserService from '@/services/UserService.js'
 import RoleService from '@/services/RoleService.js'
 import GroupService from '@/services/GroupService.js'
 import AlertDanger from '@/components/AlertDanger.vue'
-import Status from '@/Status.js'
 import { PhCheck, PhEye, PhEyeSlash, PhX } from '@phosphor-icons/vue'
 
 export default {
@@ -23,15 +22,12 @@ export default {
       errorMessage: '',
       roles: [],
       groups: [],
-      userStatus: Status,
-      statusCodes: ['A', 'P'],
       newUser: {
         firstName: '',
         lastName: '',
         email: '',
         password: '',
         roleId: null,
-        status: 'A',
         groupIds: [],
       },
     }
@@ -76,7 +72,6 @@ export default {
         email: '',
         password: '',
         roleId: null,
-        status: 'A',
         groupIds: [],
       }
     },
@@ -171,28 +166,6 @@ export default {
                 </option>
               </select>
             </div>
-            <div class="mb-2">
-              <span class="form-label fw-semibold d-block">Staatus</span>
-              <div class="d-flex gap-2">
-                <label
-                  v-for="statusCode in statusCodes"
-                  :key="statusCode"
-                  class="status-option rounded-pill"
-                  :class="{ selected: newUser.status === statusCode }"
-                >
-                  <input
-                    v-model="newUser.status"
-                    type="radio"
-                    name="add-user-status"
-                    class="visually-hidden"
-                    :value="statusCode"
-                  />
-                  <span class="badge rounded-pill" :class="userStatus[statusCode].badgeClass">
-                    {{ userStatus[statusCode].name }}
-                  </span>
-                </label>
-              </div>
-            </div>
             <div class="mt-3">
               <span class="form-label fw-semibold d-block">Grupid</span>
               <div v-if="groups.length > 0" class="d-flex flex-wrap gap-2">
@@ -232,19 +205,6 @@ export default {
 </template>
 
 <style scoped>
-.status-option {
-  padding: 0.2rem;
-  border: 2px solid transparent;
-  cursor: pointer;
-  opacity: 0.5;
-  transition: opacity 0.15s ease;
-}
-
-.status-option.selected {
-  border-color: var(--bs-blue);
-  opacity: 1;
-}
-
 .group-option {
   padding: 0.3rem 0.85rem;
   border: 2px solid var(--bs-gray-200);
@@ -262,10 +222,6 @@ export default {
   border-color: var(--bs-blue);
   background-color: var(--bs-gray-200);
   color: var(--bs-blue);
-}
-
-.status-option .badge {
-  font-size: 0.9rem;
 }
 
 .btn-color {

@@ -47,7 +47,7 @@ public class UserService {
         Role role = roleService.getValidRoleBy(newUserRequest.getRoleId());
         Instant now = Instant.now();
 
-        User user = createUser(email, newUserRequest.getPassword(), role, newUserRequest.getStatus(), now);
+        User user = createUser(email, newUserRequest.getPassword(), role, now);
         userRepository.save(user);
 
         Profile profile = createProfile(user, newUserRequest.getFirstName().trim(), newUserRequest.getLastName().trim(), now);
@@ -82,12 +82,12 @@ public class UserService {
         }
     }
 
-    private User createUser(String email, String password, Role role, String status, Instant now) {
+    private User createUser(String email, String password, Role role, Instant now) {
         User user = new User();
         user.setEmail(email);
         user.setPasswordHash(password);
         user.setRole(role);
-        user.setStatus(status);
+        user.setStatus(Status.STATUS_ACTIVE.getCode());
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
         return user;
