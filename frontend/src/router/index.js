@@ -11,6 +11,7 @@ import MyTestsView from '@/views/MyTestsView.vue'
 
 const toNumber = (param) => (route) => ({ [param]: Number(route.params[param]) })
 import TestCreateView from '@/views/TestCreateView.vue'
+import QuestionBankView from "@/views/QuestionBankView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,6 +26,7 @@ const router = createRouter({
         { path: 'my-tests', name: 'myTestsRoute', component: MyTestsView },
         { path: 'test-result', name: 'testResultRoute', component: TestResultView },
         { path: 'competences', name: 'competenceView', component: CompetenceView },
+        { path: 'questions', name: 'questionBankView', component: QuestionBankView },
         {
           path: 'tests/:testId/start',
           name: 'testStartRoute',

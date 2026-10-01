@@ -9,6 +9,19 @@ AI question generation: ADMIN/HALDUR can create test questions with AI via the c
 a confirmed question to ai_question / ai_question_answer tables with status 'P'.
 Uses Spring AI + Google GenAI (needs GOOGLE_GENAI_API_KEY). The hourly limit is temporarily removed.
 
+TP-29 QuestionBankView http://localhost:8081/questions route view. Questions are shown as collapsible cards
+(QuestionBankCard component): header has the title, competence level, competence and status badges, the arrow opens
+the card and shows question type, score, description and answer options in two columns, correct answers are
+highlighted in green. On a narrow card the badges move under the title and answers are in one column.
+"Küsimuste pank" link is added as the last item of the side menu. Competence dropdown filters questions by competence, "Lisa uus küsimus" button navigates to
+/questions/new (route not created yet). In Status.js the inactive status is now 'I' (Mitteaktiivne), as in backend.
+
+TP-29 GET /api/question-bank?competenceId={id} -> brings all questions for QuestionBankView, regardless of
+question status (both 'A' and 'I'), with competence name, competence level name, score, question type name and active answer options
+(answerText, correctChoice). competenceId is optional - without it questions of all competences are returned,
+unknown competenceId returns an empty list. Questions are ordered by questionId.
+
+
 TP-24 http://localhost:8081/tests route view and GET /api/me/my-test endpoint. Using same PreviewCard component,
 User must be logged in to see their own tests, Completed and Open tests are both shown with a different status badge,
 The order is open status tests that will close the soonest to completed status tests. If the test is open the user will
