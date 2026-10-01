@@ -25,6 +25,7 @@ public class ResultService {
     private final ResultMapper resultMapper;
 
     public ResultResponseDto findTestResult(Integer userTestId) {
+//        kui tavakasutaja vaatab suvalise testi tulemust, siis selle peaks ära kaitsema
         Result result = resultRepository.findResultByUserTestId(userTestId)
                 .orElseThrow(() -> new ForbiddenException(NO_RESULT_FOUND.getMessage(), NO_RESULT_FOUND.name()));
 

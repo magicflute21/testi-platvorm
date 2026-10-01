@@ -3,6 +3,7 @@ import TestQuestionCard from '@/components/TestQuestionCard.vue'
 import TestAttemptService from '@/services/TestAttemptService.js'
 import LoadingText from '@/components/LoadingText.vue'
 import TestNotFoundIllustration from '@/components/TestNotFoundIllustration.vue'
+import NavigationService from '@/services/NavigationService.js'
 
 export default {
   name: 'TestAttemptView',
@@ -70,9 +71,8 @@ export default {
         .then((response) => this.handleCompleteTestResponse(response))
         .catch((error) => this.handleCompeteTestErrorResponse(error))
     },
-    handleCompleteTestResponse(response) {
-      console.log("success")
-      console.log(response)
+    handleCompleteTestResponse() {
+      NavigationService.navigateToTestResult(this.testAttempt.userTestId);
     },
     handleCompeteTestErrorResponse(error) {
       console.log(error)
