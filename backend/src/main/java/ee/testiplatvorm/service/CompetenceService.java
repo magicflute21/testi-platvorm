@@ -1,10 +1,12 @@
 package ee.testiplatvorm.service;
 
+import ee.testiplatvorm.controller.competence.dto.CompetenceDto;
 import ee.testiplatvorm.controller.competence.dto.CompetenceResponseDto;
 import ee.testiplatvorm.persistence.competence.Competence;
 import ee.testiplatvorm.persistence.competence.CompetenceMapper;
 import ee.testiplatvorm.persistence.competence.CompetenceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,5 +23,10 @@ public class CompetenceService {
     public List<CompetenceResponseDto> findCompetences() {
         List<Competence> competences = competenceRepository.findCompetencesBy(STATUS_ACTIVE.getCode());
         return competenceMapper.toCompetenceResponseDtos(competences);
+    }
+
+    public List<CompetenceDto> findAllCompetences() {
+        List<Competence> competences = competenceRepository.findAll(Sort.by("status", "name"));
+        return competenceMapper.toCompetenceDtos(competences);
     }
 }

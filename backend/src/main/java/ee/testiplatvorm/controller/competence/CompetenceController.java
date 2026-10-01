@@ -1,5 +1,6 @@
 package ee.testiplatvorm.controller.competence;
 
+import ee.testiplatvorm.controller.competence.dto.CompetenceDto;
 import ee.testiplatvorm.controller.competence.dto.CompetenceResponseDto;
 import ee.testiplatvorm.service.CompetenceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,5 +25,14 @@ public class CompetenceController {
     public List<CompetenceResponseDto> findCompetences() {
 
         return competenceService.findCompetences();
+    }
+
+    @GetMapping("/api/competences/all")
+    @Operation(summary = "Tagastab kõik kompetentsid, sorteeritud staatuse ja nime järgi.")
+    @ApiResponse(
+            responseCode = "200", description = "OK"
+    )
+    public List<CompetenceDto> findAllCompetences() {
+        return competenceService.findAllCompetences();
     }
 }

@@ -1,5 +1,6 @@
 package ee.testiplatvorm.persistence.competence;
 
+import ee.testiplatvorm.controller.competence.dto.CompetenceDto;
 import ee.testiplatvorm.controller.competence.dto.CompetenceResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,4 +16,11 @@ public interface CompetenceMapper {
     CompetenceResponseDto toCompetenceResponseDto(Competence competence);
 
     List<CompetenceResponseDto> toCompetenceResponseDtos(List<Competence> competences);
+
+    @Mapping(source = "id", target = "competenceId")
+    @Mapping(source = "name", target = "competenceName")
+    @Mapping(source = "createdBy.email", target = "createdByEmail")
+    CompetenceDto toCompetenceDto(Competence competence);
+
+    List<CompetenceDto> toCompetenceDtos(List<Competence> competences);
 }

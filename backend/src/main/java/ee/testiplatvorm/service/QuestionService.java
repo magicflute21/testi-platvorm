@@ -19,6 +19,7 @@ import ee.testiplatvorm.persistence.user.User;
 import ee.testiplatvorm.persistence.user.UserMapper;
 import ee.testiplatvorm.persistence.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,6 +87,28 @@ public class QuestionService {
 
     @Transactional
     public Integer createQuestion(QuestionCreateRequestDto questionCreateRequestDto) {
+        User user = getUserRole();
+        QuestionType questionType = getQuestionType(questionCreateRequestDto);
+        CompetenceLevel competenceLevel = getCompetenceLevel(questionCreateRequestDto);
+        int isCorrectCount = getIsCorrectCount(questionCreateRequestDto);
+
+        String questionTypeName = questionType.getName();
+        int answerCount = questionCreateRequestDto.getAnswers().size();
+
+        isValidCorrectAnswerCount(questionTypeName, isCorrectCount, answerCount);
+
+        Question question = saveQuestion(questionCreateRequestDto, competenceLevel, questionType, user);
+
+        List<QuestionAnswer> questionAnswers = questionAnswerMapper.toCreateQuestionAnswers(questionCreateRequestDto.getAnswers());
+        for (QuestionAnswer questionAnswer : questionAnswers) {
+            questionAnswer.setQuestion(question);
+            questionAnswer.setStatus(STATUS_ACTIVE.getCode());
+        }
+        questionAnswerRepository.saveAll(questionAnswers);
+        return question.getId();
+    }
+
+    private User getUserRole() {
         Integer userId = currentUserService.getUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> (new PrimaryKeyNotFoundException("userId", userId)));
         String userRole = user.getRole().getName();
@@ -94,37 +117,27 @@ public class QuestionService {
         if (!isAllowedToCreateQuestion) {
             throw new ForbiddenException(NO_PERMISSION_TO_CREATE_QUESTIONS.getMessage(), NO_PERMISSION_TO_CREATE_QUESTIONS.name());
         }
-
+        return user;
+    }
+    private @NonNull QuestionType getQuestionType(QuestionCreateRequestDto questionCreateRequestDto) {
         Integer questionTypeId = questionCreateRequestDto.getQuestionTypeId();
-        QuestionType questionType = questionTypeRepository.findById(questionTypeId).orElseThrow(() -> new PrimaryKeyNotFoundException("questionTypeId", questionTypeId));
-
+        return questionTypeRepository.findById(questionTypeId).orElseThrow(() -> new PrimaryKeyNotFoundException("questionTypeId", questionTypeId));
+    }
+    private @NonNull CompetenceLevel getCompetenceLevel(QuestionCreateRequestDto questionCreateRequestDto) {
         Integer competenceLevelId = questionCreateRequestDto.getCompetenceLevelId();
         CompetenceLevel competenceLevel = competenceLevelRepository.findById(competenceLevelId).orElseThrow(() -> new PrimaryKeyNotFoundException("competenceLevelId", competenceLevelId));
-
+        return competenceLevel;
+    }
+    private static int getIsCorrectCount(QuestionCreateRequestDto questionCreateRequestDto) {
         int isCorrectCount = 0;
         for (QuestionCreateAnswerRequestDto questionCreateAnswerRequestDto : questionCreateRequestDto.getAnswers()) {
             if (questionCreateAnswerRequestDto.getIsCorrect()) {
                 isCorrectCount++;
             }
         }
-
-        String questionTypeName = questionType.getName();
-        int answerCount = questionCreateRequestDto.getAnswers().size();
-
-        boolean isValidCorrectAnswerCount = false;
-        {
-            if (questionTypeName.equals("SINGLE_CHOICE")) {
-                isValidCorrectAnswerCount = isCorrectCount == 1;
-            } else if (questionTypeName.equals("MULTIPLE_CHOICE")) {
-                isValidCorrectAnswerCount = isCorrectCount >= 1;
-            } else if (questionTypeName.equals("TRUE_FALSE")) {
-                isValidCorrectAnswerCount = answerCount == 2 && isCorrectCount == 1;
-            }
-            if (!isValidCorrectAnswerCount) {
-                throw new BadRequestException(Error.INVALID_CORRECT_ANSWER_COUNT.getMessage(), Error.INVALID_CORRECT_ANSWER_COUNT.name());
-            }
-        }
-
+        return isCorrectCount;
+    }
+    private @NonNull Question saveQuestion(QuestionCreateRequestDto questionCreateRequestDto, CompetenceLevel competenceLevel, QuestionType questionType, User user) {
         Question question = questionMapper.toQuestion(questionCreateRequestDto);
         question.setCompetence(competenceLevel.getCompetence());
         question.setCompetenceLevel(competenceLevel);
@@ -135,14 +148,26 @@ public class QuestionService {
         question.setCreatedAt(currentTime);
         question.setUpdatedAt(currentTime);
         questionRepository.save(question);
-
-        List<QuestionAnswer> questionAnswers = questionAnswerMapper.toCreateQuestionAnswers(questionCreateRequestDto.getAnswers());
-        for (QuestionAnswer questionAnswer : questionAnswers) {
-            questionAnswer.setQuestion(question);
-            questionAnswer.setStatus(STATUS_ACTIVE.getCode());
-        }
-        questionAnswerRepository.saveAll(questionAnswers);
-
-        return question.getId();
+        return question;
     }
+    private static void isValidCorrectAnswerCount(String questionTypeName, int isCorrectCount, int answerCount) {
+        boolean isValidCorrectAnswerCount = false;
+        if (questionTypeName.equals("SINGLE_CHOICE")) {
+            isValidCorrectAnswerCount = isCorrectCount == 1;
+        } else if (questionTypeName.equals("MULTIPLE_CHOICE")) {
+            isValidCorrectAnswerCount = isCorrectCount >= 1;
+        } else if (questionTypeName.equals("TRUE_FALSE")) {
+            isValidCorrectAnswerCount = answerCount == 2 && isCorrectCount == 1;
+        }
+        if (!isValidCorrectAnswerCount) {
+            throw new BadRequestException(Error.INVALID_CORRECT_ANSWER_COUNT.getMessage(), Error.INVALID_CORRECT_ANSWER_COUNT.name());
+        }
+    }
+
+
+
+
+
+
+
 }
