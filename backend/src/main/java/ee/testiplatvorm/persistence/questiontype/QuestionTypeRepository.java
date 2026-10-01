@@ -1,4 +1,4 @@
-package ee.testiplatvorm.persistence;
+package ee.testiplatvorm.persistence.questiontype;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

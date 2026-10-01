@@ -1,11 +1,13 @@
 package ee.testiplatvorm.controller.question;
 
+import ee.testiplatvorm.controller.question.dto.QuestionCreateRequestDto;
 import ee.testiplatvorm.controller.question.dto.QuestionResponseDto;
 import ee.testiplatvorm.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,5 +27,12 @@ public class QuestionController {
     public List<QuestionResponseDto> findQuestionsBy(@RequestParam Integer competenceLevelId) {
         List<QuestionResponseDto> questionResponseDtos = questionService.findQuestionsBy(competenceLevelId);
         return questionResponseDtos;
+    }
+
+
+    public void createQuestion(@RequestBody QuestionCreateRequestDto questionCreateRequestDto) {
+        questionService.createQuestion(questionCreateRequestDto);
+
+
     }
 }

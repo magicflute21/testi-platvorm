@@ -5,10 +5,11 @@ import UserTestService from '@/services/UserTestService.js'
 import Status from '@/Status.js'
 import TestNotFoundCard from '@/components/TestNotFoundCard.vue'
 import AlertDanger from '@/components/AlertDanger.vue'
+import MainTitle from "@/components/MainTitle.vue";
 
 export default {
   name: 'MyTestsView',
-  components: { AlertDanger, TestNotFoundCard, LoadingText, PreviewCard },
+  components: {MainTitle, AlertDanger, TestNotFoundCard, LoadingText, PreviewCard },
   beforeMount() {
     this.getUserTests()
   },
@@ -60,7 +61,7 @@ export default {
       <TestNotFoundCard :message="'Sulle pole ühtki testi määratud'" />
     </div>
     <div v-else>
-      <h5>Minu testid</h5>
+      <MainTitle title="Minu testid"/>
       <div class="preview-test-card-grid">
         <PreviewCard
           v-for="userTestSummary in userTestSummaries"
@@ -94,5 +95,22 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(500px, 100%), 1fr));
   gap: 1rem;
+}
+@media (min-width: 1800px) {
+  .container {
+    max-width: 1760px;
+  }
+}
+
+@media (min-width: 2400px) {
+  .container {
+    max-width: 2340px;
+  }
+}
+
+@media (min-width: 3000px) {
+  .container {
+    max-width: 2900px;
+  }
 }
 </style>

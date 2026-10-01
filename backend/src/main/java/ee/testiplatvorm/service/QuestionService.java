@@ -1,5 +1,6 @@
 package ee.testiplatvorm.service;
 
+import ee.testiplatvorm.controller.question.dto.QuestionCreateRequestDto;
 import ee.testiplatvorm.controller.question.dto.QuestionResponseDto;
 import ee.testiplatvorm.persistence.question.Question;
 import ee.testiplatvorm.persistence.question.QuestionMapper;
@@ -23,4 +24,11 @@ public class QuestionService {
         List<QuestionResponseDto> questionResponseDtos = questionMapper.toQuestionResponseDtos(questions);
         return questionResponseDtos;
     }
+
+    public void createQuestion(QuestionCreateRequestDto questionCreateRequestDto) {
+
+
+
+    }
+
 }
