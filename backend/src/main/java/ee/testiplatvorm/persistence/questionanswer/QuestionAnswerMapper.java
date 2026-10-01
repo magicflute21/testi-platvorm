@@ -1,5 +1,6 @@
 package ee.testiplatvorm.persistence.questionanswer;
 
+import ee.testiplatvorm.controller.question.dto.QuestionCreateAnswerRequestDto;
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptAnswerDto;
 import org.mapstruct.*;
 
@@ -12,4 +13,16 @@ public interface QuestionAnswerMapper {
    TestAttemptAnswerDto toQuestionAnswerDto(QuestionAnswer questionAnswer);
 
    List<TestAttemptAnswerDto> toQuestionAnswerDtos(List<QuestionAnswer> questionAnswers);
+
+   @Mapping(ignore = true, target = "id")
+   @Mapping(ignore = true, target = "question")
+   @Mapping(source = "answerText", target = "answerText")
+   @Mapping(source = "isCorrect", target = "correctChoice")
+   @Mapping(ignore = true, target = "correctPosition")
+   @Mapping(ignore = true, target = "pairedAnswer")
+   @Mapping(ignore = true, target = "status")
+   QuestionAnswer toCreateQuestionAnswer(QuestionCreateAnswerRequestDto questionCreateAnswerRequestDto);
+
+   List<QuestionAnswer> toCreateQuestionAnswers(List<QuestionCreateAnswerRequestDto> questionCreateAnswerRequestDtos);
+
 }

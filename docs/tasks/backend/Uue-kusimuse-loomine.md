@@ -14,10 +14,10 @@ Sisendiks on request body. Sisselogitud kasutaja `userId` võetakse sessioonist 
 {
   "competenceLevelId": 1,
   "questionTypeId": 1,
-  "title": "Mis on sulund (closure)?",
-  "description": "Vali JavaScripti sulundi kõige täpsem definitsioon.",
-  "score": 10,
-  "answers": [
+  "questionTitle": "Mis on sulund (closure)?",
+  "questionDescription": "Vali JavaScripti sulundi kõige täpsem definitsioon.",
+  "questionScore": 10,
+  "questionAnswers": [
     {
       "answerText": "Funktsioon, mis mäletab oma leksikaalset skoopi",
       "isCorrect": true
@@ -31,12 +31,12 @@ Sisendiks on request body. Sisselogitud kasutaja `userId` võetakse sessioonist 
 |---|---|---|---|
 | `competenceLevelId` | Integer | jah | `competence_level.id`; määrab nii kompetentsi kui taseme (vt selgitust tabeli all) |
 | `questionTypeId` | Integer | jah | `question_type.id` |
-| `title` | String | jah | max 100 märki (`question.title`) |
-| `description` | String | jah | max 1000 märki (`question.description` on NOT NULL) |
-| `score` | Integer | jah | punktid õige vastuse eest |
-| `answers` | List | jah | vastusevariandid |
-| `answers[].answerText` | String | jah | max 255 märki (`question_answer.answer_text`) |
-| `answers[].isCorrect` | Boolean | jah | kas variant on õige (`question_answer.correct_choice`) |
+| `questionTitle` | String | jah | max 100 märki (`question.title`) |
+| `questionDescription` | String | jah | max 1000 märki (`question.description` on NOT NULL) |
+| `questionScore` | Integer | jah | punktid õige vastuse eest |
+| `questionAnswers` | List | jah | vastusevariandid |
+| `questionAnswers[].answerText` | String | jah | max 255 märki (`question_answer.answer_text`) |
+| `questionAnswers[].isCorrect` | Boolean | jah | kas variant on õige (`question_answer.correct_choice`) |
 
 Näidisväärtused on võetud `3_import.sql` küsimusest `id = 1` ja selle vastusest `id = 1`.
 
@@ -104,7 +104,7 @@ CREATE TABLE question_answer (
 );
 ```
 
-- Iga `answers` listi elemendi kohta üks rida
+- Iga `questionAnswers` listi elemendi kohta üks rida
 - `isCorrect` → `correct_choice`
 - `status` = `'A'`
 - `correct_position` ja `paired_answer_id` jäävad `NULL`-iks (neid selle taski küsimuse tüübid ei kasuta)
@@ -137,7 +137,7 @@ Tabeleid `ai_question` ja `ai_question_answer` see teenus ei puuduta: need on AI
 
 | Olukord | Status code | Response body |
 |---|---|---|
-| Kohustuslik väli puudub või on tühi (nt `title` on `""`) | 400 Bad Request | `{"message": "title: must not be blank", "errorCode": "INCORRECT_INPUT"}` |
+| Kohustuslik väli puudub või on tühi (nt `questionTitle` on `""`) | 400 Bad Request | `{"message": "questionTitle: must not be blank", "errorCode": "INCORRECT_INPUT"}` |
 | Õigete vastuste arv ei vasta küsimuse tüübile | 400 Bad Request | `{"message": "Õigete vastuste arv ei vasta küsimuse tüübile", "errorCode": "INVALID_CORRECT_ANSWER_COUNT"}` |
 | Kasutaja pole sisse logitud (sessioonis pole `userId`-d) | 401 Unauthorized | Springi vaikimisi veavastus (`CurrentUserService` viskab `ResponseStatusException`-i) |
 | Kasutaja roll pole ADMIN ega HALDUR | 403 Forbidden | `{"message": "Sul puudub õigus küsimusi luua", "errorCode": "NO_PERMISSION_TO_CREATE_QUESTIONS"}` |

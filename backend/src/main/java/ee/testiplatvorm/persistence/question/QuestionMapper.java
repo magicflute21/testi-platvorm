@@ -1,5 +1,6 @@
 package ee.testiplatvorm.persistence.question;
 
+import ee.testiplatvorm.controller.question.dto.QuestionCreateRequestDto;
 import ee.testiplatvorm.controller.question.dto.QuestionResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,4 +16,20 @@ public interface QuestionMapper {
     QuestionResponseDto toQuestionResponseDto(Question question);
 
     List<QuestionResponseDto> toQuestionResponseDtos(List<Question> questions);
+
+
+    @Mapping(ignore = true, target = "id")
+    @Mapping(ignore = true, target = "competence")
+    @Mapping(ignore = true, target = "questionType")
+    @Mapping(ignore = true, target = "competenceLevel")
+    @Mapping(source = "title", target = "title")
+    @Mapping(source = "description", target = "description")
+    @Mapping(source = "score", target = "score")
+    @Mapping(ignore = true, target = "status")
+    @Mapping(ignore = true, target = "createdAt")
+    @Mapping(ignore = true, target = "createdBy")
+    @Mapping(ignore = true, target = "updatedAt")
+    Question toQuestion(QuestionCreateRequestDto questionCreateRequestDto);
+
+
 }

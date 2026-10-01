@@ -10,6 +10,9 @@ public enum Error {
     INVALID_AI_QUESTION("Küsimus ei vasta reeglitele (vastuste arv, õigete vastuste arv, koodinäite pikkus või vastuses on vihje õigele vastusele)"),
     NO_TEST_ASSIGNMENT_FOR_THIS_USER("Kasutajale ei ole vastavat testi määratud");
 
+
+
+
     private final String message;
 
     Error(String message) {

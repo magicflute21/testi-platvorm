@@ -54,20 +54,20 @@ Allpool on kõik backendi teed antud baaspaketi `backend/src/main/java/ee/testip
    ```java
    @NotNull private Integer competenceLevelId;
    @NotNull private Integer questionTypeId;
-   @NotBlank @Size(max = 100) private String title;
-   @NotBlank @Size(max = 1000) private String description;
-   @NotNull @Positive private Integer score;
-   @NotEmpty private List<@Valid QuestionAnswerCreateDto> answers;
+   @NotBlank @Size(max = 100) private String questionTitle;
+   @NotBlank @Size(max = 1000) private String questionDescription;
+   @NotNull @Positive private Integer questionScore;
+   @NotEmpty private List<@Valid QuestionAnswerCreateDto> questionAnswers;
    ```
-   - `description` on andmebaasis NOT NULL, seega `@NotBlank`. See erineb `AiQuestionSaveRequest`-ist, kus see on valikuline.
-   - Kas `score` peab olema positiivne, vt "Avatud küsimused".
+   - `questionDescription` on andmebaasis NOT NULL, seega `@NotBlank`. See erineb `AiQuestionSaveRequest`-ist, kus see on valikuline.
+   - Kas `questionScore` peab olema positiivne, vt "Avatud küsimused".
 
 4. **Lisa mapperisse DTO → entiteet** — fail: `persistence/question/QuestionMapper.java`
    ```java
    @Mapping(ignore = true, target = "id")
-   @Mapping(source = "title", target = "title")
-   @Mapping(source = "description", target = "description")
-   @Mapping(source = "score", target = "score")
+   @Mapping(source = "questionTitle", target = "title")
+   @Mapping(source = "questionDescription", target = "description")
+   @Mapping(source = "questionScore", target = "score")
    @Mapping(ignore = true, target = "competence")
    @Mapping(ignore = true, target = "competenceLevel")
    @Mapping(ignore = true, target = "questionType")
@@ -134,7 +134,7 @@ Allpool on kõik backendi teed antud baaspaketi `backend/src/main/java/ee/testip
    - **`validateCorrectAnswerCount(...)`** (private): loe kokku `isCorrect == true` vastused ja kontrolli tüübi järgi:
      - `SINGLE_CHOICE` → täpselt 1
      - `MULTIPLE_CHOICE` → vähemalt 1
-     - `TRUE_FALSE` → `answers.size() == 2` ja täpselt 1 õige
+     - `TRUE_FALSE` → `questionAnswers.size() == 2` ja täpselt 1 õige
      - Rikkumise korral `BadRequestException(INVALID_CORRECT_ANSWER_COUNT.getMessage(), INVALID_CORRECT_ANSWER_COUNT.name())`.
    - **`saveQuestionAnswers(...)`** (private): `questionAnswerMapper.toQuestionAnswers(...)`, igale reale `setQuestion(question)` ja `setStatus(STATUS_ACTIVE.getCode())`, siis `questionAnswerRepository.saveAll(...)`.
    - `status` tuleb `Status` enumist (`STATUS_ACTIVE`), mitte kõvakodeeritud `"A"`.
@@ -186,8 +186,8 @@ Teste projektis veel pole, seega loo kaust `backend/src/test/java/ee/testiplatvo
   - olematu `competenceLevelId` / `questionTypeId` → `PrimaryKeyNotFoundException`
 - **Kontrolleri test** (`@WebMvcTest(QuestionController.class)` + `MockMvc`):
   - korrektne body → `200` ja vastuses number
-  - tühi `title` → `400`, `errorCode: INCORRECT_INPUT`, `message: "title: must not be blank"`
-  - tühi `answers` list → `400 INCORRECT_INPUT`
+  - tühi `questionTitle` → `400`, `errorCode: INCORRECT_INPUT`, `message: "questionTitle: must not be blank"`
+  - tühi `questionAnswers` list → `400 INCORRECT_INPUT`
 - Soovi korral integratsioonitest päris andmebaasiga: pärast päringut on `question` tabelis uus rida ja `question_answer` tabelis sama palju ridu kui saadeti vastuseid.
 
 ## Avatud küsimused
@@ -195,7 +195,7 @@ Teste projektis veel pole, seega loo kaust `backend/src/test/java/ee/testiplatvo
 1. **Rolli kontrolli dubleerimine:** sama loogika on juba private meetodina `AiQuestionService.getValidQuestionAuthorId`-is (ja sarnane `TestService.createTest`-is). Kas tõstame selle ühte kohta, nt `UserService.getValidQuestionAuthorBy(Integer userId)`, ja kasutame mõlemas teenuses? Või kopeerime selle taski jaoks `QuestionService`-sse?
 2. **Õigete vastuste kontrolli dubleerimine:** `AiQuestionService.isValidQuestion` sisaldab osaliselt sama reeglit (aga TRUE_FALSE-il ei kontrolli see, et variante oleks täpselt 2). Kas teeme ühise meetodi või hoiame need eraldi?
 3. **Vastusevariantide arv:** kas lisaks õigete vastuste arvule peab piirama ka variantide koguarvu (nt vähemalt 2 SINGLE/MULTIPLE_CHOICE puhul, nagu AI küsimustel `@Size(min = 2, max = 5)`)? Märkmetes ja taskis seda nõuet pole.
-4. **`score` piirang:** kas punktid peavad olema positiivsed (`@Positive`)? Märkmetes on öeldud ainult, et väli on kohustuslik.
+4. **`questionScore` piirang:** kas punktid peavad olema positiivsed (`@Positive`)? Märkmetes on öeldud ainult, et väli on kohustuslik.
 5. **Vastus `Integer` vs DTO:** task ja märkmed tagastavad paljalt `questionId` numbri (nagu `POST /api/ai-questions`). Kui tulevikus on vaja tagastada rohkem infot, tasub kaaluda objekti `{"questionId": 10}`. Praegu järgib plaan taski.
 6. **`QuestionType` paigutus:** vt `Kusimuse-tuupide-nimekirja-paring-IMPLEMENTATSIOON.md` (samm 1). Seda taski on mõistlik teha **pärast** küsimuse tüüpide taski, sest `QuestionTypeService` tekib seal.
 7. **backend/CLAUDE.md vs kood:** CLAUDE.md räägib `ErrorResponse` enumist, koodis on see `Error.java`. Plaan järgib koodi.

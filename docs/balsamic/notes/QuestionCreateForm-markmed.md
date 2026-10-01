@@ -133,10 +133,10 @@ Request body:
 {
   "competenceLevelId": 1,
   "questionTypeId": 1,
-  "title": "Mis on sulund (closure)?",
-  "description": "Vali JavaScripti sulundi kõige täpsem definitsioon.",
-  "score": 10,
-  "answers": [
+  "questionTitle": "Mis on sulund (closure)?",
+  "questionDescription": "Vali JavaScripti sulundi kõige täpsem definitsioon.",
+  "questionScore": 10,
+  "questionAnswers": [
     {
       "answerText": "Funktsioon, mis mäletab oma leksikaalset skoopi",
       "isCorrect": true
@@ -154,7 +154,7 @@ Vastuseks tagastatakse loodud küsimuse questionId. Tulevikus saab /tests/new va
 Veateated:
 HTTP: 400
 errorCode: INCORRECT_INPUT
-message: "title: must not be blank"
+message: "questionTitle: must not be blank"
 
 HTTP: 403
 errorCode: NO_PERMISSION_TO_CREATE_QUESTIONS
