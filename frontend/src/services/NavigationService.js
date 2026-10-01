@@ -1,6 +1,11 @@
 import router from '@/router/index.js'
 
 export default {
+  navigateToLogin() {
+    router.push({
+      name: 'loginRoute',
+    })
+  },
   navigateToDashboard() {
     router.push({
       name: 'dashboardRoute',
@@ -23,13 +28,13 @@ export default {
       path: '/questions/new',
     })
   },
-  navigateToTestStartView(testId){
+  navigateToTestStartView(testId) {
     router.push({
       name: 'testStartRoute',
       params: { testId },
     })
   },
-  navigateToTestsView(testId){
+  navigateToTestsView() {
     router.push({
       name: 'testsRoute',
     })
