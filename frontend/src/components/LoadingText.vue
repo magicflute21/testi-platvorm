@@ -6,7 +6,7 @@ export default {
 
 <template>
   <div class="loading-text text-primary text-lg mt-3" role="status">
-    Loading<span class="dot">.</span><span class="dot dot-two">.</span
+    Laen<span class="dot">.</span><span class="dot dot-two">.</span
     ><span class="dot dot-three">.</span>
   </div>
 </template>

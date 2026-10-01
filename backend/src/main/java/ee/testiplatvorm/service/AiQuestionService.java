@@ -1,0 +1,435 @@
+package ee.testiplatvorm.service;
+
+import ee.testiplatvorm.controller.aiquestion.dto.AiQuestionGenerationResponse;
+import ee.testiplatvorm.controller.aiquestion.dto.AiQuestionSaveRequest;
+import ee.testiplatvorm.controller.aiquestion.dto.AskRequest;
+import ee.testiplatvorm.controller.aiquestion.dto.GeneratedAnswerDto;
+import ee.testiplatvorm.controller.aiquestion.dto.GeneratedQuestionDto;
+import ee.testiplatvorm.infrastructure.exception.BadRequestException;
+import ee.testiplatvorm.infrastructure.exception.ForbiddenException;
+import ee.testiplatvorm.infrastructure.exception.PrimaryKeyNotFoundException;
+import ee.testiplatvorm.persistence.QuestionType;
+import ee.testiplatvorm.persistence.QuestionTypeRepository;
+import ee.testiplatvorm.persistence.aiquestion.AiQuestion;
+import ee.testiplatvorm.persistence.aiquestion.AiQuestionRepository;
+import ee.testiplatvorm.persistence.aiquestionanswer.AiQuestionAnswer;
+import ee.testiplatvorm.persistence.aiquestionanswer.AiQuestionAnswerRepository;
+import ee.testiplatvorm.persistence.competencelevel.CompetenceLevel;
+import ee.testiplatvorm.persistence.competencelevel.CompetenceLevelRepository;
+import ee.testiplatvorm.persistence.question.Question;
+import ee.testiplatvorm.persistence.question.QuestionRepository;
+import ee.testiplatvorm.persistence.user.User;
+import ee.testiplatvorm.persistence.user.UserRepository;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
+
+import static ee.testiplatvorm.Error.INVALID_AI_QUESTION;
+import static ee.testiplatvorm.Error.NO_PERMISSION_TO_CREATE_QUESTIONS;
+import static ee.testiplatvorm.Status.STATUS_ACTIVE;
+import static ee.testiplatvorm.Status.STATUS_PENDING;
+
+@Service
+public class AiQuestionService {
+
+    private static final int MAX_QUESTION_COUNT = 5;
+    private static final int MAX_ANSWER_COUNT = 5;
+    private static final int MAX_DESCRIPTION_LINE_COUNT = 12;
+
+    private static final String SELECTION_SYSTEM_PROMPT = """
+            You help a question author on a competence testing platform.
+            The author's free-text request may ask for questions for one or several competence levels.
+            Split the request into targets: each target has a competence level, a question type
+            and how many questions to create for it.
+
+            RULES:
+            1. Choose competenceLevelId ONLY from the AVAILABLE COMPETENCE LEVELS list.
+            2. Choose questionTypeId ONLY from the AVAILABLE QUESTION TYPES list.
+            3. The author may write in Estonian or English and may use synonyms
+               (e.g. "algaja" = beginner, "JS" = JavaScript, "valikvastustega" = choice question).
+            4. If the question type is not mentioned, choose SINGLE_CHOICE.
+            5. questionCount of a target is 1 if the author did not mention a number.
+            6. The total questionCount of all targets must never exceed %d.
+               If the author asks for more, reduce the counts so that the total is %d.
+            7. Use one target per distinct competence level + question type combination.
+            8. If a competence or a level cannot be determined with confidence, or the request matches
+               several competence levels equally, return an empty targets list and write a short
+               clarifyingQuestion in Estonian that names the available options.
+            9. If everything is clear, set clarifyingQuestion to null.
+            """.formatted(MAX_QUESTION_COUNT, MAX_QUESTION_COUNT);
+
+    private static final String SELECTION_USER_PROMPT_TEMPLATE = """
+            AVAILABLE COMPETENCE LEVELS:
+            %s
+
+            AVAILABLE QUESTION TYPES:
+            %s
+
+            Author's request:
+            %s
+            """;
+
+    private static final String QUESTION_SYSTEM_PROMPT = """
+            You are a test question generator for a competence testing platform.
+            You write new test questions with their answer options.
+
+            QUESTION TYPES:
+            - SINGLE_CHOICE: 3-4 answers, exactly ONE answer has isCorrect = true.
+            - MULTIPLE_CHOICE: 4-5 answers, at least ONE answer has isCorrect = true.
+            - TRUE_FALSE: exactly 2 answers "Tõene" and "Väär", exactly ONE has isCorrect = true.
+
+            RULES:
+            1. Write the questions and answers in Estonian.
+            2. The questions must match the given competence and level difficulty.
+            3. Do not repeat or rephrase any of the existing questions, and do not repeat questions within this batch.
+            4. title is the question itself, max 100 characters, without code.
+            5. description is a short instruction for the test taker (e.g. "Vali õige vastus."), max 1000 characters.
+            6. Each answerText is max 255 characters.
+            7. A question must NEVER have more than %d answers in total.
+            8. Wrong answers must be plausible, but clearly incorrect to an expert.
+            9. Answer texts must NOT reveal which answer is correct or wrong:
+               - never add labels like "(õige)", "(vale)", "correct", "wrong", ✓ or ✗
+               - the correct answer must not be noticeably longer or more detailed than the wrong ones
+               - do not use "Kõik eelnevad" or "Mitte ükski eelnevatest" as answers
+            10. If a code example is needed, put it only in description, and it must be at most 10 lines long.
+            """.formatted(MAX_ANSWER_COUNT);
+
+    private static final String QUESTION_USER_PROMPT_TEMPLATE = """
+            Generate exactly %d %s question(s).
+
+            Competence: %s
+            Competence description: %s
+            Level: %s (%s)
+
+            Existing questions for this competence level:
+            %s
+
+            Author's full request (may also contain topic wishes and requests for other competences -
+            follow only the parts that concern this competence and level):
+            %s
+            """;
+
+    // Märgendid, mis reedavad vastuse õigsuse, nt "(õige)", "- vale", "✓"
+    private static final Pattern ANSWER_CORRECTNESS_HINT = Pattern.compile(
+            "[✓✔✗✘]|\\b(õige|vale|correct|wrong|incorrect)\\s*(vastus|answer)?\\s*[)\\]]|[(\\[]\\s*(õige|vale|correct|wrong|incorrect)\\b",
+            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    private static final String DEFAULT_CLARIFYING_QUESTION = "Millise kompetentsi ja taseme jaoks küsimus luua?";
+
+    // AI vastuste kujud - neid ei tagastata otse frontendile
+    public record QuestionTarget(Integer competenceLevelId, Integer questionTypeId, Integer questionCount) {
+    }
+
+    public record QuestionTargets(List<QuestionTarget> targets, String clarifyingQuestion) {
+    }
+
+    // Valideeritud sihtrühm: andmebaasist leitud tase ja tüüp ning lõplik küsimuste arv
+    private record ValidQuestionTarget(CompetenceLevel competenceLevel, QuestionType questionType, int questionCount) {
+    }
+
+    public record AiGeneratedQuestion(String title, String description, List<GeneratedAnswerDto> answers) {
+    }
+
+    public record AiGeneratedQuestions(List<AiGeneratedQuestion> questions) {
+    }
+
+    private final ChatClient chatClient;
+    private final CompetenceLevelRepository competenceLevelRepository;
+    private final QuestionTypeRepository questionTypeRepository;
+    private final QuestionRepository questionRepository;
+    private final AiQuestionRepository aiQuestionRepository;
+    private final AiQuestionAnswerRepository aiQuestionAnswerRepository;
+    private final CurrentUserService currentUserService;
+    private final UserRepository userRepository;
+
+    public AiQuestionService(ChatClient.Builder builder,
+                             CompetenceLevelRepository competenceLevelRepository,
+                             QuestionTypeRepository questionTypeRepository,
+                             QuestionRepository questionRepository,
+                             AiQuestionRepository aiQuestionRepository,
+                             AiQuestionAnswerRepository aiQuestionAnswerRepository,
+                             CurrentUserService currentUserService,
+                             UserRepository userRepository) {
+        this.chatClient = builder.build();
+        this.competenceLevelRepository = competenceLevelRepository;
+        this.questionTypeRepository = questionTypeRepository;
+        this.questionRepository = questionRepository;
+        this.aiQuestionRepository = aiQuestionRepository;
+        this.aiQuestionAnswerRepository = aiQuestionAnswerRepository;
+        this.currentUserService = currentUserService;
+        this.userRepository = userRepository;
+    }
+
+    public AiQuestionGenerationResponse generateQuestions(AskRequest askRequest) {
+        // Õigused kontrollitakse enne AI päringut, et ilma õiguseta päringutele raha ei kuluks
+        getValidQuestionAuthorId();
+        String instructions = askRequest.getInstructions();
+
+        List<CompetenceLevel> competenceLevels = competenceLevelRepository.findAllCompetenceLevelsBy(STATUS_ACTIVE.getCode());
+        List<QuestionType> questionTypes = questionTypeRepository.findAll();
+
+        QuestionTargets questionTargets = selectQuestionTargets(instructions, competenceLevels, questionTypes);
+        Optional<List<ValidQuestionTarget>> validQuestionTargets = getValidQuestionTargets(questionTargets, competenceLevels, questionTypes);
+        if (validQuestionTargets.isEmpty()) {
+            return createClarifyingResponse(questionTargets.clarifyingQuestion());
+        }
+
+        List<GeneratedQuestionDto> generatedQuestionDtos = new ArrayList<>();
+        for (ValidQuestionTarget validQuestionTarget : validQuestionTargets.get()) {
+            generatedQuestionDtos.addAll(generateQuestionDtosFor(validQuestionTarget, instructions));
+        }
+
+        if (generatedQuestionDtos.isEmpty()) {
+            throw new IllegalStateException("AI ei suutnud korrektseid küsimusi genereerida, proovi uuesti");
+        }
+
+        AiQuestionGenerationResponse aiQuestionGenerationResponse = new AiQuestionGenerationResponse();
+        aiQuestionGenerationResponse.setQuestions(generatedQuestionDtos);
+        return aiQuestionGenerationResponse;
+    }
+
+    @Transactional
+    public Integer saveQuestion(AiQuestionSaveRequest aiQuestionSaveRequest) {
+        Integer userId = getValidQuestionAuthorId();
+
+        Integer competenceLevelId = aiQuestionSaveRequest.getCompetenceLevelId();
+        CompetenceLevel competenceLevel = competenceLevelRepository.findById(competenceLevelId)
+                .orElseThrow(() -> new PrimaryKeyNotFoundException("competenceLevelId", competenceLevelId));
+
+        Integer questionTypeId = aiQuestionSaveRequest.getQuestionTypeId();
+        QuestionType questionType = questionTypeRepository.findById(questionTypeId)
+                .orElseThrow(() -> new PrimaryKeyNotFoundException("questionTypeId", questionTypeId));
+
+        boolean isValidQuestion = isValidQuestion(aiQuestionSaveRequest.getTitle(), aiQuestionSaveRequest.getDescription(),
+                aiQuestionSaveRequest.getAnswers(), questionType);
+        if (!isValidQuestion) {
+            throw new BadRequestException(INVALID_AI_QUESTION.getMessage(), INVALID_AI_QUESTION.name());
+        }
+
+        AiQuestion aiQuestion = saveAiQuestion(aiQuestionSaveRequest, competenceLevel, questionTypeId, userId);
+        saveAiQuestionAnswers(aiQuestionSaveRequest.getAnswers(), aiQuestion);
+        return aiQuestion.getId();
+    }
+
+    private Integer getValidQuestionAuthorId() {
+        Integer userId = currentUserService.getUserId();
+        User user = userRepository.findById(userId).orElseThrow(() -> new PrimaryKeyNotFoundException("userId", userId));
+        String roleName = user.getRole().getName();
+
+        boolean isAllowedToCreateQuestions = roleName.equals("ADMIN") || roleName.equals("HALDUR");
+        if (!isAllowedToCreateQuestions) {
+            throw new ForbiddenException(NO_PERMISSION_TO_CREATE_QUESTIONS.getMessage(), NO_PERMISSION_TO_CREATE_QUESTIONS.name());
+        }
+        return userId;
+    }
+
+    private QuestionTargets selectQuestionTargets(String instructions, List<CompetenceLevel> competenceLevels, List<QuestionType> questionTypes) {
+        String competenceLevelList = String.join("\n", competenceLevels.stream()
+                .map(competenceLevel -> "- id=" + competenceLevel.getId()
+                        + ": " + competenceLevel.getCompetence().getName()
+                        + " / " + competenceLevel.getLevel().getName())
+                .toList());
+        String questionTypeList = String.join("\n", questionTypes.stream()
+                .map(questionType -> "- id=" + questionType.getId() + ": " + questionType.getName())
+                .toList());
+
+        String userPrompt = SELECTION_USER_PROMPT_TEMPLATE.formatted(competenceLevelList, questionTypeList, instructions);
+        return callLlm(SELECTION_SYSTEM_PROMPT, userPrompt, QuestionTargets.class);
+    }
+
+    // Tühi tulemus tähendab, et tuleb küsida täpsustust (AI küsis ise või valis olematu taseme/tüübi)
+    private Optional<List<ValidQuestionTarget>> getValidQuestionTargets(QuestionTargets questionTargets,
+                                                                        List<CompetenceLevel> competenceLevels,
+                                                                        List<QuestionType> questionTypes) {
+        boolean hasClarifyingQuestion = questionTargets.clarifyingQuestion() != null && !questionTargets.clarifyingQuestion().isBlank();
+        if (hasClarifyingQuestion || questionTargets.targets() == null || questionTargets.targets().isEmpty()) {
+            return Optional.empty();
+        }
+
+        List<ValidQuestionTarget> validQuestionTargets = new ArrayList<>();
+        int remainingQuestionCount = MAX_QUESTION_COUNT;
+        for (QuestionTarget questionTarget : questionTargets.targets()) {
+            Optional<CompetenceLevel> competenceLevel = competenceLevels.stream()
+                    .filter(level -> level.getId().equals(questionTarget.competenceLevelId()))
+                    .findFirst();
+            Optional<QuestionType> questionType = questionTypes.stream()
+                    .filter(type -> type.getId().equals(questionTarget.questionTypeId()))
+                    .findFirst();
+            if (competenceLevel.isEmpty() || questionType.isEmpty()) {
+                return Optional.empty();
+            }
+
+            // Kokku mitte üle 5 küsimuse, isegi kui AI eiras reeglit
+            int questionCount = Math.min(getValidQuestionCount(questionTarget.questionCount()), remainingQuestionCount);
+            if (questionCount > 0) {
+                validQuestionTargets.add(new ValidQuestionTarget(competenceLevel.get(), questionType.get(), questionCount));
+                remainingQuestionCount -= questionCount;
+            }
+        }
+        return Optional.of(validQuestionTargets);
+    }
+
+    private int getValidQuestionCount(Integer questionCount) {
+        if (questionCount == null || questionCount < 1) {
+            return 1;
+        }
+        return Math.min(questionCount, MAX_QUESTION_COUNT);
+    }
+
+    private List<GeneratedQuestionDto> generateQuestionDtosFor(ValidQuestionTarget validQuestionTarget, String instructions) {
+        CompetenceLevel competenceLevel = validQuestionTarget.competenceLevel();
+        QuestionType questionType = validQuestionTarget.questionType();
+        int questionCount = validQuestionTarget.questionCount();
+
+        List<AiGeneratedQuestion> aiGeneratedQuestions = generateQuestionsFor(competenceLevel, questionType, questionCount, instructions);
+        return createQuestionDtos(aiGeneratedQuestions, questionCount, competenceLevel, questionType);
+    }
+
+    private AiQuestionGenerationResponse createClarifyingResponse(String clarifyingQuestion) {
+        AiQuestionGenerationResponse aiQuestionGenerationResponse = new AiQuestionGenerationResponse();
+        boolean hasClarifyingQuestion = clarifyingQuestion != null && !clarifyingQuestion.isBlank();
+        aiQuestionGenerationResponse.setClarifyingQuestion(hasClarifyingQuestion ? clarifyingQuestion : DEFAULT_CLARIFYING_QUESTION);
+        return aiQuestionGenerationResponse;
+    }
+
+    private List<AiGeneratedQuestion> generateQuestionsFor(CompetenceLevel competenceLevel, QuestionType questionType,
+                                                           int questionCount, String instructions) {
+        List<Question> existingQuestions = questionRepository.findQuestionsBy(competenceLevel.getId(), STATUS_ACTIVE.getCode());
+        String existingQuestionTitles = existingQuestions.isEmpty()
+                ? "(none)"
+                : String.join("\n", existingQuestions.stream().map(question -> "- " + question.getTitle()).toList());
+
+        String userPrompt = QUESTION_USER_PROMPT_TEMPLATE.formatted(
+                questionCount,
+                questionType.getName(),
+                competenceLevel.getCompetence().getName(),
+                competenceLevel.getCompetence().getDescription(),
+                competenceLevel.getLevel().getName(),
+                competenceLevel.getLevel().getDescription(),
+                existingQuestionTitles,
+                instructions);
+
+        AiGeneratedQuestions aiGeneratedQuestions = callLlm(QUESTION_SYSTEM_PROMPT, userPrompt, AiGeneratedQuestions.class);
+        return aiGeneratedQuestions.questions() == null ? List.of() : aiGeneratedQuestions.questions();
+    }
+
+    // Reeglitele mittevastavad küsimused jäetakse välja, ülejäänud näidatakse kasutajale
+    private List<GeneratedQuestionDto> createQuestionDtos(List<AiGeneratedQuestion> aiGeneratedQuestions, int questionCount,
+                                                          CompetenceLevel competenceLevel, QuestionType questionType) {
+        List<GeneratedQuestionDto> generatedQuestionDtos = new ArrayList<>();
+        for (AiGeneratedQuestion aiGeneratedQuestion : aiGeneratedQuestions) {
+            if (generatedQuestionDtos.size() == questionCount) {
+                break;
+            }
+            if (isValidQuestion(aiGeneratedQuestion.title(), aiGeneratedQuestion.description(), aiGeneratedQuestion.answers(), questionType)) {
+                generatedQuestionDtos.add(createQuestionDto(aiGeneratedQuestion, competenceLevel, questionType));
+            }
+        }
+        return generatedQuestionDtos;
+    }
+
+    private boolean isValidQuestion(String title, String description, List<GeneratedAnswerDto> answers, QuestionType questionType) {
+        if (title == null || title.isBlank() || answers == null
+                || answers.size() < 2 || answers.size() > MAX_ANSWER_COUNT) {
+            return false;
+        }
+
+        // Kirjelduses on lubatud kuni 10-realine koodinäide + paar rida juhist
+        if (description != null && description.lines().count() > MAX_DESCRIPTION_LINE_COUNT) {
+            return false;
+        }
+
+        boolean hasCorrectnessHint = answers.stream()
+                .anyMatch(answer -> answer.getAnswerText() == null
+                        || ANSWER_CORRECTNESS_HINT.matcher(answer.getAnswerText()).find());
+        if (hasCorrectnessHint) {
+            return false;
+        }
+
+        long correctAnswerCount = answers.stream()
+                .filter(answer -> Boolean.TRUE.equals(answer.getIsCorrect()))
+                .count();
+
+        boolean isMultipleChoice = questionType.getName().equals("MULTIPLE_CHOICE");
+        return isMultipleChoice ? correctAnswerCount >= 1 : correctAnswerCount == 1;
+    }
+
+    private GeneratedQuestionDto createQuestionDto(AiGeneratedQuestion aiGeneratedQuestion,
+                                                   CompetenceLevel competenceLevel, QuestionType questionType) {
+        List<GeneratedAnswerDto> answers = new ArrayList<>(aiGeneratedQuestion.answers());
+        // AI paneb õige vastuse sageli esimeseks - segamine ei lase asukohal vastust reeta
+        // TRUE_FALSE puhul jääb järjekord "Tõene", "Väär"
+        if (!questionType.getName().equals("TRUE_FALSE")) {
+            Collections.shuffle(answers);
+        }
+
+        GeneratedQuestionDto generatedQuestionDto = new GeneratedQuestionDto();
+        generatedQuestionDto.setTitle(truncate(aiGeneratedQuestion.title(), 100));
+        generatedQuestionDto.setDescription(truncate(aiGeneratedQuestion.description(), 1000));
+        generatedQuestionDto.setAnswers(answers);
+        generatedQuestionDto.setCompetenceLevelId(competenceLevel.getId());
+        generatedQuestionDto.setCompetenceName(competenceLevel.getCompetence().getName());
+        generatedQuestionDto.setLevelName(competenceLevel.getLevel().getName());
+        generatedQuestionDto.setQuestionTypeId(questionType.getId());
+        generatedQuestionDto.setQuestionTypeName(questionType.getName());
+        return generatedQuestionDto;
+    }
+
+    private AiQuestion saveAiQuestion(AiQuestionSaveRequest aiQuestionSaveRequest, CompetenceLevel competenceLevel, Integer questionTypeId, Integer userId) {
+        AiQuestion aiQuestion = new AiQuestion();
+        aiQuestion.setTitle(truncate(aiQuestionSaveRequest.getTitle(), 100));
+        aiQuestion.setDescription(truncate(aiQuestionSaveRequest.getDescription(), 1000));
+        aiQuestion.setCompetence(competenceLevel.getCompetence());
+        aiQuestion.setCompetenceLevel(competenceLevel);
+        aiQuestion.setQuestionTypeId(questionTypeId);
+        aiQuestion.setStatus(STATUS_PENDING.getCode());
+        aiQuestion.setCreatedBy(userId);
+        OffsetDateTime currentTime = OffsetDateTime.now();
+        aiQuestion.setCreatedAt(currentTime);
+        aiQuestion.setUpdatedAt(currentTime);
+        return aiQuestionRepository.save(aiQuestion);
+    }
+
+    private void saveAiQuestionAnswers(List<GeneratedAnswerDto> generatedAnswerDtos, AiQuestion aiQuestion) {
+        for (GeneratedAnswerDto generatedAnswerDto : generatedAnswerDtos) {
+            AiQuestionAnswer aiQuestionAnswer = new AiQuestionAnswer();
+            aiQuestionAnswer.setAiQuestion(aiQuestion);
+            aiQuestionAnswer.setAnswerText(truncate(generatedAnswerDto.getAnswerText(), 255));
+            aiQuestionAnswer.setIsCorrect(Boolean.TRUE.equals(generatedAnswerDto.getIsCorrect()));
+            aiQuestionAnswer.setStatus(STATUS_PENDING.getCode());
+            // score ja feedback on andmebaasis NOT NULL, aga hinnatakse alles ülevaatamisel
+            aiQuestionAnswer.setScore(0);
+            aiQuestionAnswer.setFeedback(0);
+            aiQuestionAnswerRepository.save(aiQuestionAnswer);
+        }
+    }
+
+    private String truncate(String text, int maxLength) {
+        if (text == null) {
+            return "";
+        }
+        return text.length() > maxLength ? text.substring(0, maxLength) : text;
+    }
+
+    private <T> T callLlm(String systemPrompt, String userPrompt, Class<T> responseType) {
+        T response = chatClient.prompt()
+                .system(systemPrompt)
+                .user(userPrompt)
+                .call()
+                .responseEntity(responseType)
+                .getEntity();
+
+        if (response == null) {
+            throw new IllegalStateException("AI model returned an empty response");
+        }
+
+        return response;
+    }
+}

@@ -1,6 +1,7 @@
 package ee.testiplatvorm.infrastructure;
 
 import ee.testiplatvorm.infrastructure.error.ApiError;
+import ee.testiplatvorm.infrastructure.exception.BadRequestException;
 import ee.testiplatvorm.infrastructure.exception.DataNotFoundException;
 import ee.testiplatvorm.infrastructure.exception.ForbiddenException;
 import ee.testiplatvorm.infrastructure.exception.PrimaryKeyNotFoundException;
@@ -40,6 +41,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         apiError.setMessage(exception.getMessage());
         apiError.setErrorCode(exception.getErrorCode());
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiError> handleBadRequestException(BadRequestException exception) {
+        ApiError apiError = new ApiError();
+        apiError.setMessage(exception.getMessage());
+        apiError.setErrorCode(exception.getErrorCode());
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler

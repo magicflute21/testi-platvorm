@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import static ee.testiplatvorm.Error.EMAIL_ALREADY_EXISTS;
@@ -67,7 +67,7 @@ public class UserService {
         User user = getValidUserBy(userId);
         String code = Status.STATUS_INACTIVE.getCode();
         user.setStatus(code);
-        Instant now = Instant.now();
+        OffsetDateTime now = OffsetDateTime.now();
         user.setUpdatedAt(now);
         userRepository.save(user);
     }

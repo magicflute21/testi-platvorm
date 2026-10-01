@@ -91,7 +91,7 @@ export default {
         </div>
         <div class="d-flex justify-content-between">
           <button
-            class="btn btn-light d-flex align-items-center gap-1"
+            class="btn btn-outline-light d-flex align-items-center gap-1"
             :class="{ 'text-primary': !isFirstQuestion }"
             :disabled="isFirstQuestion"
             @click="$emit('event-go-to-previous')"

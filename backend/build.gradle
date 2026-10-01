@@ -17,14 +17,11 @@ repositories {
 	mavenCentral()
 }
 
-ext {
-	set('springAiVersion', '2.0.1')
-}
-
 dependencyManagement {
-	imports {
-		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
-	}
+    imports {
+        // Spring AI BOM - annab versiooni spring-ai-starter-model-google-genai sõltuvusele
+        mavenBom 'org.springframework.ai:spring-ai-bom:2.0.1'
+    }
 }
 
 dependencies {
