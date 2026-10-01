@@ -7,7 +7,9 @@ import LoadingText from '@/components/LoadingText.vue'
 import SuccessToast from '@/components/SuccessToast.vue'
 import AlertDanger from '@/components/AlertDanger.vue'
 import QuestionBankCard from '@/components/QuestionBankCard.vue'
-import { PhCaretDown, PhCheckCircle, PhPencilSimple, PhPlus, PhTrash } from '@phosphor-icons/vue'
+import QuestionBankTabs from '@/components/QuestionBankTabs.vue'
+import QuestionAnswerOption from '@/components/QuestionAnswerOption.vue'
+import { PhCaretDown, PhPencilSimple, PhPlus, PhTrash } from '@phosphor-icons/vue'
 
 export default {
   name: 'QuestionBankView',
@@ -16,8 +18,9 @@ export default {
     SuccessToast,
     AlertDanger,
     QuestionBankCard,
+    QuestionBankTabs,
+    QuestionAnswerOption,
     PhCaretDown,
-    PhCheckCircle,
     PhPencilSimple,
     PhPlus,
     PhTrash,
@@ -179,7 +182,7 @@ export default {
   <div class="container-fluid py-4">
     <LoadingText v-if="isLoading" />
     <div v-else class="question-bank-content mx-auto">
-      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-5">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
         <h1 class="text-uppercase fw-bold h3 mb-0">Küsimuste pank</h1>
         <div class="d-flex flex-wrap gap-2">
           <div class="dropdown">
@@ -223,6 +226,8 @@ export default {
         </div>
       </div>
 
+      <QuestionBankTabs />
+
       <div v-if="!questions.length" class="card shadow rounded-4 p-5 text-center text-secondary">
         Küsimusi ei leitud
       </div>
@@ -263,18 +268,12 @@ export default {
           </template>
           <template #description>{{ question.questionDescription }}</template>
           <template #answers>
-            <div
+            <QuestionAnswerOption
               v-for="answer in question.answers"
               :key="answer.questionAnswerId"
-              class="answer-option d-flex align-items-center gap-3 rounded-3 py-2 px-3"
-              :class="{ correct: answer.correctChoice }"
-            >
-              <span class="answer-text flex-grow-1">{{ answer.answerText }}</span>
-              <span v-if="answer.correctChoice" class="answer-correct flex-shrink-0">
-                <PhCheckCircle :size="20" weight="fill" />
-                <span class="visually-hidden">Õige vastus</span>
-              </span>
-            </div>
+              :answer-text="answer.answerText"
+              :correct-choice="answer.correctChoice"
+            />
           </template>
         </QuestionBankCard>
       </div>
@@ -413,24 +412,5 @@ export default {
   .question-bank-content {
     width: 70%;
   }
-}
-
-.answer-option {
-  border: 1px solid var(--bs-border-color);
-  background-color: var(--bs-gray-100);
-}
-
-.answer-option.correct {
-  border-color: var(--bs-success);
-  background-color: var(--bs-success-bg-subtle);
-}
-
-.answer-text {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-.answer-correct {
-  color: var(--bs-success);
 }
 </style>

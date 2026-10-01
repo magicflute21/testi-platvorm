@@ -349,9 +349,9 @@ INSERT INTO ai_question (id, title, description, competence_id, competence_level
 VALUES (1, 'Millele viitab "this" noolefunktsioonis?', 'Vali parim vastus.', 1, 2, 1, 'P', now() - interval '1 day', 1,
         now() - interval '1 day', NULL, NULL, NULL),
        (2, 'Selgita SQL-i JOIN-tüüpe', 'Lühivastus / mõiste kontroll.', 2, 3, 1, 'A', now() - interval '5 days', 1,
-        now() - interval '4 days', 8, 'Selge küsimus, sõnastust tuleb veidi täpsustada', true),
+        now() - interval '4 days', 4, 'Selge küsimus, sõnastust tuleb veidi täpsustada', true),
        (3, 'JavaScript on dünaamiliselt tüübitud – tõene või väär?', 'Tõene/väär kontroll.', 1, 1, 3, 'R',
-        now() - interval '6 days', 1, now() - interval '5 days', 3, 'Liiga lihtne, kattub olemasoleva küsimusega',
+        now() - interval '6 days', 1, now() - interval '5 days', 2, 'Liiga lihtne, kattub olemasoleva küsimusega',
         false);
 
 -- ------------------------------------------------------------

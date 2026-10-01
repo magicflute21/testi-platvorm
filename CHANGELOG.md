@@ -9,6 +9,24 @@ AI question generation: ADMIN/HALDUR can create test questions with AI via the c
 a confirmed question to ai_question / ai_question_answer tables with status 'P'.
 Uses Spring AI + Google GenAI (needs GOOGLE_GENAI_API_KEY). The hourly limit is temporarily removed.
 
+POST /api/ai-questions/{aiQuestionId}/review -> AI question review with score 1-5, feedback (max 255) and decision
+(approved). Fills ai_question score, feedback and is_good. Approved: status 'A' and the question with its answers is
+copied to question / question_answer (status 'A', score 10, TRUE_FALSE 5, created_by = AI question author).
+Rejected: status 'R'. Already reviewed question returns HTTP 400 AI_QUESTION_ALREADY_REVIEWED. On the "AI küsimused"
+page "Vaata üle" in the "···" menu opens a review modal with star rating (StarRating component), feedback and
+"Kinnita" / "Lükka tagasi" buttons; reviewed cards show the rating and feedback. AI question scores in 3_import.sql
+are now on the 1-5 scale.
+
+GET /api/ai-questions?status={P|A|R}&competenceId={id} -> AI questions with answer options, newest first, both
+parameters optional (AiQuestionBankService). The "AI küsimused" page lists them with the same QuestionBankCard,
+filtered by status (default "Ootab ülevaatust"), and the tab shows the number of questions waiting for review.
+Answer option view moved to QuestionAnswerOption component.
+
+TP-29 Question bank tabs: QuestionBankView and the new AiQuestionBankView (http://localhost:8081/questions/ai) have
+tabs "Kõik küsimused" and "AI küsimused" (QuestionBankTabs component). Approve/reject actions on the AI
+questions page will be added later. "Küsimuste pank" in the side menu stays active
+on both pages.
+
 Test data (3_import.sql): levels renamed to Juunior / Medior / Seenior (were Algaja / Kesktase / Edasijõudnu),
 competence "Suhtlemine" renamed to "Kommunikatsioon". Kommunikatsioon has its own levels Algaja / Edasijõudnu /
 Spetsialist (level ids 4-6) and got questions for Edasijõudnu (MULTIPLE_CHOICE) and Spetsialist (TRUE_FALSE). Added competences Vue.js, Spring Boot and Git, each with

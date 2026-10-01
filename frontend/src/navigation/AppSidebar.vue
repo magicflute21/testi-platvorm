@@ -31,7 +31,11 @@ export default {
           <PhStack :size="20" />
           <span class="nav-text">Kompetentsid</span>
         </RouterLink>
-        <RouterLink class="nav-link d-flex align-items-center gap-2" to="/questions">
+        <RouterLink
+          class="nav-link d-flex align-items-center gap-2"
+          :class="{ 'section-active': $route.path.startsWith('/questions') }"
+          to="/questions"
+        >
           <PhQuestion :size="20" />
           <span class="nav-text">Küsimuste pank</span>
         </RouterLink>
@@ -92,7 +96,9 @@ export default {
   color: #1a1a2e;
 }
 
-.nav-link.router-link-exact-active {
+/* "Küsimuste pank" jääb aktiivseks ka alamlehel /questions/ai */
+.nav-link.router-link-exact-active,
+.nav-link.section-active {
   background-color: rgba(var(--bs-primary-rgb), 0.1);
   color: var(--bs-primary);
 }
