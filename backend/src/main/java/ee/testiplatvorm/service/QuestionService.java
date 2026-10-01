@@ -36,11 +36,14 @@ public class QuestionService {
         List<QuestionBankDto> questionBankDtos = questionMapper.toQuestionBankDtos(allQuestions);
 
         for (QuestionBankDto questionBankDto : questionBankDtos) {
-            List<QuestionAnswer> questionAnswers = questionAnswerRepository.findAnswersBy(questionBankDto.getQuestionId(), STATUS_ACTIVE.getCode());
-            List<QuestionBankAnswerDto> questionBankAnswerDtos = questionAnswerMapper.toQuestionBankAnswerDtos(questionAnswers);
-            questionBankDto.setAnswers(questionBankAnswerDtos);
+            handleGetQuestionsWithAnswers(questionBankDto);
         }
-
         return questionBankDtos;
+    }
+
+    private void handleGetQuestionsWithAnswers(QuestionBankDto questionBankDto) {
+        List<QuestionAnswer> questionAnswers = questionAnswerRepository.findAnswersBy(questionBankDto.getQuestionId(), STATUS_ACTIVE.getCode());
+        List<QuestionBankAnswerDto> questionBankAnswerDtos = questionAnswerMapper.toQuestionBankAnswerDtos(questionAnswers);
+        questionBankDto.setAnswers(questionBankAnswerDtos);
     }
 }

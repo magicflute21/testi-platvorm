@@ -36,6 +36,5 @@ public class QuestionController {
     public List<QuestionBankDto> findAllQuestionsBy(@RequestParam(required = false) Integer competenceId) {
         List<QuestionBankDto> questionBankDtos = questionService.findAllQuestionsBy(competenceId);
         return questionBankDtos;
-
     }
 }
