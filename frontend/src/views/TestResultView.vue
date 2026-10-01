@@ -141,8 +141,8 @@ export default {
         },
       }
     },
-    goToDashboard() {
-      NavigationService.navigateToDashboard()
+    goToTestsView() {
+      NavigationService.navigateToTestsView()
     },
   },
 
@@ -232,12 +232,12 @@ export default {
         </p>
 
         <button
-          @click="goToDashboard"
+          @click="goToTestsView"
           class="btn btn-lg w-100 d-flex align-items-center justify-content-center gap-2"
           :class="isPassed ? 'btn-success' : 'btn-primary'"
         >
           <PhHouse :size="20" weight="fill" />
-          Tagasi avalehele
+          Tagasi testide lehele
         </button>
       </div>
     </div>
