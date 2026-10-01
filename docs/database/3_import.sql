@@ -45,9 +45,13 @@ VALUES (1, 'admin', '123', 1, 'A', now(), now()),
 -- level
 -- ------------------------------------------------------------
 INSERT INTO "level" (id, "level", name, description)
-VALUES (1, 1, 'Algaja', 'Teema põhiteadmised'),
-       (2, 2, 'Kesktase', 'Praktilised, töös kasutatavad teadmised'),
-       (3, 3, 'Edasijõudnu', 'Eksperditasemel oskused');
+VALUES (1, 1, 'Juunior', 'Teema põhiteadmised, töötab juhendamisel'),
+       (2, 2, 'Medior', 'Praktilised, töös kasutatavad teadmised, töötab iseseisvalt'),
+       (3, 3, 'Seenior', 'Eksperditasemel oskused, juhendab teisi ja teeb arhitektuurseid otsuseid'),
+       -- Pehmete oskuste (nt Kommunikatsioon) tasemed
+       (4, 1, 'Algaja', 'Tunneb põhimõtteid ja rakendab neid lihtsamates olukordades'),
+       (5, 2, 'Edasijõudnu', 'Rakendab oskusi iseseisvalt ka keerulisemates olukordades'),
+       (6, 3, 'Spetsialist', 'Valdab oskusi eeskujulikult ja oskab neid teistele õpetada');
 
 -- ------------------------------------------------------------
 -- competence
@@ -59,18 +63,38 @@ VALUES (1, 'JavaScript', 'JavaScripti keele alused', 'JavaScripti põhisüntaks,
        (2, 'SQL', 'Relatsiooniliste andmebaaside päringud',
         'SQL-päringute kirjutamine ja optimeerimine: liitmised, agregeerimine ja indeksid.', now(),
         'https://docs.example.com/sql', 'sql_juhend.pdf', 'A', 1, now() - interval '85 days'),
-       (3, 'Suhtlemine', 'Professionaalsed suhtlemisoskused',
+       (3, 'Kommunikatsioon', 'Professionaalsed kommunikatsioonioskused',
         'Kirjalik ja suuline suhtlus meeskonna- ja ärikontekstis.', now(), 'https://docs.example.com/comms',
-        'suhtlemise_juhend.pdf', 'A', 1, now() - interval '80 days');
+        'kommunikatsiooni_juhend.pdf', 'A', 1, now() - interval '80 days'),
+       (4, 'Vue.js', 'Vue 3 frontendi arendus',
+        'Vue 3 komponendid, reaktiivsus, Options ja Composition API, Vue Router ning komponentidevaheline suhtlus.',
+        now(), 'https://docs.example.com/vue', 'vue_juhend.pdf', 'A', 1, now() - interval '40 days'),
+       (5, 'Spring Boot', 'Javas REST API-de arendus Spring Bootiga',
+        'Spring Booti rakenduse kihid, REST kontrollerid, Spring Data JPA, valideerimine ja veakäsitlus.',
+        now(), 'https://docs.example.com/spring-boot', 'spring_boot_juhend.pdf', 'A', 1, now() - interval '40 days'),
+       (6, 'Git', 'Versioonihaldus Gitiga',
+        'Commitid, harud, ühendamine (merge), rebase, konfliktide lahendamine ja pull requestid meeskonnatöös.',
+        now(), 'https://docs.example.com/git', 'git_juhend.pdf', 'A', 1, now() - interval '40 days');
 
 -- ------------------------------------------------------------
 -- competence_level  (competence x level junction)
 -- ------------------------------------------------------------
 INSERT INTO competence_level (id, competence_id, level_id, status)
-VALUES (1, 1, 1, 'A'), -- JavaScript / Beginner
-       (2, 1, 2, 'A'), -- JavaScript / Intermediate
-       (3, 2, 1, 'A'), -- SQL / Beginner
-       (4, 3, 1, 'A'); -- Suhtlemine / Beginner
+VALUES (1, 1, 1, 'A'),  -- JavaScript / Juunior
+       (2, 1, 2, 'A'),  -- JavaScript / Medior
+       (3, 2, 1, 'A'),  -- SQL / Juunior
+       (4, 3, 4, 'A'),  -- Kommunikatsioon / Algaja
+       (5, 4, 1, 'A'),  -- Vue.js / Juunior
+       (6, 4, 2, 'A'),  -- Vue.js / Medior
+       (7, 4, 3, 'A'),  -- Vue.js / Seenior
+       (8, 5, 1, 'A'),  -- Spring Boot / Juunior
+       (9, 5, 2, 'A'),  -- Spring Boot / Medior
+       (10, 5, 3, 'A'), -- Spring Boot / Seenior
+       (11, 6, 1, 'A'), -- Git / Juunior
+       (12, 6, 2, 'A'), -- Git / Medior
+       (13, 6, 3, 'A'), -- Git / Seenior
+       (14, 3, 5, 'A'), -- Kommunikatsioon / Edasijõudnu
+       (15, 3, 6, 'A'); -- Kommunikatsioon / Spetsialist
 
 -- ------------------------------------------------------------
 -- competence_file
@@ -148,7 +172,42 @@ VALUES (1, 1, 1, 'Mis on sulund (closure)?', 'Vali JavaScripti sulundi kõige t�
        (8, 3, 4, 'Mis on aktiivne kuulamine?', 'Vali kõige täpsem kirjeldus.', 1, 10, 'A', now() - interval '50 days', 1,
         now()),
        (9, 3, 4, 'Milline e-kirja pealkiri on kõige selgem?', 'Vali parim näide.', 1, 10, 'A',
-        now() - interval '50 days', 1, now());
+        now() - interval '50 days', 1, now()),
+       -- Vue.js
+       (10, 4, 5, 'Milline direktiiv seob sisendvälja väärtuse kahesuunaliselt andmetega?',
+        'Vali Vue direktiiv, mis hoiab sisendvälja ja komponendi andmed omavahel sünkroonis.', 1, 10, 'A',
+        now() - interval '30 days', 1, now()),
+       (11, 4, 6, 'Millised väited computed omaduste kohta on õiged?',
+        'Vali kõik õiged väited Vue computed omaduste kohta.', 2, 10, 'A', now() - interval '30 days', 1, now()),
+       (12, 4, 7, 'Kas alamkomponent tohib props väärtust otse muuta?',
+        'Tõene või väär: alamkomponent võib vanemalt saadud props väärtust otse üle kirjutada.', 3, 5, 'A',
+        now() - interval '30 days', 1, now()),
+       -- Spring Boot
+       (13, 5, 8, 'Milline annotatsioon märgib klassi REST kontrolleriks?',
+        'Vali annotatsioon, mis teeb klassist REST endpointe pakkuva kontrolleri.', 1, 10, 'A',
+        now() - interval '30 days', 1, now()),
+       (14, 5, 9, 'Millised annotatsioonid seovad HTTP päringu andmed meetodi parameetriga?',
+        'Vali kõik annotatsioonid, millega saab päringust andmeid kontrolleri meetodisse.', 2, 10, 'A',
+        now() - interval '30 days', 1, now()),
+       (15, 5, 10, 'Kas @Transactional meetodis visatud RuntimeException tühistab vaikimisi tehingu?',
+        'Tõene või väär: Springi vaikekäitumisel tehakse kontrollimata erindi korral rollback.', 3, 5, 'A',
+        now() - interval '30 days', 1, now()),
+       -- Git
+       (16, 6, 11, 'Milline käsk loob uue haru ja lülitub kohe sellele?',
+        'Vali käsk, mis teeb mõlemat korraga.', 1, 10, 'A', now() - interval '30 days', 1, now()),
+       (17, 6, 12, 'Millised käsud muudavad kohalikku tööpuud või haru ajalugu?',
+        'Vali kõik käsud, mis muudavad kohalikke faile või harusid (mitte ainult ei loe infot).', 2, 10, 'A',
+        now() - interval '30 days', 1, now()),
+       (18, 6, 13, 'Kas jagatud haru rebase ja force push võib teiste arendajate töö segamini ajada?',
+        'Tõene või väär: juba pushitud ja teistega jagatud haru ajaloo ümberkirjutamine võib teistele probleeme tekitada.',
+        3, 5, 'A', now() - interval '30 days', 1, now()),
+       -- Kommunikatsioon
+       (19, 3, 14, 'Millised võtted aitavad konfliktset arutelu rahulikult lahendada?',
+        'Vali kõik võtted, mis aitavad meeskonnas tekkinud pingelises arutelus jõuda lahenduseni.', 2, 10, 'A',
+        now() - interval '30 days', 1, now()),
+       (20, 3, 15, 'Kas tagasiside on kõige tõhusam, kui see keskendub isiku omadustele, mitte käitumisele?',
+        'Tõene või väär: hea tagasiside hindab inimest ennast, mitte tema konkreetset tegevust või tulemust.', 3, 5, 'A',
+        now() - interval '30 days', 1, now());
 
 -- ------------------------------------------------------------
 -- question_answer
@@ -179,7 +238,47 @@ VALUES (1, 1, 'Funktsioon, mis mäletab oma leksikaalset skoopi', true, NULL, NU
        (23, 8, 'Samal ajal e-kirjadele vastamine', false, NULL, NULL, 'A'),
        (24, 9, 'Kohtumise aja muutus: neljapäev kell 14', true, NULL, NULL, 'A'),
        (25, 9, 'Küsimus', false, NULL, NULL, 'A'),
-       (26, 9, 'Tere!', false, NULL, NULL, 'A');
+       (26, 9, 'Tere!', false, NULL, NULL, 'A'),
+       -- Vue.js
+       (27, 10, 'v-model', true, NULL, NULL, 'A'),
+       (28, 10, 'v-bind', false, NULL, NULL, 'A'),
+       (29, 10, 'v-if', false, NULL, NULL, 'A'),
+       (30, 10, 'v-for', false, NULL, NULL, 'A'),
+       (31, 11, 'Computed omaduse väärtus puhverdatakse ja arvutatakse uuesti alles siis, kui sõltuvused muutuvad', true, NULL, NULL, 'A'),
+       (32, 11, 'Computed omadust kasutatakse mallis nagu tavalist andmevälja, ilma sulgudeta', true, NULL, NULL, 'A'),
+       (33, 11, 'Computed omadus käivitub igal renderdamisel uuesti nagu meetod', false, NULL, NULL, 'A'),
+       (34, 11, 'Computed omaduses on hea teha API päringuid', false, NULL, NULL, 'A'),
+       (35, 12, 'Tõene', false, NULL, NULL, 'A'),
+       (36, 12, 'Väär', true, NULL, NULL, 'A'),
+       -- Spring Boot
+       (37, 13, '@RestController', true, NULL, NULL, 'A'),
+       (38, 13, '@Service', false, NULL, NULL, 'A'),
+       (39, 13, '@Repository', false, NULL, NULL, 'A'),
+       (40, 13, '@Entity', false, NULL, NULL, 'A'),
+       (41, 14, '@PathVariable', true, NULL, NULL, 'A'),
+       (42, 14, '@RequestParam', true, NULL, NULL, 'A'),
+       (43, 14, '@RequestBody', true, NULL, NULL, 'A'),
+       (44, 14, '@Autowired', false, NULL, NULL, 'A'),
+       (45, 15, 'Tõene', true, NULL, NULL, 'A'),
+       (46, 15, 'Väär', false, NULL, NULL, 'A'),
+       -- Git
+       (47, 16, 'git checkout -b uus-haru', true, NULL, NULL, 'A'),
+       (48, 16, 'git branch uus-haru', false, NULL, NULL, 'A'),
+       (49, 16, 'git commit -b uus-haru', false, NULL, NULL, 'A'),
+       (50, 16, 'git push uus-haru', false, NULL, NULL, 'A'),
+       (51, 17, 'git merge', true, NULL, NULL, 'A'),
+       (52, 17, 'git rebase', true, NULL, NULL, 'A'),
+       (53, 17, 'git status', false, NULL, NULL, 'A'),
+       (54, 17, 'git log', false, NULL, NULL, 'A'),
+       (55, 18, 'Tõene', true, NULL, NULL, 'A'),
+       (56, 18, 'Väär', false, NULL, NULL, 'A'),
+       -- Kommunikatsioon
+       (57, 19, 'Kuulata teise poole seisukoht lõpuni ära ja võtta see oma sõnadega kokku', true, NULL, NULL, 'A'),
+       (58, 19, 'Rääkida oma vajadustest mina-sõnumitega, näiteks „Mul on raske, kui…"', true, NULL, NULL, 'A'),
+       (59, 19, 'Otsida mõlemale poolele sobivaid lahendusi, mitte süüdlast', true, NULL, NULL, 'A'),
+       (60, 19, 'Tõsta häält, et oma seisukoht selgelt kõlama jääks', false, NULL, NULL, 'A'),
+       (61, 20, 'Tõene', false, NULL, NULL, 'A'),
+       (62, 20, 'Väär', true, NULL, NULL, 'A');
 
 -- ------------------------------------------------------------
 -- test
@@ -268,9 +367,9 @@ INSERT INTO ai_question (id, title, description, competence_id, competence_level
 VALUES (1, 'Millele viitab "this" noolefunktsioonis?', 'Vali parim vastus.', 1, 2, 1, 'P', now() - interval '1 day', 1,
         now() - interval '1 day', NULL, NULL, NULL),
        (2, 'Selgita SQL-i JOIN-tüüpe', 'Lühivastus / mõiste kontroll.', 2, 3, 1, 'A', now() - interval '5 days', 1,
-        now() - interval '4 days', 8, 'Selge küsimus, sõnastust tuleb veidi täpsustada', true),
+        now() - interval '4 days', 4, 'Selge küsimus, sõnastust tuleb veidi täpsustada', true),
        (3, 'JavaScript on dünaamiliselt tüübitud – tõene või väär?', 'Tõene/väär kontroll.', 1, 1, 3, 'R',
-        now() - interval '6 days', 1, now() - interval '5 days', 3, 'Liiga lihtne, kattub olemasoleva küsimusega',
+        now() - interval '6 days', 1, now() - interval '5 days', 2, 'Liiga lihtne, kattub olemasoleva küsimusega',
         false);
 
 -- ------------------------------------------------------------

@@ -9,6 +9,47 @@ AI question generation: ADMIN/HALDUR can create test questions with AI via the c
 a confirmed question to ai_question / ai_question_answer tables with status 'P'.
 Uses Spring AI + Google GenAI (needs GOOGLE_GENAI_API_KEY). The hourly limit is temporarily removed.
 
+AI chat fix: the chat kept only the user's first message and the latest one, so when the user changed the
+competence, level or type, the AI got conflicting info and repeated the same clarifying question. Now the chat
+sends the conversation history (last 10 messages incl. AI clarifying questions and generated question summaries)
+in POST /api/ai-questions/generate as previousMessages, and the AI rules say that the latest message has priority
+and earlier messages are only used to fill in missing details. The same clarifying question is not repeated.
+
+POST /api/ai-questions/{aiQuestionId}/review -> AI question review with score 1-5, feedback (max 255) and decision
+(approved). Fills ai_question score, feedback and is_good. Approved: status 'A' and the question with its answers is
+copied to question / question_answer (status 'A', score 10, TRUE_FALSE 5, created_by = AI question author).
+Rejected: status 'R'. Already reviewed question returns HTTP 400 AI_QUESTION_ALREADY_REVIEWED. On the "AI küsimused"
+page "Vaata üle" in the "···" menu opens a review modal with star rating (StarRating component), feedback and
+"Kinnita" / "Lükka tagasi" buttons; reviewed cards show the rating and feedback. AI question scores in 3_import.sql
+are now on the 1-5 scale.
+
+GET /api/ai-questions?status={P|A|R}&competenceId={id} -> AI questions with answer options, newest first, both
+parameters optional (AiQuestionBankService). The "AI küsimused" page lists them with the same QuestionBankCard,
+filtered by status (default "Ootab ülevaatust"), and the tab shows the number of questions waiting for review.
+Answer option view moved to QuestionAnswerOption component.
+
+TP-29 Question bank tabs: QuestionBankView and the new AiQuestionBankView (http://localhost:8081/questions/ai) have
+tabs "Kõik küsimused" and "AI küsimused" (QuestionBankTabs component). Approve/reject actions on the AI
+questions page will be added later. "Küsimuste pank" in the side menu stays active
+on both pages.
+
+Test data (3_import.sql): levels renamed to Juunior / Medior / Seenior (were Algaja / Kesktase / Edasijõudnu),
+competence "Suhtlemine" renamed to "Kommunikatsioon". Kommunikatsioon has its own levels Algaja / Edasijõudnu /
+Spetsialist (level ids 4-6) and got questions for Edasijõudnu (MULTIPLE_CHOICE) and Spetsialist (TRUE_FALSE). Added competences Vue.js, Spring Boot and Git, each with
+all 3 levels and 3 questions (Juunior: SINGLE_CHOICE, Medior: MULTIPLE_CHOICE, Seenior: TRUE_FALSE).
+
+PUT /api/questions/{questionId} -> updates question title (max 100), description (max 1000) and status ('A' or 'I').
+Answer options can't be changed, so existing test results stay correct. Empty/too long fields or another status
+return HTTP 400 INCORRECT_INPUT, unknown questionId returns HTTP 404 PRIMARY_KEY_NOT_FOUND. In QuestionBankView
+"Muuda" in the "···" menu opens a modal with title, description and status fields, after saving a success
+message is shown and the list is reloaded.
+
+DELETE /api/questions/{questionId} -> "deletes" a question: the question stays in the database, its status is set
+to 'I' (Mitteaktiivne) and updated_at is updated, so existing tests and results stay intact. Unknown questionId
+returns HTTP 404 PRIMARY_KEY_NOT_FOUND. In QuestionBankView the "···" menu of a question card has "Muuda" and
+"Kustuta". "Kustuta" opens a confirmation dialog, after deleting a success message is shown and
+the list is reloaded. "Kustuta" is hidden for questions that are already inactive.
+
 TP-29 QuestionBankView http://localhost:8081/questions route view. Questions are shown as collapsible cards
 (QuestionBankCard component): header has the title, competence level, competence and status badges, the arrow opens
 the card and shows question type, score, description and answer options in two columns, correct answers are

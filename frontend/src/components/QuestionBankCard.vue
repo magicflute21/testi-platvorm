@@ -45,7 +45,12 @@ export default {
           </div>
         </div>
         <div v-if="$slots.menu" class="header-row dropdown flex-shrink-0" @click.stop>
-          <button class="btn btn-sm btn-outline-secondary py-0 px-1" data-bs-toggle="dropdown">
+          <button
+            class="btn btn-sm menu-button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            aria-label="Küsimuse tegevused"
+          >
             <PhDotsThree :size="18" />
           </button>
           <ul class="dropdown-menu dropdown-menu-custom dropdown-menu-end">
@@ -230,6 +235,20 @@ export default {
 
 .caret.open {
   transform: rotate(180deg);
+}
+
+/* Ääristeta kolme täpiga nupp, hall taust ainult hiirega peale minnes või menüü avatuna */
+.menu-button {
+  padding: 0.125rem 0.25rem;
+  border: 0;
+  border-radius: 0.5rem;
+  color: var(--bs-gray-600);
+}
+
+.menu-button:hover,
+.menu-button.show {
+  background-color: var(--bs-gray-200);
+  color: var(--bs-body-color);
 }
 
 .dropdown-menu-custom {

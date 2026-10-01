@@ -3,6 +3,9 @@ import { PhSparkle, PhX, PhPaperPlaneRight, PhCheckCircle } from '@phosphor-icon
 import AiQuestionService from '@/services/AiQuestionService.js'
 
 const MAX_INPUT_LENGTH = 500
+// Mitu varasemat sõnumit saadetakse AI-le kaasa ja kui pikk võib üks sõnum olla (vt backend AskRequest)
+const MAX_HISTORY_MESSAGES = 10
+const MAX_HISTORY_MESSAGE_LENGTH = 1000
 
 const WELCOME_MESSAGE =
   'Tere! Kirjelda, milliseid küsimusi soovid luua — nt "2 küsimust JavaScripti algajatele massiivide kohta ja 1 tõene/väär küsimus SQL algajatele". Korraga saab luua kuni 5 küsimust, ka eri kompetentsidele.'
@@ -19,8 +22,9 @@ export default {
       isOpen: false,
       isLoading: false,
       userInput: '',
-      // Kui AI küsis täpsustust, hoitakse meeles kasutaja esialgne soov
-      originalInstructions: '',
+      // Vestluse ajalugu AI jaoks (kasutaja sõnumid, AI täpsustavad küsimused ja loodud küsimuste kokkuvõtted).
+      // Tervitus- ja veateateid siia ei lisata.
+      conversationHistory: [],
       messages: [{ sender: 'ai', text: WELCOME_MESSAGE, questions: [] }],
     }
   },
@@ -41,36 +45,42 @@ export default {
       const userText = this.userInput.trim()
       this.userInput = ''
       this.addMessage('user', userText)
-      this.generateQuestions(this.createInstructions(userText))
+      this.generateQuestions(userText)
     },
 
-    // Täpsustuse korral saadetakse täpsustus + esialgne soov, kokku kuni 500 märki
-    createInstructions(userText) {
-      if (this.originalInstructions === '') {
-        return userText
-      }
-      const instructions = `Täpsustus: ${userText}\nAlgne soov: ${this.originalInstructions}`
-      return instructions.slice(0, MAX_INPUT_LENGTH)
-    },
-
-    generateQuestions(instructions) {
+    // Viimane sõnum saadetakse eraldi, varasemad sõnumid kaasa, et AI saaks aru täpsustustest
+    // ja sellest, kui kasutaja vahepeal soovi muudab (viimane sõnum on alati esmatähtis)
+    generateQuestions(userText) {
       this.isLoading = true
-      AiQuestionService.sendGenerateQuestionRequest(instructions)
-        .then((response) => this.handleGenerateQuestionsResponse(response.data, instructions))
+      const previousMessages = this.conversationHistory.slice(-MAX_HISTORY_MESSAGES)
+      this.addToHistory('user', userText)
+      AiQuestionService.sendGenerateQuestionRequest(userText, previousMessages)
+        .then((response) => this.handleGenerateQuestionsResponse(response.data))
         .catch((error) => this.handleRequestError(error))
         .finally(() => (this.isLoading = false))
     },
 
-    handleGenerateQuestionsResponse(generationResponse, instructions) {
+    addToHistory(sender, text) {
+      this.conversationHistory.push({ sender, text: text.slice(0, MAX_HISTORY_MESSAGE_LENGTH) })
+    },
+
+    // Loodud küsimused lisatakse ajalukku lühidalt, et kasutaja saaks öelda nt "veel üks sama kohta"
+    createGeneratedQuestionsSummary(questions) {
+      const questionLines = questions.map(
+        (question) =>
+          `- ${question.competenceName} / ${question.levelName} / ${question.questionTypeName}: ${question.title}`,
+      )
+      return `Koostasin küsimused:\n${questionLines.join('\n')}`
+    },
+
+    handleGenerateQuestionsResponse(generationResponse) {
       if (generationResponse.clarifyingQuestion) {
-        if (this.originalInstructions === '') {
-          this.originalInstructions = instructions
-        }
+        this.addToHistory('ai', generationResponse.clarifyingQuestion)
         this.addMessage('ai', generationResponse.clarifyingQuestion)
         return
       }
 
-      this.originalInstructions = ''
+      this.addToHistory('ai', this.createGeneratedQuestionsSummary(generationResponse.questions))
       const questions = generationResponse.questions.map((question) => ({
         ...question,
         status: 'pending',

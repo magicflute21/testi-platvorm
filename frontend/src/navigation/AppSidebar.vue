@@ -26,7 +26,7 @@ export default {
   <aside class="sidebar-wrapper">
     <nav class="sidebar navbar-light d-flex flex-column p-1 pt-3">
       <div class="nav nav-pills flex-column">
-        <p class="sidebar-label">p</p>
+        <p class="sidebar-label"></p>
         <RouterLink
           v-if="canSee('/dashboard')"
           class="nav-link d-flex align-items-center gap-2"
@@ -70,6 +70,7 @@ export default {
         <RouterLink
           v-if="canSee('/questions')"
           class="nav-link d-flex align-items-center gap-2"
+          :class="{ 'section-active': $route.path.startsWith('/questions') }"
           to="/questions"
         >
           <PhQuestion :size="20" />
@@ -138,5 +139,12 @@ export default {
 .nav-link:hover {
   background-color: rgba(var(--bs-primary-rgb), 0.06);
   color: #1a1a2e;
+}
+
+/* "Küsimuste pank" jääb aktiivseks ka alamlehel /questions/ai */
+.nav-link.router-link-exact-active,
+.nav-link.section-active {
+  background-color: rgba(var(--bs-primary-rgb), 0.1);
+  color: var(--bs-primary);
 }
 </style>

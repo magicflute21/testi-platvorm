@@ -10,7 +10,8 @@ public enum Status {
     STATUS_PASSED("P"),
     STATUS_FAILED("F"),
     STATUS_INACTIVE("I"),
-    STATUS_PENDING("P");
+    STATUS_PENDING("P"),
+    STATUS_REJECTED("R");
 
 
     private final String code;
