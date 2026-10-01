@@ -45,7 +45,7 @@ public class UserService {
         String email = newUserRequest.getEmail().trim().toLowerCase();
         validateEmailIsAvailable(email);
         Role role = roleService.getValidRoleBy(newUserRequest.getRoleId());
-        Instant now = Instant.now();
+        OffsetDateTime now = OffsetDateTime.now();
 
         User user = createUser(email, newUserRequest.getPassword(), role, now);
         userRepository.save(user);
@@ -59,7 +59,7 @@ public class UserService {
     public void updateUserStatus(Integer userId, String status) {
         User user = getValidUserBy(userId);
         user.setStatus(status);
-        user.setUpdatedAt(Instant.now());
+        user.setUpdatedAt(OffsetDateTime.now());
         userRepository.save(user);
     }
 
@@ -82,7 +82,7 @@ public class UserService {
         }
     }
 
-    private User createUser(String email, String password, Role role, Instant now) {
+    private User createUser(String email, String password, Role role, OffsetDateTime now) {
         User user = new User();
         user.setEmail(email);
         user.setPasswordHash(password);
@@ -93,7 +93,7 @@ public class UserService {
         return user;
     }
 
-    private Profile createProfile(User user, String firstName, String lastName, Instant now) {
+    private Profile createProfile(User user, String firstName, String lastName, OffsetDateTime now) {
         Profile profile = new Profile();
         profile.setUser(user);
         profile.setFirstName(firstName);
@@ -103,7 +103,7 @@ public class UserService {
         return profile;
     }
 
-    private void handleAddGroupMembers(User user, List<Integer> groupIds, Instant now) {
+    private void handleAddGroupMembers(User user, List<Integer> groupIds, OffsetDateTime now) {
         if (groupIds.isEmpty()) {
             return;
         }
@@ -115,7 +115,7 @@ public class UserService {
         }
     }
 
-    private GroupMember createGroupMember(Group group, User user, User addedBy, Instant now) {
+    private GroupMember createGroupMember(Group group, User user, User addedBy, OffsetDateTime now) {
         GroupMember groupMember = new GroupMember();
         groupMember.setGroup(group);
         groupMember.setUser(user);
