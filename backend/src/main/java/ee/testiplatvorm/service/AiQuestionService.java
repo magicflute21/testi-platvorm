@@ -24,7 +24,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -391,7 +391,7 @@ public class AiQuestionService {
         aiQuestion.setQuestionTypeId(questionTypeId);
         aiQuestion.setStatus(STATUS_PENDING.getCode());
         aiQuestion.setCreatedBy(userId);
-        Instant currentTime = Instant.now();
+        OffsetDateTime currentTime = OffsetDateTime.now();
         aiQuestion.setCreatedAt(currentTime);
         aiQuestion.setUpdatedAt(currentTime);
         return aiQuestionRepository.save(aiQuestion);

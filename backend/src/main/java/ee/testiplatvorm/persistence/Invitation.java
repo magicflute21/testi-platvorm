@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 
 @Getter
 @Setter
@@ -36,11 +36,11 @@ public class Invitation {
 
     @NotNull
     @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
+    private OffsetDateTime createdAt;
 
     @NotNull
     @Column(name = "expires_at", nullable = false)
-    private Instant expiresAt;
+    private OffsetDateTime expiresAt;
 
     @NotNull
     @Column(name = "status", nullable = false, length = Integer.MAX_VALUE)

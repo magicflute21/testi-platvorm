@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Value;
 
 import java.io.Serializable;
-import java.time.Instant;
+import java.time.OffsetDateTime;
 
 /**
  * DTO for {@link ee.testiplatvorm.persistence.aiquestion.AiQuestion}
@@ -26,11 +26,11 @@ public class AiQuestionDto implements Serializable {
     @NotNull
     String status;
     @NotNull
-    Instant createdAt;
+    OffsetDateTime createdAt;
     @NotNull
     Integer createdBy;
     @NotNull
-    Instant updatedAt;
+    OffsetDateTime updatedAt;
     Integer score;
     @Size(max = 255)
     String feedback;
