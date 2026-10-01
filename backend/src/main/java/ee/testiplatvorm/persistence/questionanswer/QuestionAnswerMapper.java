@@ -35,4 +35,3 @@ public interface QuestionAnswerMapper {
     List<QuestionAnswer> toCreateQuestionAnswers(List<QuestionCreateAnswerRequestDto> questionCreateAnswerRequestDtos);
 
 }
-}

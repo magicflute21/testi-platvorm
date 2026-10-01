@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,9 +43,15 @@ public class QuestionController {
         return questionBankDtos;
     }
 
-    public void createQuestion(@RequestBody QuestionCreateRequestDto questionCreateRequestDto) {
-        questionService.createQuestion(questionCreateRequestDto);
-
-
+    @PostMapping("/api/questions")
+    @Operation(summary = "Luuakse uus küsimus koos vastusevariantidega. Tagastatakse loodud küsimuse id.")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "Õigete vastuste arv ei vasta küsimuse tüübile (INVALID_CORRECT_ANSWER_COUNT)")
+    @ApiResponse(responseCode = "401", description = "Kasutaja pole sisse logitud")
+    @ApiResponse(responseCode = "403", description = "Kasutaja roll pole ADMIN ega HALDUR (NO_PERMISSION_TO_CREATE_QUESTIONS)")
+    @ApiResponse(responseCode = "404", description = "competenceLevelId või questionTypeId järgi rida ei leitud (PRIMARY_KEY_NOT_FOUND)")
+    public Integer createQuestion(@RequestBody QuestionCreateRequestDto questionCreateRequestDto) {
+        Integer questionId = questionService.createQuestion(questionCreateRequestDto);
+        return questionId;
     }
 }

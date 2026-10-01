@@ -2,16 +2,11 @@ package ee.testiplatvorm.service;
 
 
 import ee.testiplatvorm.Error;
-import ee.testiplatvorm.controller.question.dto.QuestionCreateRequestDto;
-import ee.testiplatvorm.controller.question.dto.QuestionBankAnswerDto;
-import ee.testiplatvorm.controller.question.dto.QuestionBankDto;
-import ee.testiplatvorm.controller.question.dto.QuestionCreateRequestDto;
-import ee.testiplatvorm.controller.question.dto.QuestionResponseDto;
+import ee.testiplatvorm.controller.question.dto.*;
+import ee.testiplatvorm.infrastructure.exception.BadRequestException;
 import ee.testiplatvorm.infrastructure.exception.ForbiddenException;
 import ee.testiplatvorm.infrastructure.exception.PrimaryKeyNotFoundException;
-import ee.testiplatvorm.persistence.competencelevel.CompetenceLevelRepository;
-import ee.testiplatvorm.infrastructure.exception.ForbiddenException;
-import ee.testiplatvorm.infrastructure.exception.PrimaryKeyNotFoundException;
+import ee.testiplatvorm.persistence.competencelevel.CompetenceLevel;
 import ee.testiplatvorm.persistence.competencelevel.CompetenceLevelRepository;
 import ee.testiplatvorm.persistence.question.Question;
 import ee.testiplatvorm.persistence.question.QuestionMapper;
@@ -26,10 +21,13 @@ import ee.testiplatvorm.persistence.user.UserMapper;
 import ee.testiplatvorm.persistence.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static ee.testiplatvorm.Error.INVALID_CORRECT_ANSWER_COUNT;
 import static ee.testiplatvorm.Error.NO_PERMISSION_TO_CREATE_QUESTIONS;
 import static ee.testiplatvorm.Status.STATUS_ACTIVE;
 
@@ -70,7 +68,8 @@ public class QuestionService {
     }
 
 
-    public void createQuestion(QuestionCreateRequestDto questionCreateRequestDto) {
+    @Transactional
+    public Integer createQuestion(QuestionCreateRequestDto questionCreateRequestDto) {
         Integer userId = currentUserService.getUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> (new PrimaryKeyNotFoundException("userId", userId)));
         String userRole = user.getRole().getName();
@@ -83,34 +82,50 @@ public class QuestionService {
         Integer questionTypeId = questionCreateRequestDto.getQuestionTypeId();
         QuestionType questionType = questionTypeRepository.findById(questionTypeId).orElseThrow(() -> new PrimaryKeyNotFoundException("questionTypeId", questionTypeId));
 
+        Integer competenceLevelId = questionCreateRequestDto.getCompetenceLevelId();
+        CompetenceLevel competenceLevel = competenceLevelRepository.findById(competenceLevelId).orElseThrow(() -> new PrimaryKeyNotFoundException("competenceLevelId", competenceLevelId));
 
-        competenceLevelRepository.findCompetenceLevelsBy()
+        int isCorrectCount = 0;
+        for (QuestionCreateAnswerRequestDto questionCreateAnswerRequestDto : questionCreateRequestDto.getAnswers()){
+            if (questionCreateAnswerRequestDto.getIsCorrect()) {
+                isCorrectCount++;
+            }
+        }
+
+        String questionTypeName = questionType.getName();
+        int answerCount = questionCreateRequestDto.getAnswers().size();
+
+        boolean isValidCorrectAnswerCount = false;  {
+            if (questionTypeName.equals("SINGLE_CHOICE")) {
+                isValidCorrectAnswerCount = isCorrectCount == 1;
+            } else if (questionTypeName.equals("MULTIPLE_CHOICE")){
+                isValidCorrectAnswerCount = isCorrectCount>= 1;
+            } else if (questionTypeName.equals("TRUE_FALSE")) {
+                isValidCorrectAnswerCount = answerCount == 2 && isCorrectCount == 1;
+            }
+            if (!isValidCorrectAnswerCount) {
+                throw new BadRequestException(Error.INVALID_CORRECT_ANSWER_COUNT.getMessage(), Error.INVALID_CORRECT_ANSWER_COUNT.name());
+            }
+        }
 
         Question question = questionMapper.toQuestion(questionCreateRequestDto);
+        question.setCompetence(competenceLevel.getCompetence());
+        question.setCompetenceLevel(competenceLevel);
+        question.setQuestionType(questionType);
+        question.setStatus(STATUS_ACTIVE.getCode());
+        question.setCreatedBy(user);
+        OffsetDateTime currentTime = OffsetDateTime.now();
+        question.setCreatedAt(currentTime);
+        question.setUpdatedAt(currentTime);
+        questionRepository.save(question);
 
+        List<QuestionAnswer> questionAnswers = questionAnswerMapper.toCreateQuestionAnswers(questionCreateRequestDto.getAnswers());
+        for (QuestionAnswer questionAnswer : questionAnswers) {
+            questionAnswer.setQuestion(question);
+            questionAnswer.setStatus(STATUS_ACTIVE.getCode());
+        }
+        questionAnswerRepository.saveAll(questionAnswers);
 
-//   - kasutaja id ja tema rolli kontroll     - esimene asi ja tuleb läbi currentUserService,
-//   kust saab teada id ja sellega koos käib ka roll läbi user tabeli
-//
-//
-//  - küsimuse tüübi otsimine (+ 404)   -
-
-//  - kompetentsi taseme otsimine (+ 404)
-
-
-        //  - õigete vastuste arvu kontroll
-
-
-//  - küsimuse mappimine ja ignoreeritud väljade täitmine
-
-//  - küsimuse salvestamine
-
-
-        //  - vastuste mappimine, question ja status külge panemine
-
-        //  - vastuste salvestamine
-
-        //  - tagastamine
-
+        return question.getId();
     }
 }
