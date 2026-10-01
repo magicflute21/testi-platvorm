@@ -29,4 +29,9 @@ export default {
       params: { testId },
     })
   },
+  navigateToTestsView(testId){
+    router.push({
+      name: 'testsRoute',
+    })
+  },
 }
