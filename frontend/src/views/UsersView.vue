@@ -5,10 +5,12 @@ import LoadingText from '@/components/LoadingText.vue'
 import AlertDanger from '@/components/AlertDanger.vue'
 import AddUserModal from '@/components/AddUserModal.vue'
 import { PhCaretDown, PhCheck, PhTrash, PhUserPlus } from '@phosphor-icons/vue'
+import MainTitle from '@/components/MainTitle.vue'
 
 export default {
   name: 'UsersView',
   components: {
+    MainTitle,
     LoadingText,
     AlertDanger,
     AddUserModal,
@@ -95,7 +97,7 @@ export default {
     <LoadingText v-if="isLoading" />
     <div v-else>
       <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-5">
-        <h1 class="mb-0">Kasutajad</h1>
+        <MainTitle title="Kasutajad" />
         <button
           class="btn btn-color rounded-2 d-inline-flex align-items-center gap-2"
           @click="isAddUserModalOpen = true"
