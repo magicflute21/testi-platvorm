@@ -1,5 +1,6 @@
 package ee.testiplatvorm.controller.question;
 
+import ee.testiplatvorm.controller.question.dto.QuestionBankDto;
 import ee.testiplatvorm.controller.question.dto.QuestionResponseDto;
 import ee.testiplatvorm.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,5 +26,15 @@ public class QuestionController {
     public List<QuestionResponseDto> findQuestionsBy(@RequestParam Integer competenceLevelId) {
         List<QuestionResponseDto> questionResponseDtos = questionService.findQuestionsBy(competenceLevelId);
         return questionResponseDtos;
+    }
+
+    @GetMapping("/api/question-bank")
+    @Operation(summary = "Tagastatakse kõik küsimused olenemata staatusest, koos vastusevariantidega. competenceId on valikuline - kui see puudub, tagastatakse kõigi kompetentside küsimused.")
+    @ApiResponse(
+            responseCode = "200", description = "OK"
+    )
+    public List<QuestionBankDto> findAllQuestionsBy(@RequestParam(required = false) Integer competenceId) {
+        List<QuestionBankDto> questionBankDtos = questionService.findAllQuestionsBy(competenceId);
+        return questionBankDtos;
     }
 }

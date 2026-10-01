@@ -10,7 +10,7 @@ import {
 
 export default {
   name: 'AppSidebar',
-  components: { PhPersonSimple, PhUserRectangle, PhStack, PhFilePlus, PhHouse, PhFlask },
+  components: { PhPersonSimple, PhUserRectangle, PhStack, PhFilePlus, PhHouse, PhFlask, PhQuestion },
 }
 </script>
 
@@ -38,6 +38,10 @@ export default {
         <RouterLink class="nav-link d-flex align-items-center gap-2" to="/competences">
           <PhStack :size="20" />
           <span class="nav-text">Kompetentsid</span>
+        </RouterLink>
+        <RouterLink class="nav-link d-flex align-items-center gap-2" to="/questions">
+          <PhQuestion :size="20" />
+          <span class="nav-text">Küsimuste pank</span>
         </RouterLink>
       </div>
     </nav>
