@@ -1,3 +1,14 @@
+TP-21 TestCreateView fixes: a new question row can be removed with × right away, even when no
+question is selected yet. Empty question rows are ignored in validation and not sent to backend,
+so "Lisa testile vähemalt 1 küsimus" is shown only when no question is selected at all.
+Removed "Tühista" button and made "Loo test" button wider.
+
+AI question generation: ADMIN/HALDUR can create test questions with AI via the chat widget
+(floating button in the bottom right corner). POST /api/ai-questions/generate creates a preview
+(up to 5 questions at once, each with up to 5 answer options) and POST /api/ai-questions saves
+a confirmed question to ai_question / ai_question_answer tables with status 'P'.
+Uses Spring AI + Google GenAI (needs GOOGLE_GENAI_API_KEY). The hourly limit is temporarily removed.
+
 TP-29 GET /api/question-bank?competenceId={id} -> brings all questions for QuestionBankView, regardless of
 question status (both 'A' and 'I'), with competence name, question type name and active answer options
 (answerText, correctChoice). competenceId is optional - without it questions of all competences are returned,

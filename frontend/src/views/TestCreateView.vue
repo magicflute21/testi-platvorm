@@ -44,6 +44,9 @@ export default {
     isTimed() {
       return this.timerMin > 0
     },
+    chosenQuestionIds() {
+      return this.selectedQuestionIds.filter((id) => id !== 0)
+    },
   },
 
   methods: {
@@ -100,7 +103,7 @@ export default {
           timerMin: this.timerMin,
           passPercent: this.passPercent,
           roundScoreUp: this.roundScoreUp,
-          questions: this.selectedQuestionIds.map((id) => ({ questionId: id })),
+          questions: this.chosenQuestionIds.map((id) => ({ questionId: id })),
         }
 
         TestCreateService.postNewTest(test)
@@ -110,7 +113,7 @@ export default {
     },
 
     handleCreateTestResponse() {
-      this.successMessage = 'Test "' + this.testName + '" on lisatud'
+      this.successMessage = 'Test "' + this.testName + '" on edukalt lisatud!'
       this.resetAllFields()
     },
 
@@ -131,7 +134,7 @@ export default {
         this.errorMessage = 'Lisa testile kompetentsi tase'
       } else if (this.passPercent === 0) {
         this.errorMessage = 'Lisa testile läbimise %'
-      } else if (this.selectedQuestionIds.includes(0)) {
+      } else if (this.chosenQuestionIds.length === 0) {
         this.errorMessage = 'Lisa testile vähemalt 1 küsimus'
       }
     },
@@ -324,7 +327,7 @@ export default {
                 </option>
               </select>
               <button
-                v-if="questionId !== 0"
+                v-if="questionId !== 0 || selectedQuestionIds.length > 1"
                 type="button"
                 class="btn btn-link text-body text-decoration-none"
                 title="Eemalda küsimus"
@@ -351,9 +354,8 @@ export default {
           <AlertSuccess :success-message="successMessage" />
         </div>
 
-        <div class="d-flex justify-content-center gap-3 mt-4 mb-5">
-          <button type="button" class="btn btn-link text-body text-decoration-none">Tühista</button>
-          <button type="button" @click="createTest" class="btn btn-primary text-white">
+        <div class="d-flex justify-content-center mt-4 mb-5">
+          <button type="button" @click="createTest" class="btn btn-primary text-white px-5">
             Loo test
           </button>
         </div>

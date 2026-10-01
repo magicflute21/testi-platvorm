@@ -11,7 +11,7 @@ import ee.testiplatvorm.persistence.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Service
@@ -31,7 +31,7 @@ public class UserService {
         User user = getValidUserBy(userId);
         String code = Status.STATUS_INACTIVE.getCode();
         user.setStatus(code);
-        Instant now = Instant.now();
+        OffsetDateTime now = OffsetDateTime.now();
         user.setUpdatedAt(now);
         userRepository.save(user);
     }
