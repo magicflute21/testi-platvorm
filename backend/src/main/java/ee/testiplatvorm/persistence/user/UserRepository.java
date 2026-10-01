@@ -3,6 +3,7 @@ package ee.testiplatvorm.persistence.user;
 import ee.testiplatvorm.controller.user.dto.UserResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,4 +21,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("select (count(u) > 0) from User u where lower(u.email) = lower(:email)")
     boolean existsUserBy(String email);
 
+    @Query("select u from User u where u.role.name = :roleName")
+    Optional<User> findById(String roleName);
 }

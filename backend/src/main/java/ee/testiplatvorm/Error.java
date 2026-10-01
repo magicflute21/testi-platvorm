@@ -12,7 +12,8 @@ public enum Error {
     NO_TEST_ASSIGNMENT_FOR_THIS_USER("Kasutajale ei ole vastavat testi määratud"),
     EMAIL_ALREADY_EXISTS("Selle e-posti aadressiga kasutaja on juba olemas"),
     NO_RESULT_FOUND("Tulemust ei leitud"),
-    AI_QUESTION_ALREADY_REVIEWED("AI küsimus on juba üle vaadatud");
+    AI_QUESTION_ALREADY_REVIEWED("AI küsimus on juba üle vaadatud"),
+    INVALID_CORRECT_ANSWER_COUNT("Õigete vastuste arv ei vasta küsimuse tüübile");
 
     private final String message;
 
