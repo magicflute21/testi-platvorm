@@ -1,9 +1,9 @@
 <script>
-import { PhHouse, PhFlask, PhFilePlus, PhStack, PhQuestion } from '@phosphor-icons/vue'
+import { PhHouse, PhFlask, PhFilePlus, PhStack, PhQuestion, PhUsers } from '@phosphor-icons/vue'
 
 export default {
   name: 'AppSidebar',
-  components: { PhStack, PhFilePlus, PhHouse, PhFlask, PhQuestion },
+  components: { PhStack, PhFilePlus, PhHouse, PhFlask, PhQuestion, PhUsers },
 }
 </script>
 
@@ -21,7 +21,7 @@ export default {
           <span class="nav-text">Testid</span>
         </RouterLink>
         <RouterLink class="nav-link d-flex align-items-center gap-2" to="/my-tests">
-          Minu testid
+          <span class="nav-text">Minu testid</span>
         </RouterLink>
         <RouterLink class="nav-link d-flex align-items-center gap-2" to="/tests/new">
           <PhFilePlus :size="20" />
@@ -34,6 +34,10 @@ export default {
         <RouterLink class="nav-link d-flex align-items-center gap-2" to="/questions">
           <PhQuestion :size="20" />
           <span class="nav-text">Küsimuste pank</span>
+        </RouterLink>
+        <RouterLink class="nav-link d-flex align-items-center gap-2" to="/users">
+          <PhUsers :size="20" />
+          Kasutajad
         </RouterLink>
       </div>
     </nav>
