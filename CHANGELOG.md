@@ -1,3 +1,8 @@
+TestCreateView style: the form is now in the same card style as the test detail and test start pages. Competence,
+level, pass percent and timer are shown as info boxes with icons (same style as the test detail page), title and short
+description fields show a character counter inside the field (255 / 150, input limited with maxlength), all fields
+have the same height and text size and there is more space between rows. "Loo test" button is bold.
+
 Test detail view: "Vaata testi" on the tests page opens /tests/{testId} (TestDetailView, ADMIN/HALDUR only). The card
 shows competence, title, level, short and long description and info boxes for question count, time limit, pass
 percent and max score (singular/plural: "1 küsimus" / "2 küsimust"). Questions themselves are not shown. Inactive tests

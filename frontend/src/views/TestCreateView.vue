@@ -1,5 +1,5 @@
 <script>
-import { PhPlus } from '@phosphor-icons/vue'
+import { PhPlus, PhStack, PhStairs, PhTarget, PhTimer } from '@phosphor-icons/vue'
 import CompetenceService from '@/services/CompetenceService.js'
 import CompetenceLevelService from '@/services/CompetenceLevelService.js'
 import QuestionService from '@/services/QuestionService.js'
@@ -9,7 +9,15 @@ import AlertSuccess from '@/components/AlertSuccess.vue'
 
 export default {
   name: 'TestCreateView',
-  components: {  AlertSuccess, PhPlus, AlertDanger },
+  components: {
+    AlertSuccess,
+    PhPlus,
+    AlertDanger,
+    PhStack,
+    PhStairs,
+    PhTarget,
+    PhTimer,
+  },
 
   beforeMount() {
     this.getCompetences()
@@ -23,6 +31,9 @@ export default {
       testName: '',
       testShortDescription: '',
       testDescription: '',
+      // Andmebaasi veergude piirid (test.name varchar(255), test.short_description varchar(150))
+      testNameMaxLength: 255,
+      testShortDescriptionMaxLength: 150,
       competences: [],
       competenceId: 0,
 
@@ -159,43 +170,50 @@ export default {
 </script>
 
 <template>
-  <div>
-    <div class="container text-start col-6 mt-5 mb-5">
+  <div class="container d-flex flex-column align-items-center">
+    <div class="card shadow p-4 my-4 create-card">
+      <div class="card-body">
       <h1 class="text-uppercase fw-bold h3">Loo uus test</h1>
-      <p class="mb-3 mt-3">
+      <p class="text-body-secondary mt-3 mb-4">
         Pane kokku test, mis aitab kasutajatel oma oskusi proovile panna. Vali kompetents ja tase,
         lisa küsimused ning määra, kui palju on vaja testi läbimiseks õigesti vastata. Kõik väljad
         on kohustuslikud.
       </p>
 
       <form>
-        <div class="row mb-3">
+        <div class="row mb-4">
           <label for="inputTestName" class="col-sm-3 col-form-label">Pealkiri</label>
-          <div class="col-sm-9">
+          <div class="col-sm-9 counter-field">
             <input
               v-model="testName"
               type="text"
               class="form-control"
               id="inputTestName"
+              :maxlength="testNameMaxLength"
               placeholder="Sisesta testi pealkiri"
             />
+            <span class="char-counter">{{ testName.length }} / {{ testNameMaxLength }}</span>
           </div>
         </div>
-        <div class="row mb-3">
+        <div class="row mb-4">
           <label for="inputTestShortDescription" class="col-sm-3 col-form-label"
             >Lühikirjeldus</label
           >
-          <div class="col-sm-9">
+          <div class="col-sm-9 counter-field">
             <input
               v-model="testShortDescription"
               type="text"
               class="form-control"
               id="inputTestShortDescription"
+              :maxlength="testShortDescriptionMaxLength"
               placeholder="Lisa testi lühikirjeldus"
             />
+            <span class="char-counter">
+              {{ testShortDescription.length }} / {{ testShortDescriptionMaxLength }}
+            </span>
           </div>
         </div>
-        <div class="row mb-3">
+        <div class="row mb-4">
           <label for="inputTestDescription" class="col-sm-3 col-form-label">Kirjeldus</label>
           <div class="col-sm-9">
             <textarea
@@ -208,58 +226,89 @@ export default {
           </div>
         </div>
 
-        <div class="row mb-3">
-          <label for="selectTestCompetence" class="col-sm-3 col-form-label">Kompetents</label>
-          <div class="col-sm-5">
-            <select v-model="competenceId" class="form-select" @change="getCompetenceLevels">
-              <option :value="0" disabled>Vali kompetents</option>
-              <option
-                v-for="competence in competences"
-                :key="competence.competenceId"
-                :value="competence.competenceId"
+        <div class="setting-grid mb-4">
+          <div class="setting-box d-flex align-items-center gap-4 rounded-3 py-3 px-4">
+            <PhStack :size="28" class="text-primary flex-shrink-0" />
+            <div class="flex-grow-1 min-w-0">
+              <label for="selectTestCompetence" class="setting-label">Kompetents</label>
+              <select
+                v-model="competenceId"
+                id="selectTestCompetence"
+                class="form-select"
+                @change="getCompetenceLevels"
               >
-                {{ competence.competenceName }}
-              </option>
-            </select>
+                <option :value="0" disabled>Vali kompetents</option>
+                <option
+                  v-for="competence in competences"
+                  :key="competence.competenceId"
+                  :value="competence.competenceId"
+                >
+                  {{ competence.competenceName }}
+                </option>
+              </select>
+            </div>
           </div>
-        </div>
 
-        <div class="row mb-3">
-          <label for="selectTestLevel" class="col-sm-3 col-form-label">Tase</label>
-          <div class="col-sm-5">
-            <select
-              v-model="competenceLevelId"
-              class="form-select"
-              :disabled="competenceId === 0"
-              @change="getQuestions"
-            >
-              <option :value="0" disabled>Vali tase</option>
-              <option
-                v-for="competenceLevel in competenceLevels"
-                :key="competenceLevel.competenceLevelId"
-                :value="competenceLevel.competenceLevelId"
+          <div class="setting-box d-flex align-items-center gap-4 rounded-3 py-3 px-4">
+            <PhStairs :size="28" class="text-primary flex-shrink-0" />
+            <div class="flex-grow-1 min-w-0">
+              <label for="selectTestLevel" class="setting-label">Tase</label>
+              <select
+                v-model="competenceLevelId"
+                id="selectTestLevel"
+                class="form-select"
+                :disabled="competenceId === 0"
+                @change="getQuestions"
               >
-                {{ competenceLevel.levelName }}
-              </option>
-            </select>
+                <option :value="0" disabled>Vali tase</option>
+                <option
+                  v-for="competenceLevel in competenceLevels"
+                  :key="competenceLevel.competenceLevelId"
+                  :value="competenceLevel.competenceLevelId"
+                >
+                  {{ competenceLevel.levelName }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-box d-flex align-items-center gap-4 rounded-3 py-3 px-4">
+            <PhTarget :size="28" class="text-primary flex-shrink-0" />
+            <div class="flex-grow-1 min-w-0">
+              <label for="selectTestPassPercent" class="setting-label">Läbimise %</label>
+              <select
+                v-model="passPercent"
+                id="selectTestPassPercent"
+                class="form-select"
+              >
+                <option :value="0" disabled>Vali läbimise %</option>
+                <option :value="50">50%</option>
+                <option :value="60">60%</option>
+                <option :value="70">70%</option>
+                <option :value="80">80%</option>
+                <option :value="90">90%</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-box d-flex align-items-center gap-4 rounded-3 py-3 px-4">
+            <PhTimer :size="28" class="text-primary flex-shrink-0" />
+            <div class="flex-grow-1 min-w-0">
+              <label for="selectTestTimer" class="setting-label">Taimer</label>
+              <select v-model="timerMin" id="selectTestTimer" class="form-select">
+                <option :value="null">Ilma taimerita</option>
+                <option :value="15">15 min</option>
+                <option :value="30">30 min</option>
+                <option :value="45">45 min</option>
+                <option :value="60">60 min</option>
+                <option :value="90">90 min</option>
+                <option :value="120">120 min</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        <div class="row mb-3">
-          <label for="selectTestPassPercent" class="col-sm-3 col-form-label">Läbimise %</label>
-          <div class="col-sm-5">
-            <select v-model="passPercent" class="form-select" id="selectTestPassPercent">
-              <option :value="0" disabled>Vali läbimise %</option>
-              <option :value="50">50%</option>
-              <option :value="60">60%</option>
-              <option :value="70">70%</option>
-              <option :value="80">80%</option>
-              <option :value="90">90%</option>
-            </select>
-          </div>
-        </div>
-
-        <fieldset class="row mb-3">
+        <fieldset class="row mb-4">
           <legend class="col-form-label col-sm-3 pt-0 text-nowrap">Punktide ümardamine</legend>
           <div class="col-sm-9">
             <div class="form-check form-check-inline">
@@ -287,22 +336,7 @@ export default {
           </div>
         </fieldset>
 
-        <div class="row mb-3">
-          <label for="selectTestTimer" class="col-sm-3 col-form-label">Taimer</label>
-          <div class="col-sm-5">
-            <select v-model="timerMin" id="selectTestTimer" class="form-select">
-              <option :value="null">Ilma taimerita</option>
-              <option :value="15">15 min</option>
-              <option :value="30">30 min</option>
-              <option :value="45">45 min</option>
-              <option :value="60">60 min</option>
-              <option :value="90">90 min</option>
-              <option :value="120">120 min</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="row mb-3">
+        <div class="row mb-4">
           <label for="selectTestQuestion" class="col-sm-3 col-form-label">Küsimused</label>
           <div class="col-sm-9">
             <div
@@ -349,17 +383,75 @@ export default {
           </div>
         </div>
 
-        <div class="container text-start col-5 mt-5">
+        <div class="mt-4">
           <AlertDanger :error-message="errorMessage" />
           <AlertSuccess :success-message="successMessage" />
         </div>
 
-        <div class="d-flex justify-content-center mt-4 mb-5">
-          <button type="button" @click="createTest" class="btn btn-primary text-white px-5">
+        <div class="d-flex justify-content-center mt-4">
+          <button type="button" @click="createTest" class="btn btn-primary fw-bold rounded-2 px-5">
             Loo test
           </button>
         </div>
       </form>
+      </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Sama kaardistiil nagu testi vaatel ja testi alustamise lehel */
+.create-card {
+  width: 100%;
+  max-width: 48rem;
+  border: none;
+  border-radius: 1rem;
+}
+
+/* Tähemärkide loendur lahtri sees paremal; padding-right hoiab teksti loendurist eemal */
+.counter-field {
+  position: relative;
+}
+
+.counter-field .form-control {
+  padding-right: 5.5rem;
+}
+
+.char-counter {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--bs-gutter-x) * 0.5 + 0.75rem);
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  color: var(--bs-secondary-color);
+  pointer-events: none;
+}
+
+/* Väiksemad seaded infokastidena — sama stiil nagu testi vaate infokastidel */
+.setting-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+  gap: 1rem;
+}
+
+.setting-box {
+  background-color: rgba(var(--bs-primary-rgb), 0.06);
+  min-width: 0;
+}
+
+/* Valikuväli ei veni üle kogu kasti laiuse */
+.setting-box .form-select {
+  max-width: 12rem;
+}
+
+.setting-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--bs-secondary-color);
+}
+
+.min-w-0 {
+  min-width: 0;
+}
+</style>
