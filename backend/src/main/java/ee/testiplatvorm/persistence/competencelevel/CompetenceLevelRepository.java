@@ -12,5 +12,13 @@ public interface CompetenceLevelRepository extends JpaRepository<CompetenceLevel
             order by c.level.level ASC""")
     List<CompetenceLevel> findCompetenceLevelsBy(Integer competenceId, String status);
 
+    @Query("""
+            select c from CompetenceLevel c
+            join fetch c.competence
+            join fetch c.level
+            where c.status = :status and c.competence.status = :status
+            order by c.competence.name, c.level.level""")
+    List<CompetenceLevel> findAllCompetenceLevelsBy(String status);
+
 
 }

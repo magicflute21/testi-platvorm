@@ -3,6 +3,9 @@
 
 -- tables
 -- Table: ai_question
+
+SET TIME ZONE 'Europe/Tallinn';
+
 CREATE TABLE ai_question (
                              id serial  NOT NULL,
                              title varchar(100)  NOT NULL,
@@ -11,9 +14,9 @@ CREATE TABLE ai_question (
                              competence_level_id int  NOT NULL,
                              question_type_id int  NOT NULL,
                              status char(1)  NOT NULL,
-                             created_at timestamp  NOT NULL,
+                             created_at timestamptz  NOT NULL,
                              created_by int  NOT NULL,
-                             updated_at timestamp  NOT NULL,
+                             updated_at timestamptz  NOT NULL,
                              score int  NULL,
                              feedback varchar(255)  NULL,
                              is_good boolean  NULL,
@@ -40,12 +43,12 @@ CREATE TABLE competence (
                             name varchar(255)  NOT NULL,
                             short_description varchar(255)  NOT NULL,
                             description text  NOT NULL,
-                            updated_at timestamp  NOT NULL,
+                            updated_at timestamptz  NOT NULL,
                             doc_url varchar(500)  NOT NULL,
                             doc_filename varchar(255)  NOT NULL,
                             status char(1)  NOT NULL,
                             created_by int  NOT NULL,
-                            created_at timestamp  NOT NULL,
+                            created_at timestamptz  NOT NULL,
                             CONSTRAINT competence_ak_1 UNIQUE (name) NOT DEFERRABLE  INITIALLY IMMEDIATE,
                             CONSTRAINT competence_pk PRIMARY KEY (id)
 );
@@ -74,8 +77,8 @@ CREATE TABLE "group" (
                          id serial  NOT NULL,
                          name varchar(255)  NOT NULL,
                          status char(1)  NOT NULL,
-                         created_at timestamp  NOT NULL,
-                         updated_at timestamp  NOT NULL,
+                         created_at timestamptz  NOT NULL,
+                         updated_at timestamptz  NOT NULL,
                          CONSTRAINT group_ak_1 UNIQUE (name) NOT DEFERRABLE  INITIALLY IMMEDIATE,
                          CONSTRAINT group_pk PRIMARY KEY (id)
 );
@@ -95,8 +98,8 @@ CREATE TABLE group_member (
                               group_id int  NOT NULL,
                               user_id int  NOT NULL,
                               added_by int  NOT NULL,
-                              created_at timestamp  NOT NULL,
-                              updated_at timestamp  NOT NULL,
+                              created_at timestamptz  NOT NULL,
+                              updated_at timestamptz  NOT NULL,
                               CONSTRAINT group_member_pk PRIMARY KEY (id)
 );
 
@@ -106,8 +109,8 @@ CREATE TABLE invitation (
                             invited_by int  NOT NULL,
                             user_id int  NOT NULL,
                             token varchar(255)  NOT NULL,
-                            created_at timestamp  NOT NULL,
-                            expires_at timestamp  NOT NULL,
+                            created_at timestamptz  NOT NULL,
+                            expires_at timestamptz  NOT NULL,
                             status char(1)  NOT NULL,
                             CONSTRAINT invitation_token UNIQUE (token) NOT DEFERRABLE  INITIALLY IMMEDIATE,
                             CONSTRAINT invitation_pk PRIMARY KEY (id)
@@ -130,8 +133,8 @@ CREATE TABLE profile (
                          first_name varchar(255)  NOT NULL,
                          last_name varchar(255)  NOT NULL,
                          phone_number varchar(20)  NULL,
-                         created_at timestamp  NOT NULL,
-                         updated_at timestamp  NOT NULL,
+                         created_at timestamptz  NOT NULL,
+                         updated_at timestamptz  NOT NULL,
                          CONSTRAINT profile_pk PRIMARY KEY (id)
 );
 
@@ -145,9 +148,9 @@ CREATE TABLE question (
                           question_type_id int  NOT NULL,
                           score int  NOT NULL,
                           status char(1)  NOT NULL,
-                          created_at timestamp  NOT NULL,
+                          created_at timestamptz  NOT NULL,
                           created_by int  NOT NULL,
-                          updated_at timestamp  NOT NULL,
+                          updated_at timestamptz  NOT NULL,
                           CONSTRAINT question_pk PRIMARY KEY (id)
 );
 
@@ -206,8 +209,8 @@ CREATE TABLE test (
                       round_score_up boolean  NOT NULL,
                       status char(1)  NOT NULL,
                       created_by int  NOT NULL,
-                      created_at timestamp  NOT NULL,
-                      updated_at timestamp  NOT NULL,
+                      created_at timestamptz  NOT NULL,
+                      updated_at timestamptz  NOT NULL,
                       CONSTRAINT test_pk PRIMARY KEY (id)
 );
 
@@ -218,8 +221,8 @@ CREATE TABLE test_question (
                                question_id int  NOT NULL,
                                position int  NOT NULL,
                                added_by int  NOT NULL,
-                               created_at timestamp  NOT NULL,
-                               updated_at timestamp  NOT NULL,
+                               created_at timestamptz  NOT NULL,
+                               updated_at timestamptz  NOT NULL,
                                CONSTRAINT test_question_pk PRIMARY KEY (id)
 );
 
@@ -252,8 +255,8 @@ CREATE TABLE "user" (
                         password_hash varchar(255)  NULL,
                         role_id int  NOT NULL,
                         status char(1)  NOT NULL,
-                        created_at timestamp  NOT NULL,
-                        updated_at timestamp  NOT NULL,
+                        created_at timestamptz  NOT NULL,
+                        updated_at timestamptz  NOT NULL,
                         CONSTRAINT user_ak_1 UNIQUE (email) NOT DEFERRABLE  INITIALLY IMMEDIATE,
                         CONSTRAINT user_pk PRIMARY KEY (id)
 );
@@ -268,7 +271,7 @@ CREATE TABLE user_test (
                            status char(1)  NOT NULL,
                            group_id int  NOT NULL,
                            assigned_by int  NOT NULL,
-                           created_at timestamp  NOT NULL,
+                           created_at timestamptz  NOT NULL,
                            CONSTRAINT assignment_pk PRIMARY KEY (id)
 );
 

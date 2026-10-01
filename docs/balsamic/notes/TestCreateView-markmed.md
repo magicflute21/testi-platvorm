@@ -12,14 +12,14 @@ Frontend rada: /tests/new
 Vaatega seotud lisainfo:
 Menüü link "Testid → Testi koostamine" on nähtav ainult siis, kui sessionStorage'is olev roleName on ADMIN või MANAGER. Vaate avamisel laetakse kompetentsid (GET /api/competences). Rippmenüü "Tase" muutub aktiivseks pärast kompetentsi valimist (GET /api/competence-levels) ja rippmenüü "Vali küsimus" pärast taseme valimist (GET /api/questions). Kui kompetentsi või taset muudetakse, tühjendatakse juba valitud küsimused.
 
-Kõik väljad on kohustuslikud ja valitud peab olema vähemalt üks küsimus. Kui mõni väli on täitmata, kuvatakse AlertDanger.vue komponendiga teade "Täida kõik väljad".
+Kõik väljad on kohustuslikud ja valitud peab olema vähemalt üks küsimus. Vormi kontrollitakse "Loo test" vajutamisel ülevalt alla ja esimese täitmata välja kohta kuvatakse AlertDanger.vue komponendiga vastav teade: "Lisa testi nimi", "Lisa testi lühikirjeldus", "Lisa testi kirjeldus", "Vali testile kompetents", "Lisa testile kompetentsi tase", "Lisa testile läbimise %" või "Lisa testile vähemalt 1 küsimus". Küsimuse teade kuvatakse ainult siis, kui ühtegi küsimust pole valitud — tühjaks jäetud küsimuste lahtrid jäetakse kontrollist ja backendile saadetavast questions listist välja.
 
 Taimer on minutites; valik "Ilma taimerita" tähendab, et testil taimerit pole (isTimed = false).
 Vormil on ka valik "Punktide ümardamine" (üles / alla) — üks neist peab olema valitud (roundScoreUp = true / false).
 
-Nupp "+" küsimuste real on mõeldud uue küsimuse lisamiseks modaalaknas.
+Nupp "+" küsimuste all lisab uue küsimuse lahtri (rippmenüü "Vali küsimus"). Nupp on aktiivne ainult siis, kui viimases lahtris on küsimus valitud ja kõiki taseme küsimusi pole veel lisatud. Juba teises lahtris valitud küsimust ei saa uuesti valida. Iga lahtri kõrval on nupp "×" lahtri eemaldamiseks — see on nähtav kohe, kui lahtreid on rohkem kui üks (ka siis, kui uude lahtrisse pole veel küsimust valitud). Kui alles on ainult üks lahter, on "×" nähtav vaid siis, kui sinna on küsimus valitud, ning vajutus tühjendab lahtri.
 
-Nupule "Loo test" vajutades kogutakse vormi andmed ja saadetakse backendile POST /api/tests sõnumiga. Õnnestumise korral suunatakse kasutaja vaatele /tests ("Kõik testid"). Nupule "Tühista" vajutades suunatakse kasutaja vaatele /tests (ilma API kutseta).
+Nupule "Loo test" vajutades kogutakse vormi andmed ja saadetakse backendile POST /api/tests sõnumiga. Õnnestumise korral jääb kasutaja samale vaatele: AlertSuccess.vue komponendiga kuvatakse teade 'Test "<testi nimi>" on edukalt lisatud!' ja vormi väljad tühjendatakse, et saaks kohe järgmise testi luua.
 ```
 
 ## API märkmed — GET /api/competences
