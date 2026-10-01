@@ -9,6 +9,11 @@ AI question generation: ADMIN/HALDUR can create test questions with AI via the c
 a confirmed question to ai_question / ai_question_answer tables with status 'P'.
 Uses Spring AI + Google GenAI (needs GOOGLE_GENAI_API_KEY). The hourly limit is temporarily removed.
 
+Test data (3_import.sql): levels renamed to Juunior / Medior / Seenior (were Algaja / Kesktase / Edasijõudnu),
+competence "Suhtlemine" renamed to "Kommunikatsioon". Kommunikatsioon has its own levels Algaja / Edasijõudnu /
+Spetsialist (level ids 4-6) and got questions for Edasijõudnu (MULTIPLE_CHOICE) and Spetsialist (TRUE_FALSE). Added competences Vue.js, Spring Boot and Git, each with
+all 3 levels and 3 questions (Juunior: SINGLE_CHOICE, Medior: MULTIPLE_CHOICE, Seenior: TRUE_FALSE).
+
 PUT /api/questions/{questionId} -> updates question title (max 100), description (max 1000) and status ('A' or 'I').
 Answer options can't be changed, so existing test results stay correct. Empty/too long fields or another status
 return HTTP 400 INCORRECT_INPUT, unknown questionId returns HTTP 404 PRIMARY_KEY_NOT_FOUND. In QuestionBankView

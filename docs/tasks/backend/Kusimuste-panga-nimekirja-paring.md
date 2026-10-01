@@ -35,7 +35,7 @@ DTO: `QuestionBankDto.java` (vastusevariandid eraldi DTO-na, nt `QuestionBankAns
     "questionTypeName": "MULTIPLE_CHOICE",
     "competenceId": 1,
     "competenceName": "JavaScript",
-    "competenceLevelName": "Kesktase",
+    "competenceLevelName": "Medior",
     "score": 10,
     "questionStatus": "A",
     "answers": [
@@ -61,7 +61,7 @@ Väljade tähendus:
 | `questionTypeName` | `question_type.name` | `SINGLE_CHOICE`, `MULTIPLE_CHOICE` või `TRUE_FALSE`; frontend tõlgib selle kasutajale loetavaks tekstiks |
 | `competenceId` | `question.competence_id` | |
 | `competenceName` | `competence.name` | Kuvatakse kompetentsi sildina |
-| `competenceLevelName` | `level.name` (läbi `question.competence_level_id` → `competence_level.level_id`) | Kompetentsi tase, nt `Algaja`; kuvatakse lahti klõpsatud kaardil |
+| `competenceLevelName` | `level.name` (läbi `question.competence_level_id` → `competence_level.level_id`) | Kompetentsi tase, nt `Juunior`; kuvatakse lahti klõpsatud kaardil |
 | `score` | `question.score` | Küsimuse punktid; kuvatakse lahti klõpsatud kaardil |
 | `questionStatus` | `question.status` | `A` (aktiivne) või `I` (mitteaktiivne) |
 | `answers[].questionAnswerId` | `question_answer.id` | |
@@ -145,7 +145,7 @@ CREATE TABLE competence (
 
 ### Näidisandmed (`docs/database/3_import.sql`)
 
-Kompetentsid: 1 = JavaScript, 2 = SQL, 3 = Suhtlemine.
+Kompetentsid: 1 = JavaScript, 2 = SQL, 3 = Kommunikatsioon, 4 = Vue.js, 5 = Spring Boot, 6 = Git.
 
 Küsimuste tüübid: 1 = `SINGLE_CHOICE`, 2 = `MULTIPLE_CHOICE`, 3 = `TRUE_FALSE`.
 
