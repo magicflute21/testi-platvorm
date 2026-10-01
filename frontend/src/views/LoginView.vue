@@ -47,7 +47,7 @@ export default {
       sessionStorage.setItem('userId', this.loginResponse.userId)
       sessionStorage.setItem('roleName', this.loginResponse.roleName)
 
-      NavigationService.navigateToDashboard()
+      NavigationService.navigateToStartPage()
     },
     handleLoginErrorResponse(error) {
       console.log(error)

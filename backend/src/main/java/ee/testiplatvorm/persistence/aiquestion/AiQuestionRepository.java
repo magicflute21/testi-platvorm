@@ -12,4 +12,7 @@ public interface AiQuestionRepository extends JpaRepository<AiQuestion, Integer>
             and (:competenceId is null or a.competence.id = :competenceId)
             order by a.createdAt desc, a.id desc""")
     List<AiQuestion> findAiQuestionsBy(String status, Integer competenceId);
+
+    @Query("select count(a) from AiQuestion a where a.status = :status")
+    Long countAiQuestionsBy(String status);
 }
