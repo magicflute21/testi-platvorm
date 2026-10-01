@@ -28,7 +28,6 @@ export default {
 
 .app-nav {
   position: relative;
-  overflow: hidden;
   background: #fff;
   border-bottom: 1px solid #eee;
 }
