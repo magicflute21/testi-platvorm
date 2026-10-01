@@ -1,9 +1,9 @@
 <script>
-import { PhCaretDown, PhChartBar, PhDotsThree, PhStar } from '@phosphor-icons/vue'
+import { PhCaretDown, PhDotsThree, PhListChecks, PhStar } from '@phosphor-icons/vue'
 
 export default {
   name: 'QuestionBankCard',
-  components: { PhCaretDown, PhChartBar, PhDotsThree, PhStar },
+  components: { PhCaretDown, PhDotsThree, PhListChecks, PhStar },
   props: {
     statusBadge: { type: Object, default: null },
     competenceName: { type: String, default: '' },
@@ -32,10 +32,10 @@ export default {
           <h5 class="card-title mb-0">
             <slot name="title"></slot>
           </h5>
-          <span v-if="questionTypeLabel" class="header-row flex-shrink-0">
-            <span class="badge rounded-pill badge-neutral">{{ questionTypeLabel }}</span>
-          </span>
           <div class="header-row header-badges">
+            <span v-if="competenceLevelName" class="badge rounded-pill badge-neutral">
+              {{ competenceLevelName }}
+            </span>
             <span v-if="competenceName" class="badge rounded-pill badge-competence">
               {{ competenceName }}
             </span>
@@ -64,9 +64,9 @@ export default {
 
       <div v-if="isOpen" class="question-card-content mt-4 pt-4">
         <div class="d-flex flex-wrap gap-2 mb-4">
-          <span v-if="competenceLevelName" class="badge rounded-pill badge-neutral badge-icon">
-            <PhChartBar :size="12" weight="bold" />
-            Tase: {{ competenceLevelName }}
+          <span v-if="questionTypeLabel" class="badge rounded-pill badge-neutral badge-icon">
+            <PhListChecks :size="12" weight="bold" />
+            {{ questionTypeLabel }}
           </span>
           <span v-if="score !== null" class="badge rounded-pill badge-neutral badge-icon">
             <PhStar :size="12" weight="bold" />
@@ -126,7 +126,7 @@ export default {
   --header-row-height: 1.875rem;
 }
 
-/* Pealkiri, tüübimull ja kompetentsi/staatuse mullid ühes plokis */
+/* Pealkiri vasakul, kõik mullid (tase, kompetents, staatus) paremal ühes grupis */
 .question-card-heading {
   flex: 1 1 0;
   min-width: 0;
@@ -146,6 +146,7 @@ export default {
 .header-badges {
   margin-left: auto;
   flex-shrink: 0;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
@@ -162,6 +163,7 @@ export default {
 
   .header-badges {
     margin-left: 0;
+    flex-shrink: 1;
   }
 }
 
@@ -211,9 +213,9 @@ export default {
 }
 
 .badge-neutral {
-  background-color: var(--bs-secondary-bg-subtle);
-  color: var(--bs-secondary-text-emphasis);
-  border: var(--bs-border-width) solid var(--bs-secondary-border-subtle);
+  background-color: var(--bs-gray-100);
+  color: var(--bs-gray-700);
+  border: var(--bs-border-width) solid var(--bs-gray-300);
 }
 
 .badge-icon {

@@ -5,11 +5,11 @@ import NavigationService from '@/services/NavigationService.js'
 import Status from '@/Status.js'
 import LoadingText from '@/components/LoadingText.vue'
 import QuestionBankCard from '@/components/QuestionBankCard.vue'
-import { PhCaretDown, PhCheckCircle, PhFunnel, PhPlus } from '@phosphor-icons/vue'
+import { PhCaretDown, PhCheckCircle, PhPlus } from '@phosphor-icons/vue'
 
 export default {
   name: 'QuestionBankView',
-  components: { LoadingText, QuestionBankCard, PhCaretDown, PhCheckCircle, PhFunnel, PhPlus },
+  components: { LoadingText, QuestionBankCard, PhCaretDown, PhCheckCircle, PhPlus },
 
   beforeMount() {
     this.getCompetences()
@@ -106,7 +106,6 @@ export default {
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              <PhFunnel :size="16" />
               <span>{{ selectedCompetenceName }}</span>
               <PhCaretDown :size="14" />
             </button>

@@ -10,10 +10,10 @@ a confirmed question to ai_question / ai_question_answer tables with status 'P'.
 Uses Spring AI + Google GenAI (needs GOOGLE_GENAI_API_KEY). The hourly limit is temporarily removed.
 
 TP-29 QuestionBankView http://localhost:8081/questions route view. Questions are shown as collapsible cards
-(QuestionBankCard component): header has the title, question type, competence and status badges, the arrow opens
-the card and shows competence level, score, description and answer options in two columns, correct answers are
+(QuestionBankCard component): header has the title, competence level, competence and status badges, the arrow opens
+the card and shows question type, score, description and answer options in two columns, correct answers are
 highlighted in green. On a narrow card the badges move under the title and answers are in one column.
-Competence dropdown filters questions by competence, "Lisa uus küsimus" button navigates to
+"Küsimuste pank" link is added as the last item of the side menu. Competence dropdown filters questions by competence, "Lisa uus küsimus" button navigates to
 /questions/new (route not created yet). In Status.js the inactive status is now 'I' (Mitteaktiivne), as in backend.
 
 TP-29 GET /api/question-bank?competenceId={id} -> brings all questions for QuestionBankView, regardless of
