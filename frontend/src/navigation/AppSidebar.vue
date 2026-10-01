@@ -4,13 +4,13 @@ import {
   PhFlask,
   PhFilePlus,
   PhStack,
-  PhUserRectangle,
   PhPersonSimple,
+  PhQuestion,
 } from '@phosphor-icons/vue'
 
 export default {
   name: 'AppSidebar',
-  components: { PhPersonSimple, PhUserRectangle, PhStack, PhFilePlus, PhHouse, PhFlask, PhQuestion },
+  components: { PhPersonSimple, PhStack, PhFilePlus, PhHouse, PhFlask, PhQuestion },
 }
 </script>
 
