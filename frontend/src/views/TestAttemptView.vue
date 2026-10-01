@@ -67,6 +67,15 @@ export default {
       }))
       console.log(submittedAnswers)
       TestAttemptService.postCompleteTest(this.testId, submittedAnswers)
+        .then((response) => this.handleCompleteTestResponse(response))
+        .catch((error) => this.handleCompeteTestErrorResponse(error))
+    },
+    handleCompleteTestResponse(response) {
+      console.log("success")
+      console.log(response)
+    },
+    handleCompeteTestErrorResponse(error) {
+      console.log(error)
     },
     handleTestAttemptErrorResponse(error) {
       this.errorResponse = error.response.data
@@ -112,7 +121,7 @@ export default {
 
 <template>
   <div class="container d-flex flex-column align-items-center">
-    <TestNotFoundIllustration v-if="errorMessage.length" />
+    <TestNotFoundIllustration v-if="errorMessage.length" :message="errorMessage" />
     <div v-else>
       <h1 class="text-center h3">{{ testAttempt.testName }}</h1>
       <div class="d-flex flex-column align-items-center">
