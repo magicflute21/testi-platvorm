@@ -1,14 +1,24 @@
 package ee.testiplatvorm.service;
 
+
 import ee.testiplatvorm.Error;
 import ee.testiplatvorm.controller.question.dto.QuestionCreateRequestDto;
+import ee.testiplatvorm.controller.question.dto.QuestionBankAnswerDto;
+import ee.testiplatvorm.controller.question.dto.QuestionBankDto;
+import ee.testiplatvorm.controller.question.dto.QuestionCreateRequestDto;
 import ee.testiplatvorm.controller.question.dto.QuestionResponseDto;
+import ee.testiplatvorm.infrastructure.exception.ForbiddenException;
+import ee.testiplatvorm.infrastructure.exception.PrimaryKeyNotFoundException;
+import ee.testiplatvorm.persistence.competencelevel.CompetenceLevelRepository;
 import ee.testiplatvorm.infrastructure.exception.ForbiddenException;
 import ee.testiplatvorm.infrastructure.exception.PrimaryKeyNotFoundException;
 import ee.testiplatvorm.persistence.competencelevel.CompetenceLevelRepository;
 import ee.testiplatvorm.persistence.question.Question;
 import ee.testiplatvorm.persistence.question.QuestionMapper;
 import ee.testiplatvorm.persistence.question.QuestionRepository;
+import ee.testiplatvorm.persistence.questionanswer.QuestionAnswer;
+import ee.testiplatvorm.persistence.questionanswer.QuestionAnswerMapper;
+import ee.testiplatvorm.persistence.questionanswer.QuestionAnswerRepository;
 import ee.testiplatvorm.persistence.questiontype.QuestionType;
 import ee.testiplatvorm.persistence.questiontype.QuestionTypeRepository;
 import ee.testiplatvorm.persistence.user.User;
@@ -29,6 +39,8 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final QuestionMapper questionMapper;
+    private final QuestionAnswerRepository questionAnswerRepository;
+    private final QuestionAnswerMapper questionAnswerMapper;
     private final CurrentUserService currentUserService;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
@@ -40,6 +52,23 @@ public class QuestionService {
         List<QuestionResponseDto> questionResponseDtos = questionMapper.toQuestionResponseDtos(questions);
         return questionResponseDtos;
     }
+
+    public List<QuestionBankDto> findAllQuestionsBy(Integer competenceId) {
+        List<Question> allQuestions = questionRepository.findAllQuestionsBy(competenceId);
+        List<QuestionBankDto> questionBankDtos = questionMapper.toQuestionBankDtos(allQuestions);
+
+        for (QuestionBankDto questionBankDto : questionBankDtos) {
+            handleGetQuestionsWithAnswers(questionBankDto);
+        }
+        return questionBankDtos;
+    }
+
+    private void handleGetQuestionsWithAnswers(QuestionBankDto questionBankDto) {
+        List<QuestionAnswer> questionAnswers = questionAnswerRepository.findAnswersBy(questionBankDto.getQuestionId(), STATUS_ACTIVE.getCode());
+        List<QuestionBankAnswerDto> questionBankAnswerDtos = questionAnswerMapper.toQuestionBankAnswerDtos(questionAnswers);
+        questionBankDto.setAnswers(questionBankAnswerDtos);
+    }
+
 
     public void createQuestion(QuestionCreateRequestDto questionCreateRequestDto) {
         Integer userId = currentUserService.getUserId();
@@ -57,14 +86,7 @@ public class QuestionService {
 
         competenceLevelRepository.findCompetenceLevelsBy()
 
-
-
-
-
         Question question = questionMapper.toQuestion(questionCreateRequestDto);
-
-
-
 
 
 //   - kasutaja id ja tema rolli kontroll     - esimene asi ja tuleb läbi currentUserService,
@@ -90,7 +112,5 @@ public class QuestionService {
 
         //  - tagastamine
 
-
     }
-
 }
