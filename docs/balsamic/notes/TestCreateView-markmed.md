@@ -53,7 +53,7 @@ Response (200):
 [
   {
     "competenceLevelId": 1,
-    "levelName": "Algaja"
+    "levelName": "Juunior"
   },
   ...
 ]

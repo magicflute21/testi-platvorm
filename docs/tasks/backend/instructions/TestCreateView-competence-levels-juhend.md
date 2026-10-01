@@ -278,4 +278,4 @@ Selle endpointi service meetod on tõenäoliselt lühike — kui refaktoreerida 
 ---
 
 > **Järgmine samm:** Testi endpointi Swagger UI kaudu (`http://localhost:8080/swagger-ui/index.html`).
-> `competenceId=1` peaks tagastama "Algaja" ja "Kesktase", `competenceId=3` tühja listi.
+> `competenceId=1` peaks tagastama "Juunior" ja "Medior", `competenceId=3` tühja listi.

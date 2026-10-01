@@ -3,9 +3,11 @@ package ee.testiplatvorm.persistence.question;
 import ee.testiplatvorm.controller.question.dto.QuestionBankDto;
 import ee.testiplatvorm.controller.question.dto.QuestionCreateRequestDto;
 import ee.testiplatvorm.controller.question.dto.QuestionResponseDto;
+import ee.testiplatvorm.controller.question.dto.QuestionUpdateRequestDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
@@ -46,4 +48,9 @@ public interface QuestionMapper {
     @Mapping(ignore = true, target = "updatedAt")
     Question toQuestion(QuestionCreateRequestDto questionCreateRequestDto);
 
+
+    @Mapping(source = "questionTitle", target = "title")
+    @Mapping(source = "questionDescription", target = "description")
+    @Mapping(source = "questionStatus", target = "status")
+    void updateQuestion(QuestionUpdateRequestDto questionUpdateRequestDto, @MappingTarget Question question);
 }

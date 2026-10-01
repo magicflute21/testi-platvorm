@@ -3,21 +3,31 @@ import QuestionService from '@/services/QuestionService.js'
 import CompetenceService from '@/services/CompetenceService.js'
 import Status from '@/Status.js'
 import LoadingText from '@/components/LoadingText.vue'
+import SuccessToast from '@/components/SuccessToast.vue'
+import AlertDanger from '@/components/AlertDanger.vue'
 import QuestionBankCard from '@/components/QuestionBankCard.vue'
+import QuestionBankTabs from '@/components/QuestionBankTabs.vue'
+import QuestionAnswerOption from '@/components/QuestionAnswerOption.vue'
+import { PhCaretDown, PhPencilSimple, PhPlus, PhTrash } from '@phosphor-icons/vue'
 import BaseModal from '@/components/modal/BaseModal.vue'
 import QuestionCreateForm from '@/components/QuestionCreateForm.vue'
-import { PhCaretDown, PhCheckCircle, PhPlus } from '@phosphor-icons/vue'
+
 
 export default {
   name: 'QuestionBankView',
   components: {
     LoadingText,
-    QuestionBankCard,
+    SuccessToast,
+    AlertDanger,
     BaseModal,
     QuestionCreateForm,
+    QuestionBankCard,
+    QuestionBankTabs,
+    QuestionAnswerOption,
     PhCaretDown,
-    PhCheckCircle,
+    PhPencilSimple,
     PhPlus,
+    PhTrash,
   },
 
   beforeMount() {
@@ -32,6 +42,18 @@ export default {
       isQuestionCreatedModalOpen: false,
       createdQuestionTitle: '',
       selectedCompetenceId: null,
+      questionToDelete: null,
+      isDeleting: false,
+      successMessage: '',
+      deleteErrorMessage: '',
+      questionToEdit: null,
+      isSaving: false,
+      editErrorMessage: '',
+      questionUpdateRequestDto: {
+        questionTitle: '',
+        questionDescription: '',
+        questionStatus: '',
+      },
       questionStatus: Status,
       questionTypeLabels: {
         SINGLE_CHOICE: 'Ühe õige vastusega',
@@ -108,6 +130,64 @@ export default {
     closeQuestionCreatedModal() {
       this.isQuestionCreatedModalOpen = false
     },
+    openEditForm(question) {
+      this.successMessage = ''
+      this.editErrorMessage = ''
+      this.questionToEdit = question
+      this.questionUpdateRequestDto = {
+        questionTitle: question.questionTitle,
+        questionDescription: question.questionDescription,
+        questionStatus: question.questionStatus,
+      }
+    },
+    closeEditForm() {
+      this.questionToEdit = null
+    },
+    updateQuestion() {
+      if (!this.isEditFormValid()) {
+        this.editErrorMessage = 'Pealkiri ja kirjeldus peavad olema täidetud'
+        return
+      }
+      this.isSaving = true
+      QuestionService.updateQuestionRequest(
+        this.questionToEdit.questionId,
+        this.questionUpdateRequestDto,
+      )
+        .then(() => this.handleUpdateQuestion())
+        .catch(() => (this.editErrorMessage = 'Küsimuse muutmine ebaõnnestus. Proovi uuesti.'))
+        .finally(() => (this.isSaving = false))
+    },
+    isEditFormValid() {
+      return (
+        this.questionUpdateRequestDto.questionTitle.trim() !== '' &&
+        this.questionUpdateRequestDto.questionDescription.trim() !== ''
+      )
+    },
+    handleUpdateQuestion() {
+      this.successMessage = `Küsimus "${this.questionUpdateRequestDto.questionTitle}" on muudetud`
+      this.closeEditForm()
+      this.getQuestionBank()
+    },
+    openDeleteConfirmation(question) {
+      this.successMessage = ''
+      this.deleteErrorMessage = ''
+      this.questionToDelete = question
+    },
+    closeDeleteConfirmation() {
+      this.questionToDelete = null
+    },
+    deleteQuestion() {
+      this.isDeleting = true
+      QuestionService.deleteQuestionRequest(this.questionToDelete.questionId)
+        .then(() => this.handleDeleteQuestion())
+        .catch(() => (this.deleteErrorMessage = 'Küsimuse kustutamine ebaõnnestus. Proovi uuesti.'))
+        .finally(() => (this.isDeleting = false))
+    },
+    handleDeleteQuestion() {
+      this.successMessage = `Küsimus "${this.questionToDelete.questionTitle}" on kustutatud`
+      this.closeDeleteConfirmation()
+      this.getQuestionBank()
+    },
     getQuestionBank() {
       QuestionService.getQuestionBankRequest(this.selectedCompetenceId)
         .then((response) => this.handleGetQuestionBank(response))
@@ -125,7 +205,7 @@ export default {
   <div class="container-fluid py-4">
     <LoadingText v-if="isLoading" />
     <div v-else class="question-bank-content mx-auto">
-      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-5">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
         <h1 class="text-uppercase fw-bold h3 mb-0">Küsimuste pank</h1>
         <div class="d-flex flex-wrap gap-2">
           <div class="dropdown">
@@ -169,6 +249,8 @@ export default {
         </div>
       </div>
 
+      <QuestionBankTabs />
+
       <div v-if="!questions.length" class="card shadow rounded-4 p-5 text-center text-secondary">
         Küsimusi ei leitud
       </div>
@@ -184,25 +266,41 @@ export default {
           :score="question.score"
         >
           <template #title>{{ question.questionTitle }}</template>
+          <template #menu>
+            <li>
+              <button
+                class="dropdown-item d-flex align-items-center gap-2"
+                @click="openEditForm(question)"
+              >
+                <PhPencilSimple :size="16" />
+                Muuda
+              </button>
+            </li>
+            <template v-if="question.questionStatus !== 'I'">
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <button
+                  class="dropdown-item d-flex align-items-center gap-2 text-danger"
+                  @click="openDeleteConfirmation(question)"
+                >
+                  <PhTrash :size="16" />
+                  Kustuta
+                </button>
+              </li>
+            </template>
+          </template>
           <template #description>{{ question.questionDescription }}</template>
           <template #answers>
-            <div
+            <QuestionAnswerOption
               v-for="answer in question.answers"
               :key="answer.questionAnswerId"
-              class="answer-option d-flex align-items-center gap-3 rounded-3 py-2 px-3"
-              :class="{ correct: answer.correctChoice }"
-            >
-              <span class="answer-text flex-grow-1">{{ answer.answerText }}</span>
-              <span v-if="answer.correctChoice" class="answer-correct flex-shrink-0">
-                <PhCheckCircle :size="20" weight="fill" />
-                <span class="visually-hidden">Õige vastus</span>
-              </span>
-            </div>
+              :answer-text="answer.answerText"
+              :correct-choice="answer.correctChoice"
+            />
           </template>
         </QuestionBankCard>
       </div>
     </div>
-
     <BaseModal
       :is-open="isQuestionCreateModalOpen"
       size="lg"
@@ -246,6 +344,124 @@ export default {
         </button>
       </template>
     </BaseModal>
+    <template v-if="questionToEdit">
+      <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <form class="modal-content rounded-4 border-0 shadow" @submit.prevent="updateQuestion">
+            <div class="modal-body p-4">
+              <h5 class="fw-bold mb-4">Muuda küsimust</h5>
+              <AlertDanger :error-message="editErrorMessage" class="mb-3" />
+
+              <div class="mb-3">
+                <label for="edit-question-title" class="form-label fw-semibold">Pealkiri</label>
+                <input
+                  id="edit-question-title"
+                  v-model="questionUpdateRequestDto.questionTitle"
+                  type="text"
+                  class="form-control"
+                  maxlength="100"
+                />
+                <div class="form-text text-end">
+                  {{ questionUpdateRequestDto.questionTitle.length }} / 100
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="edit-question-description" class="form-label fw-semibold">
+                  Kirjeldus
+                </label>
+                <textarea
+                  id="edit-question-description"
+                  v-model="questionUpdateRequestDto.questionDescription"
+                  class="form-control"
+                  rows="6"
+                  maxlength="1000"
+                ></textarea>
+                <div class="form-text text-end">
+                  {{ questionUpdateRequestDto.questionDescription.length }} / 1000
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="edit-question-status" class="form-label fw-semibold">Staatus</label>
+                <select
+                  id="edit-question-status"
+                  v-model="questionUpdateRequestDto.questionStatus"
+                  class="form-select"
+                >
+                  <option value="A">Aktiivne</option>
+                  <option value="I">Mitteaktiivne</option>
+                </select>
+              </div>
+
+              <p class="text-secondary small mb-0">
+                Vastusevariante muuta ei saa, et olemasolevad testitulemused jääksid õigeks.
+              </p>
+            </div>
+            <div class="modal-footer border-0 px-4 pb-4 pt-0">
+              <button
+                type="button"
+                class="btn btn-light fw-bold rounded-2"
+                :disabled="isSaving"
+                @click="closeEditForm"
+              >
+                Tühista
+              </button>
+              <button type="submit" class="btn btn-primary fw-bold rounded-2" :disabled="isSaving">
+                Salvesta
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-backdrop fade show"></div>
+    </template>
+
+    <template v-if="questionToDelete">
+      <div
+        class="modal d-block"
+        tabindex="-1"
+        role="dialog"
+        aria-modal="true"
+        @click.self="closeDeleteConfirmation"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-body p-4">
+              <h5 class="fw-bold mb-3">Kustuta küsimus?</h5>
+              <p class="mb-2">
+                <strong>{{ questionToDelete.questionTitle }}</strong>
+              </p>
+              <AlertDanger :error-message="deleteErrorMessage" class="mb-3" />
+              <p class="text-secondary mb-0">
+                Küsimus muutub mitteaktiivseks ja seda ei saa enam uutele testidele lisada.
+                Olemasolevad testid ja tulemused jäävad alles.
+              </p>
+            </div>
+            <div class="modal-footer border-0 px-4 pb-4 pt-0">
+              <button
+                class="btn btn-light fw-bold rounded-2"
+                :disabled="isDeleting"
+                @click="closeDeleteConfirmation"
+              >
+                Tühista
+              </button>
+              <button
+                class="btn btn-danger fw-bold rounded-2 d-flex align-items-center gap-2"
+                :disabled="isDeleting"
+                @click="deleteQuestion"
+              >
+                <PhTrash :size="16" />
+                Kustuta
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-backdrop fade show"></div>
+    </template>
+
+    <SuccessToast :success-message="successMessage" @event-close="successMessage = ''" />
   </div>
 </template>
 
@@ -261,33 +477,5 @@ export default {
   .question-bank-content {
     width: 70%;
   }
-}
-
-.answer-option {
-  border: 1px solid var(--bs-border-color);
-  background-color: var(--bs-gray-100);
-}
-
-.answer-option.correct {
-  border-color: var(--bs-success);
-  background-color: var(--bs-success-bg-subtle);
-}
-
-.answer-text {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-.answer-correct {
-  color: var(--bs-success);
-}
-
-.created-icon {
-  color: var(--bs-success);
-}
-
-.created-title {
-  color: var(--brand-slate);
-  overflow-wrap: anywhere;
 }
 </style>

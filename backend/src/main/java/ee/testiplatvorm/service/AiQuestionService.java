@@ -1,5 +1,6 @@
 package ee.testiplatvorm.service;
 
+import ee.testiplatvorm.controller.aiquestion.dto.AiChatMessageDto;
 import ee.testiplatvorm.controller.aiquestion.dto.AiQuestionGenerationResponse;
 import ee.testiplatvorm.controller.aiquestion.dto.AiQuestionSaveRequest;
 import ee.testiplatvorm.controller.aiquestion.dto.AskRequest;
@@ -61,8 +62,22 @@ public class AiQuestionService {
             7. Use one target per distinct competence level + question type combination.
             8. If a competence or a level cannot be determined with confidence, or the request matches
                several competence levels equally, return an empty targets list and write a short
-               clarifyingQuestion in Estonian that names the available options.
+               clarifyingQuestion in Estonian that names the available options. If the author named a
+               competence but the requested level does not exist for it, name the levels that do exist
+               for that competence.
             9. If everything is clear, set clarifyingQuestion to null.
+
+            CONVERSATION RULES:
+            10. The request may contain EARLIER MESSAGES of the same conversation (author's messages and
+                your own clarifying questions) and always contains the LATEST AUTHOR MESSAGE.
+            11. The LATEST AUTHOR MESSAGE always has priority. If it names a different competence, level,
+                question type or question count than the earlier messages, use the values from the latest
+                message and ignore the conflicting earlier values. The author is allowed to change their mind.
+            12. Use earlier messages only to fill in what the latest message does not say. For example, if the
+                latest message only answers your clarifying question (e.g. "Juunior" or "Vue"), combine it with
+                the competence, level, type, count and topic from the earlier messages.
+            13. Never ask a clarifying question that the latest message already answers, and never repeat the
+                same clarifying question - if something is still unclear, ask only about the part that is missing.
             """.formatted(MAX_QUESTION_COUNT, MAX_QUESTION_COUNT);
 
     private static final String SELECTION_USER_PROMPT_TEMPLATE = """
@@ -72,7 +87,6 @@ public class AiQuestionService {
             AVAILABLE QUESTION TYPES:
             %s
 
-            Author's request:
             %s
             """;
 
@@ -111,8 +125,9 @@ public class AiQuestionService {
             Existing questions for this competence level:
             %s
 
-            Author's full request (may also contain topic wishes and requests for other competences -
-            follow only the parts that concern this competence and level):
+            Author's request (may also contain topic wishes and requests for other competences -
+            follow only the parts that concern this competence and level; if earlier messages and the
+            LATEST AUTHOR MESSAGE disagree, follow the latest message):
             %s
             """;
 
@@ -170,7 +185,7 @@ public class AiQuestionService {
     public AiQuestionGenerationResponse generateQuestions(AskRequest askRequest) {
         // Õigused kontrollitakse enne AI päringut, et ilma õiguseta päringutele raha ei kuluks
         getValidQuestionAuthorId();
-        String instructions = askRequest.getInstructions();
+        String instructions = createConversationText(askRequest);
 
         List<CompetenceLevel> competenceLevels = competenceLevelRepository.findAllCompetenceLevelsBy(STATUS_ACTIVE.getCode());
         List<QuestionType> questionTypes = questionTypeRepository.findAll();
@@ -228,6 +243,20 @@ public class AiQuestionService {
             throw new ForbiddenException(NO_PERMISSION_TO_CREATE_QUESTIONS.getMessage(), NO_PERMISSION_TO_CREATE_QUESTIONS.name());
         }
         return userId;
+    }
+
+    // Varasemad sõnumid + viimane sõnum ühe tekstina, viimane sõnum on eraldi esile tõstetud
+    private String createConversationText(AskRequest askRequest) {
+        String latestMessage = "LATEST AUTHOR MESSAGE (has priority):\n" + askRequest.getInstructions();
+        List<AiChatMessageDto> previousMessages = askRequest.getPreviousMessages();
+        if (previousMessages == null || previousMessages.isEmpty()) {
+            return latestMessage;
+        }
+
+        String earlierMessages = String.join("\n", previousMessages.stream()
+                .map(message -> ("ai".equals(message.getSender()) ? "Assistant: " : "Author: ") + message.getText())
+                .toList());
+        return "EARLIER MESSAGES (oldest first):\n" + earlierMessages + "\n\n" + latestMessage;
     }
 
     private QuestionTargets selectQuestionTargets(String instructions, List<CompetenceLevel> competenceLevels, List<QuestionType> questionTypes) {

@@ -55,7 +55,7 @@ Response (200):
     "questionTypeName": "MULTIPLE_CHOICE",
     "competenceId": 1,
     "competenceName": "JavaScript",
-    "competenceLevelName": "Kesktase",
+    "competenceLevelName": "Medior",
     "score": 10,
     "questionStatus": "A",
     "answers": [

@@ -9,6 +9,14 @@ export default {
     return axios.get('/api/question-bank', { params: { competenceId } })
   },
 
+  updateQuestionRequest(questionId, questionUpdateRequestDto) {
+    return axios.put(`/api/questions/${questionId}`, questionUpdateRequestDto)
+  },
+
+  deleteQuestionRequest(questionId) {
+    return axios.delete(`/api/questions/${questionId}`)
+  },
+
   postNewQuestion(questionCreateRequest) {
     return axios.post('/api/questions', questionCreateRequest)
   },

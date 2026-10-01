@@ -11,7 +11,8 @@ import MyTestsView from '@/views/MyTestsView.vue'
 import UsersView from '@/views/UsersView.vue'
 
 import TestCreateView from '@/views/TestCreateView.vue'
-import QuestionBankView from '@/views/QuestionBankView.vue'
+import QuestionBankView from "@/views/QuestionBankView.vue";
+import AiQuestionBankView from '@/views/AiQuestionBankView.vue'
 import SessionStorageService from '@/services/SessionStorageService.js'
 
 const toNumber = (param) => (route) => ({ [param]: Number(route.params[param]) })
@@ -34,6 +35,7 @@ const router = createRouter({
         { path: 'competences', name: 'competenceView', component: CompetenceView, meta: STAFF },
         { path: 'questions', name: 'questionBankView', component: QuestionBankView, meta: STAFF },
         { path: 'users', name: 'usersRoute', component: UsersView, meta: STAFF },
+        { path: 'questions/ai', name: 'aiQuestionBankView', component: AiQuestionBankView },
         {
           path: 'tests/:testId/start',
           name: 'testStartRoute',
