@@ -36,7 +36,7 @@ INSERT INTO role (id, name) VALUES
 -- "user"  (4th row = pending invite, not yet completed registration)
 -- ------------------------------------------------------------
 INSERT INTO "user" (id, email, password_hash, role_id, status, created_at, updated_at)
-VALUES (1, 'admin@example.com', 'admin123', 1, 'A', now() - interval '90 days', now()),
+VALUES (1, 'admin', '123', 1, 'A', now(), now()),
        (2, 'manager@example.com', 'manager123', 2, 'A', now() - interval '60 days', now()),
        (3, 'user@example.com', 'user123', 3, 'A', now() - interval '30 days', now()),
        (4, 'newhire@example.com', NULL, 3, 'P', now() - interval '2 days', now() - interval '2 days');

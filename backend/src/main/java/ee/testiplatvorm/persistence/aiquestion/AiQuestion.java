@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 
 @Getter
 @Setter
@@ -50,7 +50,7 @@ public class AiQuestion {
 
     @NotNull
     @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
+    private OffsetDateTime createdAt;
 
     @NotNull
     @Column(name = "created_by", nullable = false)
@@ -58,7 +58,7 @@ public class AiQuestion {
 
     @NotNull
     @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
+    private OffsetDateTime updatedAt;
 
     @Column(name = "score")
     private Integer score;
