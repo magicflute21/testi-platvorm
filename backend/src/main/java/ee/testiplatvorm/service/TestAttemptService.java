@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.OffsetDateTime;
 import java.util.*;
 
@@ -36,8 +35,6 @@ import static ee.testiplatvorm.Status.*;
 @Service
 @RequiredArgsConstructor
 public class TestAttemptService {
-    private static final int DECIMAL_POINTS = 2;
-
     private final UserTestRepository userTestRepository;
     private final UserTestMapper userTestMapper;
     private final TestQuestionRepository testQuestionRepository;
@@ -97,7 +94,7 @@ public class TestAttemptService {
         userTestRepository.save(userTest);
 
         ResultResponseDto resultResponseDto = resultMapper.toResultResponseDto(result);
-        BigDecimal userScorePercentage = calculateUserResultPercentage(result);
+        BigDecimal userScorePercentage = resultService.calculateUserResultPercentage(result);
         resultResponseDto.setUserAchievedScorePercentage(userScorePercentage);
 
         return resultResponseDto;
@@ -109,31 +106,11 @@ public class TestAttemptService {
         result.setCompletedAt(timestamp);
     }
 
-    private BigDecimal calculateUserResultPercentage(Result result) {
-        UserTest userTest = result.getUserTest();
-        Test test = userTest.getTest();
-        boolean roundScoreUp = test.getRoundScoreUp();
-        BigDecimal maxScore = BigDecimal.valueOf(result.getMaxScore());
-        BigDecimal userScore = BigDecimal.valueOf(result.getScoreTotal());
-
-        if (maxScore.compareTo(BigDecimal.ZERO) == 0) {
-            return BigDecimal.valueOf(100);
-        }
-
-        BigDecimal userAchievedPercentage = userScore.multiply(BigDecimal.valueOf(100)).divide(maxScore, DECIMAL_POINTS, RoundingMode.HALF_UP);
-        BigDecimal userAchievedEndResultPercentage = userAchievedPercentage;
-
-        if (roundScoreUp) {
-            userAchievedEndResultPercentage = userAchievedPercentage.setScale(0, RoundingMode.HALF_UP);
-        }
-        return userAchievedEndResultPercentage;
-    }
-
     private void handleResultStatus(UserTest userTest, Result result) {
         Test test = userTest.getTest();
 
         BigDecimal testPassPercent = test.getPassPercent();
-        BigDecimal userAchievedEndResultPercentage = calculateUserResultPercentage(result);
+        BigDecimal userAchievedEndResultPercentage = resultService.calculateUserResultPercentage(result);
 
         if (userAchievedEndResultPercentage.compareTo(testPassPercent) >= 0) {
             result.setStatus(STATUS_PASSED.getCode());

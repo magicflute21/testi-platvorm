@@ -28,7 +28,10 @@ public class ResultService {
         Result result = resultRepository.findResultByUserTestId(userTestId)
                 .orElseThrow(() -> new ForbiddenException(NO_RESULT_FOUND.getMessage(), NO_RESULT_FOUND.name()));
 
-        return resultMapper.toResultResponseDto(result);
+        ResultResponseDto resultResponseDto = resultMapper.toResultResponseDto(result);
+        BigDecimal resultScorePercentage = calculateUserResultPercentage(result);
+        resultResponseDto.setUserAchievedScorePercentage(resultScorePercentage);
+        return resultResponseDto;
     }
 
     public BigDecimal calculateUserResultPercentage(Result result) {
