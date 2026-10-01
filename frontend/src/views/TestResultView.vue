@@ -3,11 +3,18 @@ import TestService from '@/services/TestService.js'
 import NavigationService from '@/services/NavigationService.js'
 import LoadingText from '@/components/LoadingText.vue'
 import TestNotFoundIllustration from '@/components/TestNotFoundIllustration.vue'
-import { PhClock, PhHouse, PhListChecks, PhPlant, PhTarget, PhTrophy } from '@phosphor-icons/vue'
+import {
+  PhClock,
+  PhHouse,
+  PhListChecks,
+  PhPlant,
+  PhSkull,
+  PhTarget,
+  PhTrophy,
+} from '@phosphor-icons/vue'
 
 const STATUS_PASSED = 'P'
-const RING_RADIUS = 52
-const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS
+const LOW_SCORE_PERCENTAGE = 30
 const CONFETTI_COLORS = ['#00b894', '#92e3a9', '#1f8a4c', '#ffd166', '#ff8fab', '#74c0fc']
 const CONFETTI_PIECE_COUNT = 90
 const CONFETTI_DURATION_MS = 6000
@@ -19,6 +26,7 @@ export default {
     LoadingText,
     PhTrophy,
     PhPlant,
+    PhSkull,
     PhTarget,
     PhListChecks,
     PhClock,
@@ -29,8 +37,6 @@ export default {
     return {
       isLoading: true,
       userTestId: Number(this.$route.query.userTestId),
-      ringRadius: RING_RADIUS,
-      ringCircumference: RING_CIRCUMFERENCE,
       confettiPieces: [],
       errorResponse: {
         message: '',
@@ -57,12 +63,14 @@ export default {
     isPassed() {
       return this.result.status === STATUS_PASSED
     },
+    isLowScore() {
+      return this.scorePercentage < LOW_SCORE_PERCENTAGE
+    },
     scorePercentage() {
       return Number(this.result.userAchievedScorePercentage)
     },
-    ringOffset() {
-      const percentage = Math.min(Math.max(this.scorePercentage, 0), 100)
-      return this.ringCircumference * (1 - percentage / 100)
+    ringPercentage() {
+      return Math.min(Math.max(this.scorePercentage, 0), 100)
     },
     timeSpent() {
       const milliseconds = new Date(this.result.completedAt) - new Date(this.result.startedAt)
@@ -99,6 +107,8 @@ export default {
     },
     handleResultErrorResponse(error) {
       this.errorResponse = error.response.data
+
+      console.log(error.response)
 
       if (error.response.status === 403 && this.errorResponse.errorCode === 'NO_RESULT_FOUND') {
         this.errorMessage = 'Tulemust ei leitud'
@@ -161,32 +171,25 @@ export default {
       <div class="result-header text-center px-4 pt-4 pb-5">
         <div class="header-icon mx-auto mb-3">
           <PhTrophy v-if="isPassed" :size="32" weight="fill" />
-          <PhPlant v-else :size="32" weight="fill" />
+          <PhSkull v-else-if="isLowScore" :size="32" weight="fill" />
+          <PhPlant v-else :size="32" weight="fill" class="text-success" />
         </div>
         <p class="eyebrow mb-1">Testi tulemus</p>
         <h1 class="h3 fw-bold mb-1">
           <span v-if="isPassed">Palju õnne! Test on sooritatud</span>
-          <span v-else>Seekord jäi napiks</span>
+          <span v-else>Seekord ei õnnestunud</span>
         </h1>
         <p class="mb-0 header-subtitle">
           <span v-if="isPassed">Suurepärane töö — sinu vastused on salvestatud.</span>
+          <span v-else-if="isLowScore">Mine koju ära 🙂</span>
           <span v-else>Sinu vastused on salvestatud. Iga katse viib sind sammu edasi!</span>
         </p>
       </div>
 
       <div class="card-body px-4 pb-4 pt-0">
         <div class="score-ring mx-auto">
-          <svg viewBox="0 0 120 120" class="score-ring-svg">
-            <circle class="ring-track" cx="60" cy="60" :r="ringRadius" />
-            <circle
-              class="ring-progress"
-              cx="60"
-              cy="60"
-              :r="ringRadius"
-              :stroke-dasharray="ringCircumference"
-              :style="{ '--ring-circumference': ringCircumference, '--ring-offset': ringOffset }"
-            />
-          </svg>
+          <div class="ring ring-track"></div>
+          <div class="ring ring-progress" :style="{ '--ring-percentage': ringPercentage }"></div>
           <div class="score-ring-label">
             <span class="score-value">{{ scorePercentage }}%</span>
             <span
@@ -308,26 +311,40 @@ export default {
   box-shadow: 0 0.5rem 1.5rem rgba(var(--bs-primary-rgb), 0.12);
 }
 
-.score-ring-svg {
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
+/* Registreeritud muutuja, et brauser oskaks protsenti animeerida (0 → tulemus) */
+@property --ring-percentage {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
 }
 
-.ring-track,
-.ring-progress {
-  fill: none;
-  stroke-width: 9;
+/* Ringi kuju tehakse maskiga: radial-gradient lõikab keskelt augu välja */
+.ring {
+  --ring-shape: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 11px),
+    #000 calc(100% - 10px)
+  );
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  -webkit-mask: var(--ring-shape);
+  mask: var(--ring-shape);
 }
 
 .ring-track {
-  stroke: #eceff1;
+  background-color: #eceff1;
 }
 
+/* Gradient kulgeb üle kogu ringi tumehallist mündiroheliseks, teine mask näitab sellest
+   ainult osa kuni tulemuse protsendini — mida suurem tulemus, seda heledamaks ring läheb */
 .ring-progress {
-  stroke: var(--result-accent);
-  stroke-linecap: round;
-  stroke-dashoffset: var(--ring-offset);
+  --ring-reveal: conic-gradient(#000 calc(var(--ring-percentage) * 1%), transparent 0);
+  background: conic-gradient(var(--brand-slate), var(--brand-mint));
+  -webkit-mask: var(--ring-shape), var(--ring-reveal);
+  -webkit-mask-composite: source-in;
+  mask: var(--ring-shape), var(--ring-reveal);
+  mask-composite: intersect;
   animation: ring-fill 1.2s ease-out both;
 }
 
@@ -369,7 +386,10 @@ export default {
   z-index: 1050;
 }
 
+/* Vaikeväärtused — iga tüki juhuslikud väärtused tulevad createConfettiPiece() kaudu */
 .confetti-piece {
+  --confetti-drift: 0px;
+  --confetti-spin: 360deg;
   position: absolute;
   top: -2rem;
   opacity: 0;
@@ -394,7 +414,7 @@ export default {
 
 @keyframes ring-fill {
   from {
-    stroke-dashoffset: var(--ring-circumference);
+    --ring-percentage: 0;
   }
 }
 
