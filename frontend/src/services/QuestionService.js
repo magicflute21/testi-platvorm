@@ -16,4 +16,8 @@ export default {
   deleteQuestionRequest(questionId) {
     return axios.delete(`/api/questions/${questionId}`)
   },
+
+  postNewQuestion(questionCreateRequest) {
+    return axios.post('/api/questions', questionCreateRequest)
+  },
 }

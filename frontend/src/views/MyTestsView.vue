@@ -100,4 +100,21 @@ export default {
   grid-template-columns: repeat(auto-fill, minmax(min(500px, 100%), 1fr));
   gap: 1rem;
 }
+@media (min-width: 1800px) {
+  .container {
+    max-width: 1760px;
+  }
+}
+
+@media (min-width: 2400px) {
+  .container {
+    max-width: 2340px;
+  }
+}
+
+@media (min-width: 3000px) {
+  .container {
+    max-width: 2900px;
+  }
+}
 </style>

@@ -1,6 +1,6 @@
 package ee.testiplatvorm.persistence.question;
 
-import ee.testiplatvorm.persistence.QuestionType;
+import ee.testiplatvorm.persistence.questiontype.QuestionType;
 import ee.testiplatvorm.persistence.competence.Competence;
 import ee.testiplatvorm.persistence.competencelevel.CompetenceLevel;
 import ee.testiplatvorm.persistence.user.User;

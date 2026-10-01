@@ -1,6 +1,7 @@
 package ee.testiplatvorm.controller.question;
 
 import ee.testiplatvorm.controller.question.dto.QuestionBankDto;
+import ee.testiplatvorm.controller.question.dto.QuestionCreateRequestDto;
 import ee.testiplatvorm.controller.question.dto.QuestionResponseDto;
 import ee.testiplatvorm.controller.question.dto.QuestionUpdateRequestDto;
 import ee.testiplatvorm.infrastructure.error.ApiError;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,6 +48,18 @@ public class QuestionController {
     public List<QuestionBankDto> findAllQuestionsBy(@RequestParam(required = false) Integer competenceId) {
         List<QuestionBankDto> questionBankDtos = questionService.findAllQuestionsBy(competenceId);
         return questionBankDtos;
+    }
+
+
+    @PostMapping("/api/questions")
+    @Operation(summary = "Luuakse uus küsimus koos vastusevariantidega. Tagastatakse loodud küsimuse id.")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "Õigete vastuste arv ei vasta küsimuse tüübile (INVALID_CORRECT_ANSWER_COUNT)")
+    @ApiResponse(responseCode = "401", description = "Kasutaja pole sisse logitud")
+    @ApiResponse(responseCode = "403", description = "Kasutaja roll pole ADMIN ega HALDUR (NO_PERMISSION_TO_CREATE_QUESTIONS)")
+    @ApiResponse(responseCode = "404", description = "competenceLevelId või questionTypeId järgi rida ei leitud (PRIMARY_KEY_NOT_FOUND)")
+    public Integer createQuestion(@RequestBody QuestionCreateRequestDto questionCreateRequestDto) {
+        return questionService.createQuestion(questionCreateRequestDto);
     }
 
     @PutMapping("/api/questions/{questionId}")
