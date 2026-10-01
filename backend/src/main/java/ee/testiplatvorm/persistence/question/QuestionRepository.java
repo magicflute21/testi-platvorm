@@ -2,7 +2,6 @@ package ee.testiplatvorm.persistence.question;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
 
     @Query("""
             select q from Question q
-            where q.competence.id = :id
-            order by q.competence.id""")
-    List<Question> findAllQuestionsBy(Integer id);
+            where (:competenceId is null or q.competence.id = :competenceId)
+            order by q.id""")
+    List<Question> findAllQuestionsBy(Integer competenceId);
 }

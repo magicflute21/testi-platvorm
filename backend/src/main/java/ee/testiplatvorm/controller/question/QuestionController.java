@@ -1,5 +1,6 @@
 package ee.testiplatvorm.controller.question;
 
+import ee.testiplatvorm.controller.question.dto.QuestionBankDto;
 import ee.testiplatvorm.controller.question.dto.QuestionResponseDto;
 import ee.testiplatvorm.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,8 +33,9 @@ public class QuestionController {
     @ApiResponse(
             responseCode = "200", description = "OK"
     )
-    public void findAllQuestionsBy(@RequestParam(required = false) Integer competenceId) {
-        questionService.findAllQuestionsBy(competenceId);
+    public List<QuestionBankDto> findAllQuestionsBy(@RequestParam(required = false) Integer competenceId) {
+        List<QuestionBankDto> questionBankDtos = questionService.findAllQuestionsBy(competenceId);
+        return questionBankDtos;
 
     }
 }

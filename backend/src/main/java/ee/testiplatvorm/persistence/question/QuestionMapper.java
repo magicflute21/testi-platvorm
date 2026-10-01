@@ -1,8 +1,11 @@
 package ee.testiplatvorm.persistence.question;
 
+import ee.testiplatvorm.controller.question.dto.QuestionBankDto;
 import ee.testiplatvorm.controller.question.dto.QuestionResponseDto;
-import ee.testiplatvorm.service.AllQuestionsResponseDto;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
@@ -14,15 +17,15 @@ public interface QuestionMapper {
 
     List<QuestionResponseDto> toQuestionResponseDtos(List<Question> questions);
 
-    @Mapping(source = "competenceStatus", target = "competence.status")
-    @Mapping(source = "competenceName", target = "competence.name")
-    @Mapping(source = "competenceId", target = "competence.id")
-    Question toEntity(AllQuestionsResponseDto allQuestionsResponseDto);
+    @Mapping(source = "id", target = "questionId")
+    @Mapping(source = "title", target = "questionTitle")
+    @Mapping(source = "description", target = "questionDescription")
+    @Mapping(source = "questionType.name", target = "questionTypeName")
+    @Mapping(source = "competence.id", target = "competenceId")
+    @Mapping(source = "competence.name", target = "competenceName")
+    @Mapping(source = "status", target = "questionStatus")
+    @Mapping(ignore = true, target = "answers")
+    QuestionBankDto toQuestionBankDto(Question question);
 
-    @InheritInverseConfiguration(name = "toEntity")
-    AllQuestionsResponseDto toDto(Question question);
-
-    @InheritConfiguration(name = "toEntity")
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Question partialUpdate(AllQuestionsResponseDto allQuestionsResponseDto, @MappingTarget Question question);
+    List<QuestionBankDto> toQuestionBankDtos(List<Question> questions);
 }

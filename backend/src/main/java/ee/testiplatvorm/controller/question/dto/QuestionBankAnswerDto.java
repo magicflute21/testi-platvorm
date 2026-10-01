@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuestionAnswerDto {
+public class QuestionBankAnswerDto {
     private Integer questionAnswerId;
     private String answerText;
     private Boolean correctChoice;

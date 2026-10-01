@@ -1,7 +1,7 @@
 package ee.testiplatvorm.persistence.questionanswer;
 
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptAnswerDto;
-import ee.testiplatvorm.controller.question.dto.QuestionAnswerDto;
+import ee.testiplatvorm.controller.question.dto.QuestionBankAnswerDto;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -14,10 +14,10 @@ public interface QuestionAnswerMapper {
 
     List<TestAttemptAnswerDto> toQuestionAnswerDtos(List<QuestionAnswer> questionAnswers);
 
-    QuestionAnswer toEntity(QuestionAnswerDto questionAnswerDto);
+    @Mapping(source = "id", target = "questionAnswerId")
+    @Mapping(source = "answerText", target = "answerText")
+    @Mapping(source = "correctChoice", target = "correctChoice")
+    QuestionBankAnswerDto toQuestionBankAnswerDto(QuestionAnswer questionAnswer);
 
-    QuestionAnswerDto toDto(QuestionAnswer questionAnswer);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    QuestionAnswer partialUpdate(QuestionAnswerDto questionAnswerDto, @MappingTarget QuestionAnswer questionAnswer);
+    List<QuestionBankAnswerDto> toQuestionBankAnswerDtos(List<QuestionAnswer> questionAnswers);
 }
