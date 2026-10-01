@@ -23,4 +23,10 @@ export default {
       path: '/questions/new',
     })
   },
+  navigateToTestStartView(testId){
+    router.push({
+      name: 'testStartRoute',
+      params: { testId },
+    })
+  },
 }

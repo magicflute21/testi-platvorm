@@ -50,6 +50,4 @@ public class Result {
     @NotNull
     @Column(name = "questions_answered", nullable = false)
     private Integer questionsAnswered;
-
-
 }

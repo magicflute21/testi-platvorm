@@ -1,5 +1,6 @@
 package ee.testiplatvorm.service;
 
+import ee.testiplatvorm.controller.result.dto.ResultResponseDto;
 import ee.testiplatvorm.controller.testattempt.dto.SubmittedAnswersDto;
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptAnswerDto;
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptQuestionDto;
@@ -10,6 +11,7 @@ import ee.testiplatvorm.persistence.questionanswer.QuestionAnswer;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswerMapper;
 import ee.testiplatvorm.persistence.questionanswer.QuestionAnswerRepository;
 import ee.testiplatvorm.persistence.result.Result;
+import ee.testiplatvorm.persistence.result.ResultMapper;
 import ee.testiplatvorm.persistence.result.ResultRepository;
 import ee.testiplatvorm.persistence.test.Test;
 import ee.testiplatvorm.persistence.testquestion.TestQuestion;
@@ -24,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.OffsetDateTime;
 import java.util.*;
 
@@ -34,8 +35,6 @@ import static ee.testiplatvorm.Status.*;
 @Service
 @RequiredArgsConstructor
 public class TestAttemptService {
-    private static final int DECIMAL_POINTS = 2;
-
     private final UserTestRepository userTestRepository;
     private final UserTestMapper userTestMapper;
     private final TestQuestionRepository testQuestionRepository;
@@ -44,6 +43,8 @@ public class TestAttemptService {
     private final QuestionAnswerRepository questionAnswerRepository;
     private final CurrentUserService currentUserService;
     private final ResultRepository resultRepository;
+    private final ResultService resultService;
+    private final ResultMapper resultMapper;
 
 
     public TestAttemptResponseDto getTestAttempt(Integer userId, Integer testId) {
@@ -76,7 +77,7 @@ public class TestAttemptService {
     }
 
     @Transactional
-    public void submitTest(Integer testId, List<SubmittedAnswersDto> submittedAnswers) {
+    public ResultResponseDto submitTest(Integer testId, List<SubmittedAnswersDto> submittedAnswers) {
         Integer userId = currentUserService.getUserId();
         UserTest userTest = userTestRepository.getValidUserTestBy(userId, testId, STATUS_OPEN.getCode(), STATUS_ACTIVE.getCode(), STATUS_ACTIVE.getCode())
                 .orElseThrow(() -> new ForbiddenException(NO_TEST_ASSIGNMENT_FOR_THIS_USER.getMessage(), NO_TEST_ASSIGNMENT_FOR_THIS_USER.name()));
@@ -91,6 +92,12 @@ public class TestAttemptService {
 
         resultRepository.save(result);
         userTestRepository.save(userTest);
+
+        ResultResponseDto resultResponseDto = resultMapper.toResultResponseDto(result);
+        BigDecimal userScorePercentage = resultService.calculateUserResultPercentage(result);
+        resultResponseDto.setUserAchievedScorePercentage(userScorePercentage);
+
+        return resultResponseDto;
     }
 
     private void handleResultTimeStamp(Result result) {
@@ -103,22 +110,7 @@ public class TestAttemptService {
         Test test = userTest.getTest();
 
         BigDecimal testPassPercent = test.getPassPercent();
-        boolean roundScoreUp = test.getRoundScoreUp();
-        BigDecimal userScore = BigDecimal.valueOf(result.getScoreTotal());
-        BigDecimal maxScore = BigDecimal.valueOf(result.getMaxScore());
-
-        if (maxScore.compareTo(BigDecimal.ZERO) == 0) {
-            // kui maxScore on 0, siis loeme testi automaatselt läbituks, mitte läbikukkunuks.
-            result.setStatus(STATUS_PASSED.getCode());
-            return;
-        }
-
-        BigDecimal userAchievedPercentage = userScore.multiply(BigDecimal.valueOf(100)).divide(maxScore, DECIMAL_POINTS, RoundingMode.HALF_UP);
-        BigDecimal userAchievedEndResultPercentage = userAchievedPercentage;
-
-        if (roundScoreUp) {
-            userAchievedEndResultPercentage = userAchievedPercentage.setScale(0, RoundingMode.HALF_UP);
-        }
+        BigDecimal userAchievedEndResultPercentage = resultService.calculateUserResultPercentage(result);
 
         if (userAchievedEndResultPercentage.compareTo(testPassPercent) >= 0) {
             result.setStatus(STATUS_PASSED.getCode());

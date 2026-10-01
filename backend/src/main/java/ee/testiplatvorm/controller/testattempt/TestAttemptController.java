@@ -1,7 +1,9 @@
 package ee.testiplatvorm.controller.testattempt;
 
+import ee.testiplatvorm.controller.result.dto.ResultResponseDto;
 import ee.testiplatvorm.controller.testattempt.dto.SubmittedAnswersDto;
 import ee.testiplatvorm.controller.testattempt.dto.TestAttemptResponseDto;
+import ee.testiplatvorm.persistence.result.Result;
 import ee.testiplatvorm.service.CurrentUserService;
 import ee.testiplatvorm.service.TestAttemptService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,7 +52,8 @@ public class TestAttemptController {
             )
 
     })
-    public void submitTest(@PathVariable Integer testId, @RequestBody List<SubmittedAnswersDto> submittedAnswers) {
-        testAttemptService.submitTest(testId, submittedAnswers);
+    public ResultResponseDto submitTest(@PathVariable Integer testId, @RequestBody List<SubmittedAnswersDto> submittedAnswers) {
+//        responding with the result to immediately show the user how the test went
+        return testAttemptService.submitTest(testId, submittedAnswers);
     }
 }
