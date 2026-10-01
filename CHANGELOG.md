@@ -1,3 +1,9 @@
+TP-29 GET /api/question-bank?competenceId={id} -> brings all questions for QuestionBankView, regardless of
+question status (both 'A' and 'I'), with competence name, question type name and active answer options
+(answerText, correctChoice). competenceId is optional - without it questions of all competences are returned,
+unknown competenceId returns an empty list. Questions are ordered by questionId.
+
+
 TP-24 http://localhost:8081/tests route view and GET /api/me/my-test endpoint. Using same PreviewCard component,
 User must be logged in to see their own tests, Completed and Open tests are both shown with a different status badge,
 The order is open status tests that will close the soonest to completed status tests. If the test is open the user will
