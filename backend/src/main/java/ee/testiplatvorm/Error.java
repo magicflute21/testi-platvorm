@@ -8,6 +8,7 @@ public enum Error {
     NO_PERMISSION("Sul puudub õigus testi luua"),
     NO_PERMISSION_TO_CREATE_QUESTIONS("Sul puudub õigus küsimusi luua"),
     NO_PERMISSION_TO_VIEW_TEST("Sul puudub õigus testi vaadata"),
+    NO_PERMISSION_TO_VIEW_DASHBOARD("Sul puudub õigus töölauda vaadata"),
     INVALID_AI_QUESTION("Küsimus ei vasta reeglitele (vastuste arv, õigete vastuste arv, koodinäite pikkus või vastuses on vihje õigele vastusele)"),
     NO_TEST_ASSIGNMENT_FOR_THIS_USER("Kasutajale ei ole vastavat testi määratud"),
     EMAIL_ALREADY_EXISTS("Selle e-posti aadressiga kasutaja on juba olemas"),

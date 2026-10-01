@@ -12,7 +12,7 @@ import MyTestsView from '@/views/MyTestsView.vue'
 import UsersView from '@/views/UsersView.vue'
 
 import TestCreateView from '@/views/TestCreateView.vue'
-import QuestionBankView from "@/views/QuestionBankView.vue";
+import QuestionBankView from '@/views/QuestionBankView.vue'
 import AiQuestionBankView from '@/views/AiQuestionBankView.vue'
 import SessionStorageService from '@/services/SessionStorageService.js'
 
@@ -28,7 +28,7 @@ const router = createRouter({
       path: '/',
       component: MainLayout,
       children: [
-        { path: 'dashboard', name: 'dashboardRoute', component: DashboardView },
+        { path: 'dashboard', name: 'dashboardRoute', component: DashboardView, meta: STAFF },
         { path: 'tests/new', name: 'testCreateRoute', component: TestCreateView, meta: STAFF },
         { path: 'tests', name: 'testsRoute', component: TestOverview, meta: STAFF },
         { path: 'my-tests', name: 'myTestsRoute', component: MyTestsView },
@@ -70,7 +70,8 @@ router.beforeEach((to) => {
   if (to.name === 'loginRoute') return true
   if (!SessionStorageService.userIsLoggedIn()) return { name: 'loginRoute' }
 
-  if (!SessionStorageService.hasRole(to.meta.roles)) return { name: 'dashboardRoute' }
+  // Õigusteta lehelt suunatakse "Minu testid" lehele - see on kõigile sisselogitutele avatud
+  if (!SessionStorageService.hasRole(to.meta.roles)) return { name: 'myTestsRoute' }
 })
 
 export default router

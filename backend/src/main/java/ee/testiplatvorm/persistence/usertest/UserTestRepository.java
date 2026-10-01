@@ -19,4 +19,7 @@ public interface UserTestRepository extends JpaRepository<UserTest, Integer> {
             order by u.status DESC, u.closesAt ASC""")
     List<UserTest> findUserTestsBy(Integer userId, String testStatus);
 
+    @Query("select count(u) from UserTest u where u.user.id = :userId and u.status = :userTestStatus and u.test.status = :testStatus")
+    Long countUserTestsBy(Integer userId, String userTestStatus, String testStatus);
+
 }
