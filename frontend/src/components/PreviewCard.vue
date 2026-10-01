@@ -59,6 +59,15 @@ export default {
   overflow-wrap: anywhere;
 }
 
+/* Pikk pealkiri lõigatakse kahe rea järel "…"-ga, täispealkiri on näha testi vaates */
+.card-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
 .card-text {
   min-height: 4.5rem;
 }

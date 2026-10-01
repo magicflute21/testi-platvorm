@@ -1,5 +1,6 @@
 <script>
 import TestService from '@/services/TestService.js'
+import NavigationService from '@/services/NavigationService.js'
 import Status from '@/Status.js'
 import PreviewCard from '@/components/PreviewCard.vue'
 import LoadingText from '@/components/LoadingText.vue'
@@ -37,6 +38,9 @@ export default {
     handleGetAllTests(response) {
       this.testSummaries = response.data
     },
+    navigateToTestDetail(testId) {
+      NavigationService.navigateToTestDetail(testId)
+    },
     assignTestToUser() {},
     // tühi meetod nupuvajutuse näitamiseks
   },
@@ -64,7 +68,12 @@ export default {
             </li>
           </template>
           <template #actions>
-            <button class="btn btn-primary fw-bold rounded-2">Vaata testi</button>
+            <button
+              class="btn btn-primary fw-bold rounded-2"
+              @click="navigateToTestDetail(testSummary.testId)"
+            >
+              Vaata testi
+            </button>
             <button class="btn btn-light fw-bold rounded-2">Vaata tulemusi</button>
           </template>
         </PreviewCard>
