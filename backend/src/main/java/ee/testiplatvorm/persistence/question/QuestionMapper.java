@@ -23,6 +23,8 @@ public interface QuestionMapper {
     @Mapping(source = "questionType.name", target = "questionTypeName")
     @Mapping(source = "competence.id", target = "competenceId")
     @Mapping(source = "competence.name", target = "competenceName")
+    @Mapping(source = "competenceLevel.level.name", target = "competenceLevelName")
+    @Mapping(source = "score", target = "score")
     @Mapping(source = "status", target = "questionStatus")
     @Mapping(ignore = true, target = "answers")
     QuestionBankDto toQuestionBankDto(Question question);

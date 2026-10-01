@@ -18,4 +18,9 @@ export default {
       query: { userTestId: userTestId },
     })
   },
+  navigateToQuestionCreate() {
+    router.push({
+      path: '/questions/new',
+    })
+  },
 }

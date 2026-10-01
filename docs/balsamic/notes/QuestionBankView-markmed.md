@@ -12,9 +12,9 @@ Frontend rada: /questions
 Vaatega seotud lisainfo:
 Menüü link "Küsimuste pank → Kõik küsimused" on nähtav ainult siis, kui sessionStorage'is olev roleName on ADMIN või MANAGER. Vaate avamisel laetakse kompetentsid filtri jaoks (GET /api/competences) ja kõik küsimused (GET /api/question-bank). Rippmenüüst "Kompetents" valides laetakse küsimused uuesti ainult valitud kompetentsi kohta (?competenceId={competenceId}); valik "Kõik kompetentsid" näitab jälle kõiki küsimusi.
 
-Iga küsimus kuvatakse eraldi kaardina: pealkiri, küsimuse tüüp, kompetentsi silt ja staatuse silt. Küsimuse tüüp kuvatakse questionTypeName välja põhjal: SINGLE_CHOICE = "Ühe õige vastusega", MULTIPLE_CHOICE = "Mitme õige vastusega", TRUE_FALSE = "True or false". Staatuse silt kuvatakse questionStatus välja põhjal (Status.js): A = "Aktiivne", I = "Mitteaktiivne".
+Iga küsimus kuvatakse eraldi kaardina: pealkiri, küsimuse tüüp, kompetentsi silt ja staatuse silt. Küsimuse tüüp kuvatakse questionTypeName välja põhjal: SINGLE_CHOICE = "Ühe õige vastusega", MULTIPLE_CHOICE = "Mitme õige vastusega", TRUE_FALSE = "Tõene või väär". Staatuse silt kuvatakse questionStatus välja põhjal (Status.js): A = "Aktiivne", I = "Mitteaktiivne".
 
-Kaardid on vaikimisi kinni. Noolele vajutades avaneb kaart ja näitab küsimuse kirjeldust ning vastusevariante (eraldi API kutset ei tehta, andmed tulevad juba nimekirjaga kaasa). Õige(d) vastus(ed) (correctChoice = true) on esile tõstetud rohelise taustaga. Nupp "..." ei tee hetkel midagi — menüü (nt muutmine, deaktiveerimine) lisatakse hilisemas taskis.
+Kaardid on vaikimisi kinni. Noolele vajutades avaneb kaart ja näitab küsimuse infot (kompetentsi tase competenceLevelName, punktid score), kirjeldust ning vastusevariante (eraldi API kutset ei tehta, andmed tulevad juba nimekirjaga kaasa). Õige(d) vastus(ed) (correctChoice = true) on esile tõstetud rohelise taustaga. Nupp "..." ei tee hetkel midagi — menüü (nt muutmine, deaktiveerimine) lisatakse hilisemas taskis.
 
 Nupule "Lisa uus küsimus" vajutades suunatakse kasutaja uue küsimuse loomise vaatele /questions/new (ilma API kutseta). Kui küsimusi pole, kuvatakse tekst "Küsimusi ei leitud".
 ```
@@ -55,6 +55,8 @@ Response (200):
     "questionTypeName": "MULTIPLE_CHOICE",
     "competenceId": 1,
     "competenceName": "JavaScript",
+    "competenceLevelName": "Kesktase",
+    "score": 10,
     "questionStatus": "A",
     "answers": [
       {

@@ -20,6 +20,8 @@ public class QuestionBankDto {
     private String questionTypeName;
     private Integer competenceId;
     private String competenceName;
+    private String competenceLevelName;
+    private Integer score;
     private String questionStatus;
     private List<QuestionBankAnswerDto> answers;
 }
