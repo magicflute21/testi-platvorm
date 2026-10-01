@@ -29,7 +29,6 @@ export default {
           <span class="nav-text">Testid</span>
         </RouterLink>
         <RouterLink class="nav-link d-flex align-items-center gap-2" to="/my-tests">
-          <span class="nav-text">Minu testid</span>
           <PhPersonSimple :size="20" />
           <span class="nav-text">Minu testid</span>
         </RouterLink>
