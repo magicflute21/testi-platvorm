@@ -8,4 +8,8 @@ export default {
   getQuestionBankRequest(competenceId) {
     return axios.get('/api/question-bank', { params: { competenceId } })
   },
+
+  postNewQuestion(questionCreateRequest) {
+    return axios.post('/api/questions', questionCreateRequest)
+  },
 }

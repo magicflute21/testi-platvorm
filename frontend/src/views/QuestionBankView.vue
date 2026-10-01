@@ -1,15 +1,24 @@
 <script>
 import QuestionService from '@/services/QuestionService.js'
 import CompetenceService from '@/services/CompetenceService.js'
-import NavigationService from '@/services/NavigationService.js'
 import Status from '@/Status.js'
 import LoadingText from '@/components/LoadingText.vue'
 import QuestionBankCard from '@/components/QuestionBankCard.vue'
+import BaseModal from '@/components/modal/BaseModal.vue'
+import QuestionCreateForm from '@/components/QuestionCreateForm.vue'
 import { PhCaretDown, PhCheckCircle, PhPlus } from '@phosphor-icons/vue'
 
 export default {
   name: 'QuestionBankView',
-  components: { LoadingText, QuestionBankCard, PhCaretDown, PhCheckCircle, PhPlus },
+  components: {
+    LoadingText,
+    QuestionBankCard,
+    BaseModal,
+    QuestionCreateForm,
+    PhCaretDown,
+    PhCheckCircle,
+    PhPlus,
+  },
 
   beforeMount() {
     this.getCompetences()
@@ -19,6 +28,9 @@ export default {
   data() {
     return {
       isLoading: true,
+      isQuestionCreateModalOpen: false,
+      isQuestionCreatedModalOpen: false,
+      createdQuestionTitle: '',
       selectedCompetenceId: null,
       questionStatus: Status,
       questionTypeLabels: {
@@ -77,8 +89,24 @@ export default {
       this.selectedCompetenceId = competenceId
       this.getQuestionBank()
     },
-    navigateToQuestionCreate() {
-      NavigationService.navigateToQuestionCreate()
+    openQuestionCreateModal() {
+      this.isQuestionCreateModalOpen = true
+    },
+    closeQuestionCreateModal() {
+      this.isQuestionCreateModalOpen = false
+    },
+    handleQuestionCreated(createdQuestion) {
+      this.createdQuestionTitle = createdQuestion.title
+      this.isQuestionCreateModalOpen = false
+      this.isQuestionCreatedModalOpen = true
+      this.getQuestionBank()
+    },
+    addNewQuestion() {
+      this.isQuestionCreatedModalOpen = false
+      this.isQuestionCreateModalOpen = true
+    },
+    closeQuestionCreatedModal() {
+      this.isQuestionCreatedModalOpen = false
     },
     getQuestionBank() {
       QuestionService.getQuestionBankRequest(this.selectedCompetenceId)
@@ -133,7 +161,7 @@ export default {
           </div>
           <button
             class="btn btn-primary fw-bold rounded-2 d-flex align-items-center gap-2"
-            @click="navigateToQuestionCreate"
+            @click="openQuestionCreateModal"
           >
             <span>Lisa uus küsimus</span>
             <PhPlus :size="16" weight="bold" />
@@ -174,6 +202,50 @@ export default {
         </QuestionBankCard>
       </div>
     </div>
+
+    <BaseModal
+      :is-open="isQuestionCreateModalOpen"
+      size="lg"
+      @event-modal-closed="closeQuestionCreateModal"
+    >
+      <template #title>Loo uus küsimus</template>
+      <template #body>
+        <QuestionCreateForm
+          @event-cancel="closeQuestionCreateModal"
+          @event-question-created="handleQuestionCreated"
+        />
+      </template>
+    </BaseModal>
+
+    <BaseModal
+      :is-open="isQuestionCreatedModalOpen"
+      @event-modal-closed="closeQuestionCreatedModal"
+    >
+      <template #title>Küsimus lisatud</template>
+      <template #body>
+        <div class="text-center py-2">
+          <PhCheckCircle :size="56" weight="fill" class="created-icon mb-3" />
+          <p class="mb-1">Küsimus on edukalt lisatud!</p>
+          <p class="created-title fw-bold mb-0">„{{ createdQuestionTitle }}"</p>
+        </div>
+      </template>
+      <template #buttons>
+        <button
+          type="button"
+          class="btn btn-light rounded-3 px-4"
+          @click="closeQuestionCreatedModal"
+        >
+          Sulge
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary rounded-3 px-4 fw-bold"
+          @click="addNewQuestion"
+        >
+          Lisa uus
+        </button>
+      </template>
+    </BaseModal>
   </div>
 </template>
 
@@ -208,5 +280,14 @@ export default {
 
 .answer-correct {
   color: var(--bs-success);
+}
+
+.created-icon {
+  color: var(--bs-success);
+}
+
+.created-title {
+  color: var(--brand-slate);
+  overflow-wrap: anywhere;
 }
 </style>
