@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import static ee.testiplatvorm.Error.NO_PERMISSION;
@@ -81,7 +81,7 @@ public class TestService {
         test.setCompetence(competenceLevel.getCompetence());
         test.setCreatedBy(user);
         test.setStatus(STATUS_ACTIVE.getCode());
-        Instant currentTime = Instant.now();
+        OffsetDateTime currentTime = OffsetDateTime.now();
         test.setCreatedAt(currentTime);
         test.setUpdatedAt(currentTime);
         Test savedTest = testRepository.save(test);
