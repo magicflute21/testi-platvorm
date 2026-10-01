@@ -1,3 +1,19 @@
+Test detail view: "Vaata testi" on the tests page opens /tests/{testId} (TestDetailView, ADMIN/HALDUR only). The card
+shows competence, title, level, short and long description and info boxes for question count, time limit, pass
+percent and max score (singular/plural: "1 küsimus" / "2 küsimust"). Questions themselves are not shown. Inactive tests
+get a "Mitteaktiivne" badge. Long titles (over 60 chars) are shown in normal case and a smaller font. An info icon in
+the bottom right corner shows the author and creation date in a hover tooltip (shared .app-tooltip style in theme.css).
+
+GET /api/tests/{testId} -> test details with questionCount, maxScore and createdBy (author's name from profile, email
+if there is no profile). Only ADMIN and HALDUR: other roles get HTTP 403 NO_PERMISSION_TO_VIEW_TEST, not logged in 401,
+unknown test 404 PRIMARY_KEY_NOT_FOUND.
+
+Test cards (PreviewCard): titles longer than two lines are cut with "...".
+
+Test data (3_import.sql): new tests "Vue.js Medior" (title 255 and short description 150 chars, the maximum lengths)
+and "Giti algtaseme test". New competence "Vali-IT" (level Spetsialist) with the test "Backendi koodi head tavad":
+12 questions in rAIn style about backend coding conventions, 20 min, pass 50%, assigned to the admin user.
+
 TP-21 TestCreateView fixes: a new question row can be removed with × right away, even when no
 question is selected yet. Empty question rows are ignored in validation and not sent to backend,
 so "Lisa testile vähemalt 1 küsimus" is shown only when no question is selected at all.

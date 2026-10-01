@@ -6,6 +6,7 @@ import TestOverview from '@/views/TestOverview.vue'
 import TestResultView from '@/views/TestResultView.vue'
 import TestAttemptView from '@/views/TestAttemptView.vue'
 import TestStartView from '@/views/TestStartView.vue'
+import TestDetailView from '@/views/TestDetailView.vue'
 import CompetenceView from '@/views/CompetenceView.vue'
 import MyTestsView from '@/views/MyTestsView.vue'
 import UsersView from '@/views/UsersView.vue'
@@ -36,6 +37,13 @@ const router = createRouter({
         { path: 'questions', name: 'questionBankView', component: QuestionBankView, meta: STAFF },
         { path: 'users', name: 'usersRoute', component: UsersView, meta: STAFF },
         { path: 'questions/ai', name: 'aiQuestionBankView', component: AiQuestionBankView },
+        {
+          path: 'tests/:testId(\\d+)',
+          name: 'testDetailRoute',
+          component: TestDetailView,
+          props: toNumber('testId'),
+          meta: STAFF,
+        },
         {
           path: 'tests/:testId/start',
           name: 'testStartRoute',

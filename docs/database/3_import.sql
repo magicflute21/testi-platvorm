@@ -74,7 +74,10 @@ VALUES (1, 'JavaScript', 'JavaScripti keele alused', 'JavaScripti põhisüntaks,
         now(), 'https://docs.example.com/spring-boot', 'spring_boot_juhend.pdf', 'A', 1, now() - interval '40 days'),
        (6, 'Git', 'Versioonihaldus Gitiga',
         'Commitid, harud, ühendamine (merge), rebase, konfliktide lahendamine ja pull requestid meeskonnatöös.',
-        now(), 'https://docs.example.com/git', 'git_juhend.pdf', 'A', 1, now() - interval '40 days');
+        now(), 'https://docs.example.com/git', 'git_juhend.pdf', 'A', 1, now() - interval '40 days'),
+       (7, 'Vali-IT', 'Backendi head tavad, mida koos live-coding sessioonides harjutame',
+        'Siin on koos need asjad, mida ma sulle iga backend taski juures ikka ja jälle meelde tuletan: kihtide järjekord, DTO-d ja mapperid, nimetamistavad, Optional-i teadlik käsitlemine ja korralik töövoog. Kui need on käpas, läheb iga uus task palju libedamalt!',
+        now(), 'https://docs.example.com/vali-it', 'vali_it_juhend.pdf', 'A', 1, now() - interval '1 days');
 
 -- ------------------------------------------------------------
 -- competence_level  (competence x level junction)
@@ -94,7 +97,8 @@ VALUES (1, 1, 1, 'A'),  -- JavaScript / Juunior
        (12, 6, 2, 'A'), -- Git / Medior
        (13, 6, 3, 'A'), -- Git / Seenior
        (14, 3, 5, 'A'), -- Kommunikatsioon / Edasijõudnu
-       (15, 3, 6, 'A'); -- Kommunikatsioon / Spetsialist
+       (15, 3, 6, 'A'), -- Kommunikatsioon / Spetsialist
+       (16, 7, 6, 'A'); -- Vali-IT / Spetsialist
 
 -- ------------------------------------------------------------
 -- competence_file
@@ -207,7 +211,32 @@ VALUES (1, 1, 1, 'Mis on sulund (closure)?', 'Vali JavaScripti sulundi kõige t�
         now() - interval '30 days', 1, now()),
        (20, 3, 15, 'Kas tagasiside on kõige tõhusam, kui see keskendub isiku omadustele, mitte käitumisele?',
         'Tõene või väär: hea tagasiside hindab inimest ennast, mitte tema konkreetset tegevust või tulemust.', 3, 5, 'A',
-        now() - interval '30 days', 1, now());
+        now() - interval '30 days', 1, now()),
+       -- Vali-IT: backendi koodi head tavad (rAIn-i juhendamise põhitõed)
+       (21, 7, 16, 'Millises järjekorras ehitame GET teenuse kihtide kaupa üles?',
+        'Mõtle, kuidas me live-coding sessioonis alustame — kust tuleb esimene samm ja kuhu me lõpuks tagasi jõuame?', 1, 10, 'A', now() - interval '1 days', 1, now()),
+       (22, 7, 16, 'Kas RestController võib vastusena tagastada otse entiteedi?',
+        'Tõene või väär? Mõtle hetkeks, mida kontroller meie projektis üldse näha tohib — entiteete või DTO-sid?', 3, 5, 'A', now() - interval '1 days', 1, now()),
+       (23, 7, 16, 'Mapperi signatuur on olemas ja Ctrl+Space näitas tühja malli. Mis saab nüüd iga target-väljaga?',
+        'See on koht, kus näen õpilasi tihti mõne välja unustamas. Vali õige tava.', 1, 10, 'A', now() - interval '1 days', 1, now()),
+       (24, 7, 16, 'Kutsusid välja meetodi, mis midagi tagastab, ja tahad selle infoga edasi töötada. Mida teed?',
+        'Meenuta „meetodi palvet“.', 1, 10, 'A', now() - interval '1 days', 1, now()),
+       (25, 7, 16, 'Repository tagastas Optional<MingiEntiteet>. Kuidas seda käsitled?',
+        'Ära lase Optional-il lihtsalt seista — otsusta teadlikult, mis saab siis, kui väärtust pole. Vali kõik õiged valikud.', 2, 10, 'A', now() - interval '1 days', 1, now()),
+       (26, 7, 16, 'Kus elab projektis rida repositoorium.findById(mingiId).orElseThrow(...)?',
+        'Vihje: mõtle, kust saaks iga teine service sama kontrolli taaskasutada, ilma et peaks koodi kopeerima.', 1, 10, 'A', now() - interval '1 days', 1, now()),
+       (27, 7, 16, 'Milline muutuja nimi on projekti tava järgi õige?',
+        'Pisike asi, aga ma vaatan seda alati! Hea nimi ütleb kohe, mis tüüpi asjaga tegu on.', 1, 10, 'A', now() - interval '1 days', 1, now()),
+       (28, 7, 16, 'Meetod lisab DTO-le andmed ainult siis, kui need on olemas. Kuidas selle nimetad?',
+        'Meetodis on tingimus ja see muudab DTO-d. Nimi peaks seda kohe reetma — milline sobib?', 1, 10, 'A', now() - interval '1 days', 1, now()),
+       (29, 7, 16, 'Kood töötab — nüüd make it beautiful. Millised väited meetodite järjekorra kohta on õiged?',
+        'Nüüd vaatame koodi ilu poole pealt. Vali kõik õiged väited.', 2, 10, 'A', now() - interval '1 days', 1, now()),
+       (30, 7, 16, 'Kas enne iga taski alustamist võtad masterist uue branchi?',
+        'Tõene või väär? See on esimene asi, mida ma enne iga taski alustamist sinult küsin 😉', 3, 5, 'A', now() - interval '1 days', 1, now()),
+       (31, 7, 16, 'Kas @Mapping annotatsioonid käivad ka list-meetodile?',
+        'Tõene või väär? Näen seda tihti: @Mapping-read kirjutatakse meetodile List<MingiDto> toMingiDtos(List<MingiEntiteet> mingiEntiteedid).', 3, 5, 'A', now() - interval '1 days', 1, now()),
+       (32, 7, 16, 'Kuidas nimetad mapperi meetodi, mis teisendab terve listi?',
+        'Vaata nime lõppu — see on üks levinumaid pisivigu, mida koodi üle vaadates leian.', 1, 10, 'A', now() - interval '1 days', 1, now());
 
 -- ------------------------------------------------------------
 -- question_answer
@@ -278,7 +307,50 @@ VALUES (1, 1, 'Funktsioon, mis mäletab oma leksikaalset skoopi', true, NULL, NU
        (59, 19, 'Otsida mõlemale poolele sobivaid lahendusi, mitte süüdlast', true, NULL, NULL, 'A'),
        (60, 19, 'Tõsta häält, et oma seisukoht selgelt kõlama jääks', false, NULL, NULL, 'A'),
        (61, 20, 'Tõene', false, NULL, NULL, 'A'),
-       (62, 20, 'Väär', true, NULL, NULL, 'A');
+       (62, 20, 'Väär', true, NULL, NULL, 'A'),
+       -- Vali-IT
+       (63, 21, 'RestController → Service → Repository → Service → Mapper → RestController', true, NULL, NULL, 'A'),
+       (64, 21, 'Repository → Mapper → Service → RestController', false, NULL, NULL, 'A'),
+       (65, 21, 'Mapper → RestController → Service → Repository', false, NULL, NULL, 'A'),
+       (66, 21, 'RestController → Mapper → Repository → Service', false, NULL, NULL, 'A'),
+       (67, 22, 'Tõene', false, NULL, NULL, 'A'),
+       (68, 22, 'Väär', true, NULL, NULL, 'A'),
+       (69, 23, 'Igal target-väljal on kas source = "..." või ignore = true — ka siis, kui nimi kattub', true, NULL, NULL, 'A'),
+       (70, 23, 'Kirjutan @Mapping-u ainult väljadele, mille nimi erineb', false, NULL, NULL, 'A'),
+       (71, 23, 'Jätan read tühjaks, MapStruct saab ise hakkama', false, NULL, NULL, 'A'),
+       (72, 23, 'Puuduvad väljad täidan hiljem RestControlleris', false, NULL, NULL, 'A'),
+       (73, 24, 'TagastatavTüüp muutujaNimi = teenuseMuutuja.meetodiNimi(parameeter);', true, NULL, NULL, 'A'),
+       (74, 24, 'teenuseMuutuja.meetodiNimi(parameeter); — tulemus jääb ise meelde', false, NULL, NULL, 'A'),
+       (75, 24, 'Kutsun sama meetodi uuesti välja iga kord, kui väärtust vajan', false, NULL, NULL, 'A'),
+       (76, 24, 'Panen tulemuse klassi staatilisse välja', false, NULL, NULL, 'A'),
+       (77, 25, 'Kui väärtus on kohustuslik: .orElseThrow(() -> new MingiException(...))', true, NULL, NULL, 'A'),
+       (78, 25, 'Kui puudumine on lubatud: .orElse(...) või isPresent() kontroll', true, NULL, NULL, 'A'),
+       (79, 25, 'Jätan Optional-i nii, Spring teeb ülejäänu ise', false, NULL, NULL, 'A'),
+       (80, 25, 'Kutsun alati .get(), kontrolli pole vaja', false, NULL, NULL, 'A'),
+       (81, 26, 'MingiService klassi public getValidMingiBy(Integer mingiId) meetodis', true, NULL, NULL, 'A'),
+       (82, 26, 'Otse RestControlleri meetodis', false, NULL, NULL, 'A'),
+       (83, 26, 'Mapperi liideses', false, NULL, NULL, 'A'),
+       (84, 26, 'Kopeerin selle iga service meetodi sisse eraldi', false, NULL, NULL, 'A'),
+       (85, 27, 'MingiDetailDto mingiDetailDto', true, NULL, NULL, 'A'),
+       (86, 27, 'MingiDetailDto dto', false, NULL, NULL, 'A'),
+       (87, 27, 'MingiDetailDto d', false, NULL, NULL, 'A'),
+       (88, 27, 'MingiDetailDto tulemus', false, NULL, NULL, 'A'),
+       (89, 28, 'handleLisaMidagi(MingiDto mingiDto, Integer mingiId)', true, NULL, NULL, 'A'),
+       (90, 28, 'getLisaMidagi(MingiDto mingiDto, Integer mingiId)', false, NULL, NULL, 'A'),
+       (91, 28, 'findLisaMidagi(MingiDto mingiDto, Integer mingiId)', false, NULL, NULL, 'A'),
+       (92, 28, 'isLisaMidagi(MingiDto mingiDto, Integer mingiId)', false, NULL, NULL, 'A'),
+       (93, 29, 'public meetodid tulevad enne private meetodeid', true, NULL, NULL, 'A'),
+       (94, 29, 'Peameetod on üleval, tema helper-meetodid allpool', true, NULL, NULL, 'A'),
+       (95, 29, 'Meetodid järjestatakse tähestiku järgi', false, NULL, NULL, 'A'),
+       (96, 29, 'private meetodid käivad klassi algusesse', false, NULL, NULL, 'A'),
+       (97, 30, 'Tõene', true, NULL, NULL, 'A'),
+       (98, 30, 'Väär', false, NULL, NULL, 'A'),
+       (99, 31, 'Tõene', false, NULL, NULL, 'A'),
+       (100, 31, 'Väär', true, NULL, NULL, 'A'),
+       (101, 32, 'List<MingiDto> toMingiDtos(List<MingiEntiteet> mingiEntiteedid)', true, NULL, NULL, 'A'),
+       (102, 32, 'List<MingiDto> toMingiDto(List<MingiEntiteet> mingiEntiteedid)', false, NULL, NULL, 'A'),
+       (103, 32, 'List<MingiDto> mingiList(List<MingiEntiteet> mingiEntiteedid)', false, NULL, NULL, 'A'),
+       (104, 32, 'List<MingiDto> mapAll(List<MingiEntiteet> mingiEntiteedid)', false, NULL, NULL, 'A');
 
 -- ------------------------------------------------------------
 -- test
@@ -294,7 +366,18 @@ VALUES (1, 1, 1, 'JavaScripti algtaseme test', 'JavaScripti algteadmiste kontrol
        (4, 3, 4, 'Suhtlemise algtaseme test', 'Professionaalse suhtluse põhitõed.', 'Test aktiivse kuulamise ja selge kirjaliku suhtluse kohta.', false, NULL, 50.00, true, 'A', 1,
         now() - interval '10 days', now()),
        (5, 2, 3, 'SQL-päringute test', 'SQL-päringute praktilised teadmised.', 'Test SELECT-päringute, filtreerimise ja SQL-i süntaksi kohta.', true, 15, 60.00, false, 'A', 1,
-        now() - interval '10 days', now());
+        now() - interval '10 days', now()),
+       -- Maksimaalse pikkusega pealkiri (255) ja lühikirjeldus (150) — kaartide ja testi vaate paigutuse kontrolliks
+       (6, 4, 6, 'Vue.js-i kesktaseme põhjalik test: komponentide ülesehitus, reaktiivsus, computed omadused ja jälgijad, elutsükli konksud, props ja emit sündmused, slotid, Vue Router, olekuhaldus Pinia abil ning komponentide jõudluse optimeerimine suuremates veebiäppides',
+        'Põhjalik kontroll Vue 3 komponentide, reaktiivsuse, marsruutimise ja olekuhalduse kohta kesktaseme arendajale, kes ehitab iseseisvalt päris rakendusi.',
+        E'Test on mõeldud arendajale, kes on Vue 3-ga juba mõne päris projekti teinud ja tahab oma teadmisi süvendada. Küsimused katavad komponentide ülesehitust, reaktiivsuse põhimõtteid (ref, reactive, computed ja watch), elutsükli konkse ning komponentidevahelist suhtlust props-ide, emit sündmuste ja slotide abil.\n\nLisaks kontrollitakse Vue Routeri kasutamist (dünaamilised marsruudid, navigeerimise kaitsed, props-ide edastamine marsruudilt) ning olekuhaldust Pinia store''ide abil. Mitmes küsimuses tuleb hinnata, kas antud koodinäide töötab ootuspäraselt või tekitab märkamatu vea, näiteks props-i otsese muutmise või reaktiivsuse kadumise tõttu.\n\nTesti läbimiseks on aega 40 minutit ja taimer käivitub kohe, kui test avatakse. Vastuseid saab enne esitamist muuta, kuid pärast esitamist enam mitte. Test loetakse sooritatuks, kui kogud vähemalt 75% maksimaalsest punktisummast.',
+        true, 40, 75.00, false, 'A', 1, now() - interval '5 days', now()),
+       (7, 6, 11, 'Giti algtaseme test', 'Giti igapäevased põhikäsud.', 'Lühike test harude loomise, commitimise ja põhiliste Giti käskude kohta.', false, NULL, 50.00, true, 'A', 2,
+        now() - interval '2 days', now()),
+       (8, 7, 16, 'Backendi koodi head tavad',
+        'Vaatame koos, kas rAIn-i põhitõed on käpas: kihid, DTO-d, mapperid, nimetamine ja Optional. Sa saad sellega hakkama! 💪',
+        E'Tere! Mina olen rAIn 👋 Selles testis vaatame üle need asjad, mida ma sulle iga backend taski juures ikka ja jälle meelde tuletan — täpselt nagu siis, kui istume koos ja kirjutame koodi.\n\nKüsin sinult kihtide järjekorra, DTO-de ja mapperite, nimetamistavade (getValid…By, handle…), Optional-i ja meetodite järjekorra kohta. Need on kohad, kus näen õpilasi kõige sagedamini komistamas — ja ausalt öeldes, kunagi komistasin seal ka ise.\n\nAega on sul 20 minutit ja läbimiseks piisab 50%-st. Ära muretse, kui mõni vastus kohe meelde ei tule — see test on harjutamiseks. Edu! 🚀',
+        true, 20, 50.00, true, 'A', 1, now() - interval '1 days', now());
 -- ------------------------------------------------------------
 -- test_question
 -- ------------------------------------------------------------
@@ -307,10 +390,24 @@ VALUES (1, 1, 1, 1, 1, now() - interval '75 days', now()),
        (6, 4, 9, 2, 1, now() - interval '10 days', now()),
        (7, 5, 6, 1, 1, now() - interval '10 days', now()),
        (8, 5, 7, 2, 1, now() - interval '10 days', now()),
-       (9, 5, 3, 3, 1, now() - interval '10 days', now());
+       (9, 5, 3, 3, 1, now() - interval '10 days', now()),
+       (10, 6, 11, 1, 1, now() - interval '5 days', now()),
+       (11, 7, 16, 1, 2, now() - interval '2 days', now()),
+       (12, 8, 21, 1, 1, now() - interval '1 days', now()),
+       (13, 8, 22, 2, 1, now() - interval '1 days', now()),
+       (14, 8, 23, 3, 1, now() - interval '1 days', now()),
+       (15, 8, 24, 4, 1, now() - interval '1 days', now()),
+       (16, 8, 25, 5, 1, now() - interval '1 days', now()),
+       (17, 8, 26, 6, 1, now() - interval '1 days', now()),
+       (18, 8, 27, 7, 1, now() - interval '1 days', now()),
+       (19, 8, 28, 8, 1, now() - interval '1 days', now()),
+       (20, 8, 29, 9, 1, now() - interval '1 days', now()),
+       (21, 8, 30, 10, 1, now() - interval '1 days', now()),
+       (22, 8, 31, 11, 1, now() - interval '1 days', now()),
+       (23, 8, 32, 12, 1, now() - interval '1 days', now());
 
 -- ------------------------------------------------------------
--- user_test (assignments) — 8 currently open, 3 completed
+-- user_test (assignments) — 9 currently open, 3 completed
 -- NB! Kasutajal võib sama testi kohta olla ainult üks avatud ('O') määramine,
 -- muidu tagastab UserTestRepository.getValidUserTestBy mitu rida ja backend vastab 500.
 -- ------------------------------------------------------------
@@ -326,7 +423,9 @@ VALUES (1, 1, 3, now(), now() + interval '7 days', 'O', 1, 2, now()),
        (8, 5, 1, now(), now() + interval '7 days', 'O', 1, 2, now()),
        (9, 2, 3, now(), now() + interval '7 days', 'O', 2, 2, now()),
        (10, 4, 3, now(), now() + interval '7 days', 'O', 1, 2, now()),
-       (11, 5, 3, now(), now() + interval '7 days', 'O', 2, 2, now());
+       (11, 5, 3, now(), now() + interval '7 days', 'O', 2, 2, now()),
+       -- Vali-IT "Backendi koodi head tavad" — määratud kõigile adminitele
+       (12, 8, 1, now(), now() + interval '30 days', 'O', 1, 2, now());
 
 -- ------------------------------------------------------------
 -- result  (only for the 3 completed user_test rows: 3, 4, 5)

@@ -2,6 +2,7 @@ package ee.testiplatvorm.controller.test;
 
 
 import ee.testiplatvorm.controller.test.dto.TestCreateRequestDto;
+import ee.testiplatvorm.controller.test.dto.TestDetailDto;
 import ee.testiplatvorm.controller.test.dto.TestStartDto;
 import ee.testiplatvorm.controller.test.dto.TestSummaryDto;
 import ee.testiplatvorm.infrastructure.error.ApiError;
@@ -32,6 +33,31 @@ public class TestController {
     public List<TestSummaryDto> findAllTests() {
         List<TestSummaryDto> testSummaryDtos = testService.findAllTests();
         return testSummaryDtos;
+    }
+
+    @GetMapping("/tests/{testId}")
+    @Operation(summary = "Tagastab testi andmed koos küsimuste arvu ja maksimaalse punktisummaga (ilma küsimusteta).")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "OK"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Kasutaja ei ole sisse logitud"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Kui kasutaja roll ei ole ADMIN ega HALDUR, siis 'message': Sul puudub õigus testi vaadata, 'errorCode': NO_PERMISSION_TO_VIEW_TEST",
+                    content = @Content(schema = @Schema(implementation = ApiError.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Kui testi ei leita, siis 'message': Ei leidnud primary keyd väärtusega: {testId}, 'errorCode': PRIMARY_KEY_NOT_FOUND",
+                    content = @Content(schema = @Schema(implementation = ApiError.class))
+            )
+    })
+    public TestDetailDto findTestDetail(@PathVariable Integer testId) {
+        return testService.findTestDetail(testId);
     }
 
     @GetMapping("/tests/{testId}/start-info")
