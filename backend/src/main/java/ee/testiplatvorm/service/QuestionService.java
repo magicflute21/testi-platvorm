@@ -1,20 +1,9 @@
 package ee.testiplatvorm.service;
 
-
 import ee.testiplatvorm.Error;
 import ee.testiplatvorm.controller.question.dto.*;
 import ee.testiplatvorm.infrastructure.exception.BadRequestException;
 import ee.testiplatvorm.infrastructure.exception.ForbiddenException;
-import ee.testiplatvorm.infrastructure.exception.PrimaryKeyNotFoundException;
-import ee.testiplatvorm.persistence.competencelevel.CompetenceLevel;
-import ee.testiplatvorm.persistence.competencelevel.CompetenceLevelRepository;
-import ee.testiplatvorm.Error;
-import ee.testiplatvorm.controller.question.dto.QuestionBankAnswerDto;
-import ee.testiplatvorm.controller.question.dto.QuestionBankDto;
-import ee.testiplatvorm.infrastructure.exception.BadRequestException;
-import ee.testiplatvorm.infrastructure.exception.ForbiddenException;
-import ee.testiplatvorm.controller.question.dto.QuestionResponseDto;
-import ee.testiplatvorm.controller.question.dto.QuestionUpdateRequestDto;
 import ee.testiplatvorm.infrastructure.exception.PrimaryKeyNotFoundException;
 import ee.testiplatvorm.persistence.competencelevel.CompetenceLevel;
 import ee.testiplatvorm.persistence.competencelevel.CompetenceLevelRepository;
@@ -35,9 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import static ee.testiplatvorm.Error.INVALID_CORRECT_ANSWER_COUNT;
 import static ee.testiplatvorm.Error.NO_PERMISSION_TO_CREATE_QUESTIONS;
 import static ee.testiplatvorm.Status.STATUS_ACTIVE;
 import static ee.testiplatvorm.Status.STATUS_INACTIVE;
@@ -115,7 +102,7 @@ public class QuestionService {
         CompetenceLevel competenceLevel = competenceLevelRepository.findById(competenceLevelId).orElseThrow(() -> new PrimaryKeyNotFoundException("competenceLevelId", competenceLevelId));
 
         int isCorrectCount = 0;
-        for (QuestionCreateAnswerRequestDto questionCreateAnswerRequestDto : questionCreateRequestDto.getAnswers()){
+        for (QuestionCreateAnswerRequestDto questionCreateAnswerRequestDto : questionCreateRequestDto.getAnswers()) {
             if (questionCreateAnswerRequestDto.getIsCorrect()) {
                 isCorrectCount++;
             }
@@ -124,11 +111,12 @@ public class QuestionService {
         String questionTypeName = questionType.getName();
         int answerCount = questionCreateRequestDto.getAnswers().size();
 
-        boolean isValidCorrectAnswerCount = false;  {
+        boolean isValidCorrectAnswerCount = false;
+        {
             if (questionTypeName.equals("SINGLE_CHOICE")) {
                 isValidCorrectAnswerCount = isCorrectCount == 1;
-            } else if (questionTypeName.equals("MULTIPLE_CHOICE")){
-                isValidCorrectAnswerCount = isCorrectCount>= 1;
+            } else if (questionTypeName.equals("MULTIPLE_CHOICE")) {
+                isValidCorrectAnswerCount = isCorrectCount >= 1;
             } else if (questionTypeName.equals("TRUE_FALSE")) {
                 isValidCorrectAnswerCount = answerCount == 2 && isCorrectCount == 1;
             }

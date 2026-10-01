@@ -8,10 +8,9 @@ import AlertDanger from '@/components/AlertDanger.vue'
 import QuestionBankCard from '@/components/QuestionBankCard.vue'
 import QuestionBankTabs from '@/components/QuestionBankTabs.vue'
 import QuestionAnswerOption from '@/components/QuestionAnswerOption.vue'
-import { PhCaretDown, PhPencilSimple, PhPlus, PhTrash } from '@phosphor-icons/vue'
 import BaseModal from '@/components/modal/BaseModal.vue'
 import QuestionCreateForm from '@/components/QuestionCreateForm.vue'
-
+import { PhCaretDown, PhCheckCircle, PhPencilSimple, PhPlus, PhTrash } from '@phosphor-icons/vue'
 
 export default {
   name: 'QuestionBankView',
@@ -25,6 +24,7 @@ export default {
     QuestionBankTabs,
     QuestionAnswerOption,
     PhCaretDown,
+    PhCheckCircle,
     PhPencilSimple,
     PhPlus,
     PhTrash,

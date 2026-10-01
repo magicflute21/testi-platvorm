@@ -1,8 +1,6 @@
 package ee.testiplatvorm.controller.question;
 
-import ee.testiplatvorm.controller.question.dto.QuestionCreateRequestDto;
 import ee.testiplatvorm.controller.question.dto.QuestionBankDto;
-import ee.testiplatvorm.controller.question.dto.QuestionCreateRequestDto;
 import ee.testiplatvorm.controller.question.dto.QuestionCreateRequestDto;
 import ee.testiplatvorm.controller.question.dto.QuestionResponseDto;
 import ee.testiplatvorm.controller.question.dto.QuestionUpdateRequestDto;
@@ -16,13 +14,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -61,8 +59,7 @@ public class QuestionController {
     @ApiResponse(responseCode = "403", description = "Kasutaja roll pole ADMIN ega HALDUR (NO_PERMISSION_TO_CREATE_QUESTIONS)")
     @ApiResponse(responseCode = "404", description = "competenceLevelId või questionTypeId järgi rida ei leitud (PRIMARY_KEY_NOT_FOUND)")
     public Integer createQuestion(@RequestBody QuestionCreateRequestDto questionCreateRequestDto) {
-        Integer questionId = questionService.createQuestion(questionCreateRequestDto);
-        return questionId;
+        return questionService.createQuestion(questionCreateRequestDto);
     }
 
     @PutMapping("/api/questions/{questionId}")
