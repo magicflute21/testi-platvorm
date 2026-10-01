@@ -10,10 +10,15 @@ import CompetenceView from '@/views/CompetenceView.vue'
 import MyTestsView from '@/views/MyTestsView.vue'
 import UsersView from '@/views/UsersView.vue'
 
-const toNumber = (param) => (route) => ({ [param]: Number(route.params[param]) })
 import TestCreateView from '@/views/TestCreateView.vue'
 import QuestionBankView from "@/views/QuestionBankView.vue";
 import AiQuestionBankView from '@/views/AiQuestionBankView.vue'
+import SessionStorageService from '@/services/SessionStorageService.js'
+
+const toNumber = (param) => (route) => ({ [param]: Number(route.params[param]) })
+
+// Lehed, mida näevad ainult ADMIN ja HALDUR. Ilma meta.roles'ita lehed on kõigile sisselogitutele.
+const STAFF = { roles: ['ADMIN', 'HALDUR'] }
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,13 +28,13 @@ const router = createRouter({
       component: MainLayout,
       children: [
         { path: 'dashboard', name: 'dashboardRoute', component: DashboardView },
-        { path: 'tests/new', name: 'testCreateRoute', component: TestCreateView },
-        { path: 'tests', name: 'testsRoute', component: TestOverview },
+        { path: 'tests/new', name: 'testCreateRoute', component: TestCreateView, meta: STAFF },
+        { path: 'tests', name: 'testsRoute', component: TestOverview, meta: STAFF },
         { path: 'my-tests', name: 'myTestsRoute', component: MyTestsView },
         { path: 'test-result', name: 'testResultRoute', component: TestResultView },
-        { path: 'competences', name: 'competenceView', component: CompetenceView },
-        { path: 'questions', name: 'questionBankView', component: QuestionBankView },
-        { path: 'users', name: 'usersRoute', component: UsersView },
+        { path: 'competences', name: 'competenceView', component: CompetenceView, meta: STAFF },
+        { path: 'questions', name: 'questionBankView', component: QuestionBankView, meta: STAFF },
+        { path: 'users', name: 'usersRoute', component: UsersView, meta: STAFF },
         { path: 'questions/ai', name: 'aiQuestionBankView', component: AiQuestionBankView },
         {
           path: 'tests/:testId/start',
@@ -51,6 +56,13 @@ const router = createRouter({
       component: LoginView,
     },
   ],
+})
+
+router.beforeEach((to) => {
+  if (to.name === 'loginRoute') return true
+  if (!SessionStorageService.userIsLoggedIn()) return { name: 'loginRoute' }
+
+  if (!SessionStorageService.hasRole(to.meta.roles)) return { name: 'dashboardRoute' }
 })
 
 export default router
