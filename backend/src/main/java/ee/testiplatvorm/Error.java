@@ -9,6 +9,9 @@ public enum Error {
     NO_PERMISSION_TO_CREATE_QUESTIONS("Sul puudub õigus küsimusi luua"),
     INVALID_AI_QUESTION("Küsimus ei vasta reeglitele (vastuste arv, õigete vastuste arv, koodinäite pikkus või vastuses on vihje õigele vastusele)"),
     NO_TEST_ASSIGNMENT_FOR_THIS_USER("Kasutajale ei ole vastavat testi määratud"),
+    EMAIL_ALREADY_EXISTS("Selle e-posti aadressiga kasutaja on juba olemas"),
+    NO_RESULT_FOUND("Tulemust ei leitud");
+    NO_TEST_ASSIGNMENT_FOR_THIS_USER("Kasutajale ei ole vastavat testi määratud"),
     AI_QUESTION_ALREADY_REVIEWED("AI küsimus on juba üle vaadatud");
 
     private final String message;

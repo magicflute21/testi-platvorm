@@ -13,7 +13,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("""
             select new  ee.testiplatvorm.controller.user.dto.UserResponse (u.id, p.firstName, p.lastName, u.email, u.role.name, u.status)
-                       from User u left join Profile p on u.id = p.user.id """)
+                       from User u left join Profile p on u.id = p.user.id
+                       order by u.id """)
     List<UserResponse> findAllUserResponses();
+
+    @Query("select (count(u) > 0) from User u where lower(u.email) = lower(:email)")
+    boolean existsUserBy(String email);
 
 }

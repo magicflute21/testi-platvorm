@@ -290,7 +290,11 @@ VALUES (1, 1, 1, 'JavaScripti algtaseme test', 'JavaScripti algteadmiste kontrol
        (2, 1, 2, 'JavaScripti kesktaseme test', 'JavaScripti süvitsi minevad teemad.', 'Kesktaseme test JS-i süvitsi minevate teemade kohta.', true, 45, 70.00, false, 'A', 1,
         now() - interval '70 days', now()),
        (3, 2, 3, 'SQL-i aluste test', 'SQL-i põhiteadmiste kontroll.', 'Lühike test SQL-i põhiteadmiste hindamiseks.', false, NULL, 65.00, true, 'A', 1,
-        now() - interval '65 days', now());
+        now() - interval '65 days', now()),
+       (4, 3, 4, 'Suhtlemise algtaseme test', 'Professionaalse suhtluse põhitõed.', 'Test aktiivse kuulamise ja selge kirjaliku suhtluse kohta.', false, NULL, 50.00, true, 'A', 1,
+        now() - interval '10 days', now()),
+       (5, 2, 3, 'SQL-päringute test', 'SQL-päringute praktilised teadmised.', 'Test SELECT-päringute, filtreerimise ja SQL-i süntaksi kohta.', true, 15, 60.00, false, 'A', 1,
+        now() - interval '10 days', now());
 -- ------------------------------------------------------------
 -- test_question
 -- ------------------------------------------------------------
@@ -298,17 +302,31 @@ INSERT INTO test_question (id, test_id, question_id, position, added_by, created
 VALUES (1, 1, 1, 1, 1, now() - interval '75 days', now()),
        (2, 1, 2, 2, 1, now() - interval '75 days', now()),
        (3, 2, 2, 1, 1, now() - interval '70 days', now()),
-       (4, 3, 3, 1, 1, now() - interval '65 days', now());
+       (4, 3, 3, 1, 1, now() - interval '65 days', now()),
+       (5, 4, 8, 1, 1, now() - interval '10 days', now()),
+       (6, 4, 9, 2, 1, now() - interval '10 days', now()),
+       (7, 5, 6, 1, 1, now() - interval '10 days', now()),
+       (8, 5, 7, 2, 1, now() - interval '10 days', now()),
+       (9, 5, 3, 3, 1, now() - interval '10 days', now());
 
 -- ------------------------------------------------------------
--- user_test (assignments) — 2 currently open, 3 completed
+-- user_test (assignments) — 8 currently open, 3 completed
+-- NB! Kasutajal võib sama testi kohta olla ainult üks avatud ('O') määramine,
+-- muidu tagastab UserTestRepository.getValidUserTestBy mitu rida ja backend vastab 500.
 -- ------------------------------------------------------------
 INSERT INTO user_test (id, test_id, user_id, opens_at, closes_at, status, group_id, assigned_by, created_at)
 VALUES (1, 1, 3, now(), now() + interval '7 days', 'O', 1, 2, now()),
        (2, 3, 3, now() - interval '3 days', now() + interval '4 days', 'O', 1, 2, now() - interval '3 days'),
-       (3, 1, 1, now() - interval '10 days', now() - interval '3 days', 'O', 2, 2, now() - interval '10 days'),
+       (3, 1, 1, now() - interval '10 days', now() - interval '3 days', 'C', 2, 2, now() - interval '10 days'),
        (4, 2, 2, now() - interval '15 days', now() - interval '8 days', 'C', 2, 1, now() - interval '15 days'),
-       (5, 3, 1, now() - interval '20 days', now() - interval '13 days', 'C', 1, 2, now() - interval '20 days');
+       (5, 3, 1, now() - interval '20 days', now() - interval '13 days', 'C', 1, 2, now() - interval '20 days'),
+       -- Puhtad avatud testid frontendi testimiseks (ilma result kirjeta)
+       (6, 1, 1, now(), now() + interval '7 days', 'O', 1, 2, now()),
+       (7, 4, 1, now(), now() + interval '7 days', 'O', 1, 2, now()),
+       (8, 5, 1, now(), now() + interval '7 days', 'O', 1, 2, now()),
+       (9, 2, 3, now(), now() + interval '7 days', 'O', 2, 2, now()),
+       (10, 4, 3, now(), now() + interval '7 days', 'O', 1, 2, now()),
+       (11, 5, 3, now(), now() + interval '7 days', 'O', 2, 2, now());
 
 -- ------------------------------------------------------------
 -- result  (only for the 3 completed user_test rows: 3, 4, 5)

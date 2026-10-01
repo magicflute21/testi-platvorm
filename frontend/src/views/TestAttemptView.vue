@@ -3,6 +3,7 @@ import TestQuestionCard from '@/components/TestQuestionCard.vue'
 import TestAttemptService from '@/services/TestAttemptService.js'
 import LoadingText from '@/components/LoadingText.vue'
 import TestNotFoundIllustration from '@/components/TestNotFoundIllustration.vue'
+import NavigationService from '@/services/NavigationService.js'
 
 export default {
   name: 'TestAttemptView',
@@ -67,6 +68,14 @@ export default {
       }))
       console.log(submittedAnswers)
       TestAttemptService.postCompleteTest(this.testId, submittedAnswers)
+        .then((response) => this.handleCompleteTestResponse(response))
+        .catch((error) => this.handleCompeteTestErrorResponse(error))
+    },
+    handleCompleteTestResponse() {
+      NavigationService.navigateToTestResult(this.testAttempt.userTestId);
+    },
+    handleCompeteTestErrorResponse(error) {
+      console.log(error)
     },
     handleTestAttemptErrorResponse(error) {
       this.errorResponse = error.response.data
@@ -112,7 +121,7 @@ export default {
 
 <template>
   <div class="container d-flex flex-column align-items-center">
-    <TestNotFoundIllustration v-if="errorMessage.length" />
+    <TestNotFoundIllustration v-if="errorMessage.length" :message="errorMessage" />
     <div v-else>
       <h1 class="text-center h3">{{ testAttempt.testName }}</h1>
       <div class="d-flex flex-column align-items-center">
