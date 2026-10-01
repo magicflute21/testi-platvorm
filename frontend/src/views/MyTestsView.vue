@@ -5,11 +5,12 @@ import UserTestService from '@/services/UserTestService.js'
 import Status from '@/Status.js'
 import TestNotFoundCard from '@/components/TestNotFoundCard.vue'
 import AlertDanger from '@/components/AlertDanger.vue'
-import MainTitle from "@/components/MainTitle.vue";
+import MainTitle from '@/components/MainTitle.vue'
+import NavigationService from '@/services/NavigationService.js'
 
 export default {
   name: 'MyTestsView',
-  components: {MainTitle, AlertDanger, TestNotFoundCard, LoadingText, PreviewCard },
+  components: { MainTitle, AlertDanger, TestNotFoundCard, LoadingText, PreviewCard },
   beforeMount() {
     this.getUserTests()
   },
@@ -41,11 +42,13 @@ export default {
 
     handleGetUserTests(response) {
       this.userTestSummaries = response.data
-      console.log(this.userTestSummaries)
     },
 
     handleErrorMessage() {
       this.errorMessage = 'Testide laadimine ebaõnnestus'
+    },
+    goToTestStartView(testId) {
+      NavigationService.navigateToTestStartView(testId)
     },
   },
 }
@@ -61,7 +64,7 @@ export default {
       <TestNotFoundCard :message="'Sulle pole ühtki testi määratud'" />
     </div>
     <div v-else>
-      <MainTitle title="Minu testid"/>
+      <MainTitle title="Minu testid" />
       <div class="preview-test-card-grid">
         <PreviewCard
           v-for="userTestSummary in userTestSummaries"
@@ -74,6 +77,7 @@ export default {
             <button
               v-if="userTestSummary.userTestStatus === 'O'"
               class="btn btn-primary fw-bold rounded-2"
+              @click="goToTestStartView(userTestSummary.testId)"
             >
               Soorita test
             </button>
