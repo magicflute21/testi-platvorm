@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 export default {
-  sendGenerateQuestionRequest(instructions) {
-    return axios.post('/api/ai-questions/generate', { instructions })
+  sendGenerateQuestionRequest(instructions, previousMessages) {
+    return axios.post('/api/ai-questions/generate', { instructions, previousMessages })
   },
 
   sendSaveQuestionRequest(question) {

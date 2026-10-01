@@ -9,6 +9,12 @@ AI question generation: ADMIN/HALDUR can create test questions with AI via the c
 a confirmed question to ai_question / ai_question_answer tables with status 'P'.
 Uses Spring AI + Google GenAI (needs GOOGLE_GENAI_API_KEY). The hourly limit is temporarily removed.
 
+AI chat fix: the chat kept only the user's first message and the latest one, so when the user changed the
+competence, level or type, the AI got conflicting info and repeated the same clarifying question. Now the chat
+sends the conversation history (last 10 messages incl. AI clarifying questions and generated question summaries)
+in POST /api/ai-questions/generate as previousMessages, and the AI rules say that the latest message has priority
+and earlier messages are only used to fill in missing details. The same clarifying question is not repeated.
+
 POST /api/ai-questions/{aiQuestionId}/review -> AI question review with score 1-5, feedback (max 255) and decision
 (approved). Fills ai_question score, feedback and is_good. Approved: status 'A' and the question with its answers is
 copied to question / question_answer (status 'A', score 10, TRUE_FALSE 5, created_by = AI question author).
