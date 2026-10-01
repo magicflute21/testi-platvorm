@@ -6,11 +6,12 @@ import {
   PhStack,
   PhPersonSimple,
   PhQuestion,
+  PhUsers
 } from '@phosphor-icons/vue'
 
 export default {
   name: 'AppSidebar',
-  components: { PhPersonSimple, PhStack, PhFilePlus, PhHouse, PhFlask, PhQuestion },
+  components: { PhPersonSimple, PhStack, PhFilePlus, PhHouse, PhFlask, PhQuestion, PhUsers },
 }
 </script>
 
@@ -28,6 +29,7 @@ export default {
           <span class="nav-text">Testid</span>
         </RouterLink>
         <RouterLink class="nav-link d-flex align-items-center gap-2" to="/my-tests">
+          <span class="nav-text">Minu testid</span>
           <PhPersonSimple :size="20" />
           <span class="nav-text">Minu testid</span>
         </RouterLink>
@@ -42,6 +44,10 @@ export default {
         <RouterLink class="nav-link d-flex align-items-center gap-2" to="/questions">
           <PhQuestion :size="20" />
           <span class="nav-text">Küsimuste pank</span>
+        </RouterLink>
+        <RouterLink class="nav-link d-flex align-items-center gap-2" to="/users">
+          <PhUsers :size="20" />
+          Kasutajad
         </RouterLink>
       </div>
     </nav>
