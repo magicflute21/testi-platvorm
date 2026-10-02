@@ -1,3 +1,12 @@
+TP-30 Did a bit of code cleanup in QuestionService createQuestion method. Added Levels and Competence views, that
+use the same card component. New design option for /levels route card components.
+
+
+TP-28 POST /api/questions endpoint for QuestionCreateForm modal in frontend that opens in Question Bank
+view when the "Lisa küsimus +" button is pressed. QuestionCreateForm is a component that sits inside the Basemodal
+that appears on the QuestionBankView. Every time a field is not filled there is an alert that tells you what to do.
+
+
 Test detail view: "Vaata testi" on the tests page opens /tests/{testId} (TestDetailView, ADMIN/HALDUR only). The card
 shows competence, title, level, short and long description and info boxes for question count, time limit, pass
 percent and max score (singular/plural: "1 küsimus" / "2 küsimust"). Questions themselves are not shown. Inactive tests
