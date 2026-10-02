@@ -11,7 +11,7 @@ export default {
   },
   computed: {
     completionPercentage() {
-      return (this.questionNumber / this.totalQuestions) * 100
+      return Math.round((this.questionNumber / this.totalQuestions) * 100)
     },
     isMultiple() {
       return this.question.questionTypeName === 'MULTIPLE_CHOICE'
