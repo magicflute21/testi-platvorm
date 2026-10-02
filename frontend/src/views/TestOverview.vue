@@ -5,10 +5,11 @@ import Status from '@/Status.js'
 import PreviewCard from '@/components/PreviewCard.vue'
 import LoadingText from '@/components/LoadingText.vue'
 import MainTitle from '@/components/MainTitle.vue'
+import AlertDanger from '@/components/AlertDanger.vue'
 
 export default {
   name: 'TestOverview',
-  components: { LoadingText, PreviewCard, MainTitle },
+  components: { LoadingText, PreviewCard, MainTitle, AlertDanger },
 
   beforeMount() {
     this.getAllTests()
@@ -16,6 +17,7 @@ export default {
 
   data() {
     return {
+      errorMessage: '',
       isLoading: true,
       testStatus: Status,
       testSummaries: [
@@ -32,11 +34,14 @@ export default {
     getAllTests() {
       TestService.getAllTests()
         .then((response) => this.handleGetAllTests(response))
-        .catch()
+        .catch(() => this.handleErrorMessage())
         .finally(() => (this.isLoading = false))
     },
     handleGetAllTests(response) {
       this.testSummaries = response.data
+    },
+    handleErrorMessage() {
+      this.errorMessage = 'Testide laadimine ebaõnnestus'
     },
     navigateToTestDetail(testId) {
       NavigationService.navigateToTestDetail(testId)
@@ -50,6 +55,9 @@ export default {
 <template>
   <div class="container py-4">
     <LoadingText v-if="isLoading" />
+    <div v-else-if="errorMessage" class="text-center">
+      <AlertDanger :error-message="errorMessage" />
+    </div>
     <div v-else>
       <MainTitle title="Testid" />
       <div class="preview-test-card-grid">

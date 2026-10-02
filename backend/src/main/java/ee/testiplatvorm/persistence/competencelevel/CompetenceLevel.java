@@ -1,6 +1,6 @@
 package ee.testiplatvorm.persistence.competencelevel;
 
-import ee.testiplatvorm.persistence.Level;
+import ee.testiplatvorm.persistence.level.Level;
 import ee.testiplatvorm.persistence.competence.Competence;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

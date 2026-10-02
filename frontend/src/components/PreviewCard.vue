@@ -41,6 +41,7 @@ export default {
 </template>
 
 <style scoped>
+
 .card {
   min-width: 0;
   transition:

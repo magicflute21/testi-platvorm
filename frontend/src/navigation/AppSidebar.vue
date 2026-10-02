@@ -7,12 +7,22 @@ import {
   PhPersonSimple,
   PhQuestion,
   PhUsers,
+  PhChartBar,
 } from '@phosphor-icons/vue'
 import SessionStorageService from '@/services/SessionStorageService.js'
 
 export default {
   name: 'AppSidebar',
-  components: { PhPersonSimple, PhStack, PhFilePlus, PhHouse, PhFlask, PhQuestion, PhUsers },
+  components: {
+    PhPersonSimple,
+    PhStack,
+    PhFilePlus,
+    PhHouse,
+    PhFlask,
+    PhQuestion,
+    PhUsers,
+    PhChartBar,
+  },
   methods: {
     // Lingi nähtavus tuleb marsruudi meta.roles'ist (src/router/index.js)
     canSee(path) {
@@ -66,6 +76,14 @@ export default {
         >
           <PhStack :size="20" />
           <span class="nav-text">Kompetentsid</span>
+        </RouterLink>
+        <RouterLink
+          v-if="canSee('/levels')"
+          class="nav-link d-flex align-items-center gap-2"
+          to="/levels"
+        >
+          <PhChartBar :size="20" />
+          <span class="nav-text">Tasemed</span>
         </RouterLink>
         <RouterLink
           v-if="canSee('/questions')"
