@@ -6,6 +6,21 @@ TP-28 POST /api/questions endpoint for QuestionCreateForm modal in frontend that
 view when the "Lisa küsimus +" button is pressed. QuestionCreateForm is a component that sits inside the Basemodal
 that appears on the QuestionBankView. Every time a field is not filled there is an alert that tells you what to do.
 
+Dashboard ("Töölaud"): visible only to ADMIN and HALDUR. Shows four clickable number cards: tests assigned to me and
+not yet completed (-> "Minu testid"), tests and questions added in the last 7 days (-> tests / question bank) and AI
+questions waiting for review (-> AI questions, highlighted when > 0). GET /api/dashboard returns assignedTestCount,
+recentTestCount, recentQuestionCount, pendingAiQuestionCount and recentDays (7, RECENT_DAYS in DashboardService);
+other roles get HTTP 403 NO_PERMISSION_TO_VIEW_DASHBOARD, not logged in 401. After login a regular user (KASUTAJA)
+goes straight to "Minu testid" and is redirected there from staff-only pages (NavigationService.navigateToStartPage).
+
+TestCreateView fields: inputs, selects and labels use the same style as the question create form (QuestionCreateForm):
+light grey rounded fields that turn white on focus and small bold labels. Info box content is centered, "Lisa küsimus"
+is a dashed button with text and removing a question uses an X icon.
+
+TestCreateView style: the form is now in the same card style as the test detail and test start pages. Competence,
+level, pass percent and timer are shown as info boxes with icons (same style as the test detail page), title and short
+description fields show a character counter inside the field (255 / 150, input limited with maxlength), all fields
+have the same height and text size and there is more space between rows. "Loo test" button is bold.
 
 Test detail view: "Vaata testi" on the tests page opens /tests/{testId} (TestDetailView, ADMIN/HALDUR only). The card
 shows competence, title, level, short and long description and info boxes for question count, time limit, pass

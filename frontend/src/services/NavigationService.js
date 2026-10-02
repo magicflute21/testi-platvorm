@@ -1,10 +1,19 @@
 import router from '@/router/index.js'
+import SessionStorageService from '@/services/SessionStorageService.js'
 
 export default {
   navigateToLogin() {
     router.push({
       name: 'loginRoute',
     })
+  },
+  // Admin ja haldur alustavad töölaualt, tavakasutaja oma testide lehelt
+  navigateToStartPage() {
+    if (SessionStorageService.hasRole(['ADMIN', 'HALDUR'])) {
+      this.navigateToDashboard()
+    } else {
+      router.push({ name: 'myTestsRoute' })
+    }
   },
   navigateToDashboard() {
     router.push({

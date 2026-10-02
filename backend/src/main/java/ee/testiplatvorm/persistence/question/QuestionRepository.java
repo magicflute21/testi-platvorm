@@ -3,6 +3,7 @@ package ee.testiplatvorm.persistence.question;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, Integer> {
@@ -14,4 +15,7 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
             where (:competenceId is null or q.competence.id = :competenceId)
             order by q.id""")
     List<Question> findAllQuestionsBy(Integer competenceId);
+
+    @Query("select count(q) from Question q where q.createdAt >= :createdAfter")
+    Long countQuestionsCreatedAfter(OffsetDateTime createdAfter);
 }
