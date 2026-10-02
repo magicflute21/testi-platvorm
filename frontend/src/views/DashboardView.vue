@@ -1,10 +1,12 @@
 <script>
 import MainTitle from '@/components/MainTitle.vue'
 import LoadingText from '@/components/LoadingText.vue'
+import DatabaseSchemaModal from '@/components/DatabaseSchemaModal.vue'
 import DashboardService from '@/services/DashboardService.js'
 import {
   PhArrowRight,
   PhClipboardText,
+  PhDatabase,
   PhFilePlus,
   PhQuestion,
   PhSparkle,
@@ -12,11 +14,12 @@ import {
 
 export default {
   name: 'DashboardView',
-  components: { MainTitle, LoadingText, PhArrowRight },
+  components: { MainTitle, LoadingText, DatabaseSchemaModal, PhArrowRight, PhDatabase },
   data() {
     return {
       isLoading: true,
       errorMessage: '',
+      isSchemaModalOpen: false,
       dashboard: {
         assignedTestCount: 0,
         recentTestCount: 0,
@@ -27,6 +30,10 @@ export default {
     }
   },
   computed: {
+    // Andmebaasi skeem on tehniline info, seega näidatakse seda ainult administraatorile
+    canViewDatabaseSchema() {
+      return sessionStorage.getItem('roleName') === 'ADMIN'
+    },
     recentPeriodText() {
       return `viimase ${this.dashboard.recentDays} päeva jooksul`
     },
@@ -115,6 +122,18 @@ export default {
         </div>
       </RouterLink>
     </div>
+
+    <button
+      v-if="canViewDatabaseSchema"
+      type="button"
+      class="btn btn-outline-primary fw-bold rounded-2 d-inline-flex align-items-center gap-2 mt-4"
+      @click="isSchemaModalOpen = true"
+    >
+      <PhDatabase :size="20" />
+      Andmebaasi skeem
+    </button>
+
+    <DatabaseSchemaModal :is-open="isSchemaModalOpen" @event-close="isSchemaModalOpen = false" />
   </div>
 </template>
 

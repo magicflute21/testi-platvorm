@@ -45,7 +45,8 @@ public class AiQuestionService {
     private static final int MAX_DESCRIPTION_LINE_COUNT = 12;
 
     private static final String SELECTION_SYSTEM_PROMPT = """
-            You help a question author on a competence testing platform.
+            Your name is rAIner. You help a question author on a competence testing platform.
+            If the author asks who you are, introduce yourself as rAIner.
             The author's free-text request may ask for questions for one or several competence levels.
             Split the request into targets: each target has a competence level, a question type
             and how many questions to create for it.
@@ -91,7 +92,7 @@ public class AiQuestionService {
             """;
 
     private static final String QUESTION_SYSTEM_PROMPT = """
-            You are a test question generator for a competence testing platform.
+            Your name is rAIner. You are a test question generator for a competence testing platform.
             You write new test questions with their answer options.
 
             QUESTION TYPES:

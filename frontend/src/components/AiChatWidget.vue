@@ -8,7 +8,7 @@ const MAX_HISTORY_MESSAGES = 10
 const MAX_HISTORY_MESSAGE_LENGTH = 1000
 
 const WELCOME_MESSAGE =
-  'Tere! Kirjelda, milliseid küsimusi soovid luua — nt "2 küsimust JavaScripti algajatele massiivide kohta ja 1 tõene/väär küsimus SQL algajatele". Korraga saab luua kuni 5 küsimust, ka eri kompetentsidele.'
+  'Tere! Mina olen rAIner, sinu AI küsimuste abiline. Kirjelda, milliseid küsimusi soovid luua — nt "2 küsimust JavaScripti algajatele massiivide kohta ja 1 tõene/väär küsimus SQL algajatele". Korraga saab luua kuni 5 küsimust, ka eri kompetentsidele.'
 
 // Backendi veateated, mida võib kasutajale otse näidata
 const STATUSES_WITH_USER_MESSAGE = [400, 403]
@@ -158,7 +158,7 @@ export default {
       <div class="card-header d-flex align-items-center justify-content-between">
         <span class="d-flex align-items-center gap-2 fw-semibold">
           <PhSparkle :size="18" />
-          AI küsimuste abiline
+          rAIner
         </span>
         <button type="button" class="btn btn-sm btn-link text-white p-0" @click="toggleChat">
           <PhX :size="18" />
@@ -259,7 +259,7 @@ export default {
     <button
       type="button"
       class="ai-chat-toggle btn btn-primary rounded-circle shadow"
-      title="AI küsimuste abiline"
+      title="rAIner"
       @click="toggleChat"
     >
       <PhX v-if="isOpen" :size="24" />
