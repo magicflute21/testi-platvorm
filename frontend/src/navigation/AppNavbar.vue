@@ -28,6 +28,8 @@ export default {
 
 .app-nav {
   position: relative;
+  /* Navbar jääb lehe täpilaine (DotWaveBackground) kohale */
+  z-index: 1;
   background: #fff;
   border-bottom: 1px solid #eee;
 }
