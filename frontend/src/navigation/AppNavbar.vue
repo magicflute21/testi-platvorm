@@ -10,12 +10,21 @@ export default {
       type: Boolean,
       default: true,
     },
+    // Lehe täpilaine jookseb ka üle kaare. MainLayout annab sama tingimuse, millega näidatakse
+    // DotWaveBackground'i, et mõlemad kihid alustaksid animatsiooni samal hetkel.
+    showDotWave: {
+      type: Boolean,
+      default: false,
+    },
   },
 }
 </script>
 
 <template>
   <nav class="navbar navbar-expand-lg px-4 app-nav shadow-sm d-flex justify-content-between">
+    <span class="nav-arc" aria-hidden="true">
+      <span v-if="showDotWave" class="nav-arc-wave app-dot-wave-layer"></span>
+    </span>
     <RouterLink class="navbar-brand brand" to="/">
       <span class="brand-mark" aria-hidden="true"></span>
       <span class="brand-skill">Skill</span><span class="brand-scope">Scope</span>
@@ -38,8 +47,7 @@ export default {
   border-bottom: 1px solid var(--app-nav-border);
 }
 
-.app-nav::before {
-  content: '';
+.nav-arc {
   position: absolute;
   top: 0;
   left: 0;
@@ -55,14 +63,24 @@ export default {
     no-repeat 0 0 / 100% 100%;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H40 Q52 45 85 100 H0 Z' fill='black'/%3E%3C/svg%3E")
     no-repeat 0 0 / 100% 100%;
-  z-index: 0;
   pointer-events: none;
+}
+
+/* Laine täidab kogu kaare; kaare mask lõikab selle kaare kujuliseks */
+.nav-arc-wave {
+  position: absolute;
+  inset: 0;
 }
 
 /* keep the nav content above the curve */
 .app-nav > * {
   position: relative;
   z-index: 1;
+}
+
+.app-nav > .nav-arc {
+  position: absolute;
+  z-index: 0;
 }
 
 .brand {

@@ -167,7 +167,7 @@ export default {
 
     <TestNotFoundIllustration v-else-if="errorMessage.length" :message="errorMessage" />
 
-    <div v-else class="card my-4 shadow result-card" :class="isPassed ? 'is-passed' : 'is-failed'">
+    <div v-else class="card my-4 app-surface result-card" :class="isPassed ? 'is-passed' : 'is-failed'">
       <div class="result-header text-center px-4 pt-4 pb-5">
         <div class="header-icon mx-auto mb-3">
           <PhTrophy v-if="isPassed" :size="32" weight="fill" />

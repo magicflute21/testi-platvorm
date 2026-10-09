@@ -356,7 +356,7 @@ export default {
 .form-label {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--brand-slate);
+  color: var(--bs-primary);
 }
 
 /* Heledad väljad nagu kujunduses; fookuses muutuvad valgeks */
@@ -452,13 +452,13 @@ export default {
 .add-answer-button {
   border: 1px dashed var(--bs-gray-500);
   border-radius: 0.75rem;
-  color: var(--brand-slate);
+  color: var(--bs-primary);
   font-size: 0.875rem;
   font-weight: 600;
 }
 
 .add-answer-button:hover {
-  border-color: var(--brand-slate);
+  border-color: var(--bs-primary);
   background-color: var(--bs-primary-bg-subtle);
 }
 </style>

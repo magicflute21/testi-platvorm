@@ -24,7 +24,7 @@ export default {
 </script>
 
 <template>
-  <Navbar />
+  <Navbar :show-dot-wave="isDotWaveShown" />
 
   <div class="d-flex layout">
     <DotWaveBackground v-if="isDotWaveShown" />

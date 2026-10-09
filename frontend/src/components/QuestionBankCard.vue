@@ -26,7 +26,7 @@ export default {
 </script>
 
 <template>
-  <div class="card question-card shadow rounded-4">
+  <div class="card question-card app-surface rounded-4">
     <div class="card-body question-card-body">
       <div class="d-flex align-items-start gap-3 question-card-header" @click="toggleOpen">
         <div class="question-card-heading">
@@ -108,7 +108,7 @@ export default {
 }
 
 .question-card:hover {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  box-shadow: var(--app-surface-shadow-hover);
 }
 
 .question-card-header {

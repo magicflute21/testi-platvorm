@@ -172,7 +172,7 @@ export default {
 
 <template>
   <div class="container d-flex flex-column align-items-center">
-    <div class="card shadow p-4 my-4 create-card">
+    <div class="card app-surface p-4 my-4 create-card">
       <div class="card-body">
         <h1 class="text-uppercase fw-bold h3">Loo uus test</h1>
         <p class="text-body-secondary mt-3 mb-4">
@@ -422,7 +422,7 @@ export default {
 .setting-label {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--brand-slate);
+  color: var(--bs-primary);
 }
 
 .test-create-form .form-control,
@@ -459,13 +459,13 @@ export default {
 .add-question-button {
   border: 1px dashed var(--bs-gray-500);
   border-radius: 0.75rem;
-  color: var(--brand-slate);
+  color: var(--bs-primary);
   font-size: 0.875rem;
   font-weight: 600;
 }
 
 .add-question-button:hover {
-  border-color: var(--brand-slate);
+  border-color: var(--bs-primary);
   background-color: var(--bs-primary-bg-subtle);
 }
 

@@ -182,7 +182,7 @@ export default {
 
       <QuestionBankTabs ref="questionBankTabs" />
 
-      <div v-if="!aiQuestions.length" class="card shadow rounded-4 p-5 text-center">
+      <div v-if="!aiQuestions.length" class="card app-surface rounded-4 p-5 text-center">
         <PhSparkle :size="40" class="empty-icon mx-auto mb-3" />
         <h2 class="h5 fw-bold mb-2">AI küsimusi ei leitud</h2>
         <p class="text-secondary mb-0">

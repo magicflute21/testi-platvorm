@@ -298,7 +298,7 @@ export default {
 
             <div
               v-if="!questions.length"
-              class="card shadow rounded-4 p-5 text-center text-secondary"
+              class="card app-surface rounded-4 p-5 text-center text-secondary"
             >
               Küsimusi ei leitud
             </div>

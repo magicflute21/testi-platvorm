@@ -213,7 +213,7 @@ export default {
 
 <template>
   <div class="d-flex flex-column gap-4">
-    <div class="card shadow rounded-4">
+    <div class="card app-surface rounded-4">
       <div class="card-body generator-card-body">
         <h2 class="h5 fw-bold d-flex align-items-center gap-2 mb-1">
           <PhSparkle :size="20" />
@@ -293,7 +293,7 @@ export default {
       </div>
     </div>
 
-    <div v-if="!messages.length" class="card shadow rounded-4 p-5 text-center">
+    <div v-if="!messages.length" class="card app-surface rounded-4 p-5 text-center">
       <PhSparkle :size="40" class="empty-icon mx-auto mb-3" />
       <h3 class="h5 fw-bold mb-2">Alusta juhisega</h3>
       <p class="text-secondary mb-0">
@@ -362,7 +362,7 @@ export default {
       </div>
     </div>
 
-    <div ref="promptInput" class="card shadow rounded-4">
+    <div ref="promptInput" class="card app-surface rounded-4">
       <div class="card-body generator-card-body">
         <AlertDanger :error-message="errorMessage" class="mb-3" />
         <div v-if="isCompetenceLevelSelected" class="d-flex flex-wrap gap-2 mb-3">
