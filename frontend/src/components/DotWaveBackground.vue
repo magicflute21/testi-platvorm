@@ -17,7 +17,7 @@ export default {
   inset: 0;
   pointer-events: none;
   /* Sama ruudustik nagu .layout taustal: fixed element algab vaateakna nurgast, nii joonduvad täpid */
-  background-image: radial-gradient(rgba(55, 71, 79, 0.14) 1px, transparent 1px);
+  background-image: radial-gradient(var(--app-dot-wave-color) 1px, transparent 1px);
   background-size: 22px 22px;
   -webkit-mask-image: linear-gradient(110deg, transparent 40%, #000 50%, transparent 60%);
   mask-image: linear-gradient(110deg, transparent 40%, #000 50%, transparent 60%);

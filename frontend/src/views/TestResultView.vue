@@ -262,7 +262,7 @@ export default {
 
 /* Päis: eduka sooritamise korral rõõmsam münt-türkiis üleminek, muidu rahulik hall */
 .result-header {
-  background: linear-gradient(160deg, #eceff1 0%, #f8fafb 100%);
+  background: var(--app-result-header-bg);
   color: var(--bs-primary-text-emphasis);
 }
 
@@ -306,7 +306,7 @@ export default {
   width: 10rem;
   height: 10rem;
   margin-top: -3rem;
-  background-color: #fff;
+  background-color: var(--bs-body-bg);
   border-radius: 50%;
   box-shadow: 0 0.5rem 1.5rem rgba(var(--bs-primary-rgb), 0.12);
 }
@@ -333,7 +333,7 @@ export default {
 }
 
 .ring-track {
-  background-color: #eceff1;
+  background-color: var(--app-ring-track);
 }
 
 /* Gradient kulgeb üle kogu ringi tumehallist mündiroheliseks, teine mask näitab sellest

@@ -37,6 +37,97 @@
   --brand-green-rgb: 31, 138, 76;
   --brand-slate: #37474f;
   --brand-mint: #92e3a9;
+
+  /* Rakenduse enda pinnad ja toonid — tumeda režiimi väärtused on allpool */
+  --app-page-bg: #f5f8f6;
+  --app-page-glow: rgba(199, 217, 199, 0.22);
+  --app-dot-color: rgba(55, 71, 79, 0.08);
+  --app-dot-wave-color: rgba(55, 71, 79, 0.14);
+  --app-ink: #1a1a2e;
+  --app-nav-border: #eee;
+  --app-nav-arc-bg: #e4ede7;
+  --app-nav-arc-dot: rgba(55, 71, 79, 0.12);
+  --app-sidebar-border: rgba(26, 26, 46, 0.06);
+  --app-result-header-bg: linear-gradient(160deg, #eceff1 0%, #f8fafb 100%);
+  --app-ring-track: #eceff1;
+}
+
+/*
+  Tume režiim — lülitatakse <html data-bs-theme="dark"> atribuudiga (vt ThemeService.js).
+  Tumehall, mitte must: leht #1c2024, kaardid ja paneelid heledamad (#262b30), et pinnad eristuksid.
+  Rohelised ja kollased on heledamad ja veidi pehmemad, et tumedal taustal mitte kiirata.
+  Kõik :root-is üle kirjutatud Bootstrapi muutujad tuleb siin uuesti määrata, muidu jääksid heledad.
+*/
+:root[data-bs-theme='dark'] {
+  --bs-body-bg: #262b30;
+  --bs-body-bg-rgb: 38, 43, 48;
+  --bs-body-color: #dfe4e8;
+  --bs-body-color-rgb: 223, 228, 232;
+  --bs-emphasis-color: #f5f7f8;
+  --bs-emphasis-color-rgb: 245, 247, 248;
+  --bs-secondary-color: rgba(223, 228, 232, 0.68);
+  --bs-secondary-color-rgb: 223, 228, 232;
+  --bs-secondary-bg: #30363c;
+  --bs-secondary-bg-rgb: 48, 54, 60;
+  --bs-tertiary-bg: #2b3036;
+  --bs-tertiary-bg-rgb: 43, 48, 54;
+  --bs-border-color: #3b4249;
+  --bs-border-color-translucent: rgba(255, 255, 255, 0.1);
+
+  /* Halliskaala pööratakse ümber: komponentides kasutatud --bs-gray-100 (hele täide) jääb ka
+     tumedas režiimis "pehmeks täiteks" ja --bs-gray-600 (vaiksem tekst) loetavaks. */
+  --bs-gray-100: #2f353b;
+  --bs-gray-200: #363d43;
+  --bs-gray-300: #434b52;
+  --bs-gray-400: #58616a;
+  --bs-gray-500: #7b858e;
+  --bs-gray-600: #9aa4ad;
+  --bs-gray-700: #c3cbd2;
+  --bs-gray-800: #dde2e6;
+  --bs-gray-900: #eef1f3;
+
+  --bs-primary: #9fb3bd;
+  --bs-primary-rgb: 159, 179, 189;
+  --bs-primary-text-emphasis: #d3dde2;
+  --bs-primary-bg-subtle: #2e393f;
+  --bs-primary-border-subtle: #4a5c65;
+
+  --bs-link-color: #b0c4cd;
+  --bs-link-color-rgb: 176, 196, 205;
+  --bs-link-hover-color: #dbe5ea;
+  --bs-link-hover-color-rgb: 219, 229, 234;
+  --bs-focus-ring-color: rgba(159, 179, 189, 0.3);
+
+  --bs-success: #34d1a8;
+  --bs-success-rgb: 52, 209, 168;
+  --bs-success-text-emphasis: #86e8cd;
+  --bs-success-bg-subtle: #17362f;
+  --bs-success-border-subtle: #23705c;
+  --bs-form-valid-color: #34d1a8;
+  --bs-form-valid-border-color: #34d1a8;
+
+  /* Kollane (AI märgid, "pooleli" staatus, tärnid) — soe ja summutatud, mitte neoonkollane */
+  --bs-warning: #f0c454;
+  --bs-warning-rgb: 240, 196, 84;
+  --bs-warning-text-emphasis: #f3d27c;
+  --bs-warning-bg-subtle: #3a3222;
+  --bs-warning-border-subtle: #7d6530;
+
+  --brand-green: #4cc47f;
+  --brand-green-rgb: 76, 196, 127;
+  --brand-slate: #50646e;
+
+  --app-page-bg: #1c2024;
+  --app-page-glow: rgba(76, 196, 127, 0.06);
+  --app-dot-color: rgba(203, 213, 219, 0.07);
+  --app-dot-wave-color: rgba(203, 213, 219, 0.14);
+  --app-ink: #eef1f3;
+  --app-nav-border: #3b4249;
+  --app-nav-arc-bg: #22302a;
+  --app-nav-arc-dot: rgba(203, 213, 219, 0.09);
+  --app-sidebar-border: rgba(255, 255, 255, 0.06);
+  --app-result-header-bg: linear-gradient(160deg, #2e353b 0%, #283036 100%);
+  --app-ring-track: #363d43;
 }
 
 /* Brändi roheline pealkirjadele ja aktsentidele */
@@ -114,10 +205,10 @@
    ja täpivõrk. 57px = navbari kõrgus. */
 .layout {
   min-height: calc(100vh - 57px);
-  background-color: #f5f8f6;
+  background-color: var(--app-page-bg);
   background-image:
-    radial-gradient(circle at 100% 0%, rgba(199, 217, 199, 0.22), transparent 45%),
-    radial-gradient(rgba(55, 71, 79, 0.08) 1px, transparent 1px);
+    radial-gradient(circle at 100% 0%, var(--app-page-glow), transparent 45%),
+    radial-gradient(var(--app-dot-color) 1px, transparent 1px);
   background-size:
     100% 100%,
     22px 22px;
@@ -188,4 +279,99 @@
 .form-check-input:checked {
   background-color: #37474f;
   border-color: #37474f;
+}
+
+/* ---------- Tume režiim: komponendid, mille värvid on Bootstrapis või ülal kõvasti kirjas ---------- */
+
+[data-bs-theme='dark'] .btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #546e7a;
+  --bs-btn-border-color: #546e7a;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #607d8b;
+  --bs-btn-hover-border-color: #607d8b;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #6c8a98;
+  --bs-btn-active-border-color: #6c8a98;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #546e7a;
+  --bs-btn-disabled-border-color: #546e7a;
+  --bs-btn-focus-shadow-rgb: 159, 179, 189;
+}
+
+[data-bs-theme='dark'] .btn-outline-primary {
+  --bs-btn-color: #b0c4cd;
+  --bs-btn-border-color: #78909c;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #546e7a;
+  --bs-btn-hover-border-color: #546e7a;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #607d8b;
+  --bs-btn-active-border-color: #607d8b;
+  --bs-btn-disabled-color: #78909c;
+  --bs-btn-disabled-border-color: #78909c;
+  --bs-btn-focus-shadow-rgb: 159, 179, 189;
+}
+
+[data-bs-theme='dark'] .btn-outline-success {
+  --bs-btn-color: #34d1a8;
+  --bs-btn-border-color: #34d1a8;
+  --bs-btn-hover-color: #10241f;
+  --bs-btn-hover-bg: #34d1a8;
+  --bs-btn-hover-border-color: #34d1a8;
+  --bs-btn-active-color: #10241f;
+  --bs-btn-active-bg: #2bb892;
+  --bs-btn-active-border-color: #2bb892;
+  --bs-btn-disabled-color: #34d1a8;
+  --bs-btn-disabled-border-color: #34d1a8;
+  --bs-btn-focus-shadow-rgb: 52, 209, 168;
+}
+
+[data-bs-theme='dark'] .btn-light {
+  --bs-btn-color: #dfe4e8;
+  --bs-btn-bg: #363d43;
+  --bs-btn-border-color: #363d43;
+  --bs-btn-hover-color: #f5f7f8;
+  --bs-btn-hover-bg: #424a51;
+  --bs-btn-hover-border-color: #424a51;
+  --bs-btn-active-color: #f5f7f8;
+  --bs-btn-active-bg: #4d565e;
+  --bs-btn-active-border-color: #4d565e;
+  --bs-btn-disabled-color: #7b858e;
+  --bs-btn-disabled-bg: #2f353b;
+  --bs-btn-disabled-border-color: #2f353b;
+  --bs-btn-focus-shadow-rgb: 159, 179, 189;
+}
+
+[data-bs-theme='dark'] .dropdown-menu {
+  --bs-dropdown-link-hover-bg: #3b4249;
+  --bs-dropdown-link-hover-color: #f5f7f8;
+  --bs-dropdown-link-active-bg: #546e7a;
+  --bs-dropdown-link-active-color: #fff;
+}
+
+[data-bs-theme='dark'] .nav-pills {
+  --bs-nav-pills-link-active-bg: #546e7a;
+}
+
+[data-bs-theme='dark'] .form-control:focus,
+[data-bs-theme='dark'] .form-select:focus,
+[data-bs-theme='dark'] .form-check-input:focus {
+  border-color: #78909c;
+  box-shadow: 0 0 0 0.25rem rgba(159, 179, 189, 0.3);
+}
+
+[data-bs-theme='dark'] .form-check-input:checked {
+  background-color: #607d8b;
+  border-color: #607d8b;
+}
+
+/* Bootstrapi .text-bg-light jääb tumedas režiimis heledaks — muudame selle pehmeks halliks märgiks */
+[data-bs-theme='dark'] .text-bg-light {
+  background-color: var(--bs-secondary-bg) !important;
+  color: var(--bs-body-color) !important;
+}
+
+[data-bs-theme='dark'] .app-tooltip {
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
 }

@@ -1,9 +1,10 @@
 <script>
 import AccountIcon from '@/navigation/AccountIcon.vue'
+import ThemeToggle from '@/navigation/ThemeToggle.vue'
 
 export default {
   name: 'AppNavbar',
-  components: { AccountIcon: AccountIcon },
+  components: { AccountIcon: AccountIcon, ThemeToggle },
   props: {
     showAccountIcon: {
       type: Boolean,
@@ -19,7 +20,10 @@ export default {
       <span class="brand-mark" aria-hidden="true"></span>
       <span class="brand-skill">Skill</span><span class="brand-scope">Scope</span>
     </RouterLink>
-    <AccountIcon v-if="showAccountIcon" />
+    <div class="d-flex align-items-center gap-2">
+      <ThemeToggle :class="{ 'me-3': !showAccountIcon }" />
+      <AccountIcon v-if="showAccountIcon" />
+    </div>
   </nav>
 </template>
 
@@ -30,8 +34,8 @@ export default {
   position: relative;
   /* Navbar jääb lehe täpilaine (DotWaveBackground) kohale */
   z-index: 1;
-  background: #fff;
-  border-bottom: 1px solid #eee;
+  background: var(--bs-body-bg);
+  border-bottom: 1px solid var(--app-nav-border);
 }
 
 .app-nav::before {
@@ -43,8 +47,8 @@ export default {
   height: 100%;
   /* Sama täpivõrk ja alatoon nagu lehe taustal (theme.css .layout) —
      fixed-kinnitusega joonduvad täpid lehe taustaga. Kaare kuju tuleb maskist. */
-  background-color: #e4ede7;
-  background-image: radial-gradient(rgba(55, 71, 79, 0.12) 1px, transparent 1px);
+  background-color: var(--app-nav-arc-bg);
+  background-image: radial-gradient(var(--app-nav-arc-dot) 1px, transparent 1px);
   background-size: 22px 22px;
   background-attachment: fixed;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H40 Q52 45 85 100 H0 Z' fill='black'/%3E%3C/svg%3E")
@@ -72,13 +76,13 @@ export default {
 
 .brand-skill {
   font-weight: 800;
-  color: #1a1a2e;
+  color: var(--app-ink);
 }
 
 /* Rohelised toonid on tuletatud aaloe illustratsiooni mündirohelisest (#92e3a9) */
 .brand-scope {
   font-weight: 800;
-  background: linear-gradient(90deg, #1f8a4c, #3fbf74);
+  background: linear-gradient(90deg, var(--brand-green), #3fbf74);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -90,7 +94,7 @@ export default {
   height: 1.1rem;
   border-radius: 50%;
   margin-right: 0.35rem;
-  border: 3px solid #1f8a4c;
+  border: 3px solid var(--brand-green);
   position: relative;
 }
 .brand-mark::after {

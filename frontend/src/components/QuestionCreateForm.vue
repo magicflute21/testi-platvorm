@@ -374,7 +374,7 @@ export default {
 
 .question-create-form .form-control:focus,
 .question-create-form .form-select:focus {
-  background-color: #fff;
+  background-color: var(--bs-body-bg);
 }
 
 .question-create-form .form-select:disabled {
@@ -424,7 +424,7 @@ export default {
 }
 
 .question-create-form .answer-input:focus {
-  background-color: #fff;
+  background-color: var(--bs-body-bg);
   border-color: var(--bs-gray-300);
 }
 

@@ -327,6 +327,6 @@ export default {
   --bs-dropdown-min-width: 12rem;
   --bs-dropdown-bg: var(--bs-gray-100);
   --bs-dropdown-border-radius: 0.75rem;
-  --bs-dropdown-link-color: var(--bs-black);
+  --bs-dropdown-link-color: var(--bs-emphasis-color);
 }
 </style>

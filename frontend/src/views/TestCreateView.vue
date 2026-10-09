@@ -439,7 +439,7 @@ export default {
 
 .test-create-form .form-control:focus,
 .test-create-form .form-select:focus {
-  background-color: #fff;
+  background-color: var(--bs-body-bg);
 }
 
 .test-create-form .form-select:disabled {
