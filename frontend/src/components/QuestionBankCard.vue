@@ -10,10 +10,11 @@ export default {
     questionTypeLabel: { type: String, default: '' },
     competenceLevelName: { type: String, default: '' },
     score: { type: Number, default: null },
+    isInitiallyOpen: { type: Boolean, default: false },
   },
   data() {
     return {
-      isOpen: false,
+      isOpen: this.isInitiallyOpen,
     }
   },
   methods: {
@@ -88,6 +89,10 @@ export default {
         </h6>
         <div class="answers-grid">
           <slot name="answers"></slot>
+        </div>
+
+        <div v-if="$slots.actions" class="mt-4">
+          <slot name="actions"></slot>
         </div>
       </div>
     </div>

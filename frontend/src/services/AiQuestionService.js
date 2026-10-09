@@ -5,6 +5,11 @@ export default {
     return axios.post('/api/ai-questions/generate', { instructions, previousMessages })
   },
 
+  // Küsimuste genereerimine eelvalitud kompetentsi taseme jaoks (QuestionBankAiGenerator)
+  sendGenerateLevelQuestionsRequest(aiQuestionGenerateRequestDto) {
+    return axios.post('/api/ai-questions/generate-by-level', aiQuestionGenerateRequestDto)
+  },
+
   sendSaveQuestionRequest(question) {
     return axios.post('/api/ai-questions', question)
   },

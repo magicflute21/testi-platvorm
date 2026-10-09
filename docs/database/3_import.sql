@@ -46,7 +46,7 @@ VALUES (1, 'admin', '123', 1, 'A', now(), now()),
 -- ------------------------------------------------------------
 INSERT INTO "level" (id, "level", name, description)
 VALUES (1, 1, 'Juunior', 'Teema põhiteadmised, töötab juhendamisel'),
-       (2, 2, 'Medior', 'Praktilised, töös kasutatavad teadmised, töötab iseseisvalt'),
+       (2, 2, 'Mid', 'Praktilised, töös kasutatavad teadmised, töötab iseseisvalt'),
        (3, 3, 'Seenior', 'Eksperditasemel oskused, juhendab teisi ja teeb arhitektuurseid otsuseid'),
        -- Pehmete oskuste (nt Kommunikatsioon) tasemed
        (4, 1, 'Algaja', 'Tunneb põhimõtteid ja rakendab neid lihtsamates olukordades'),
@@ -77,35 +77,43 @@ VALUES (1, 'JavaScript', 'JavaScripti keele alused', 'JavaScripti põhisüntaks,
         now(), 'https://docs.example.com/git', 'git_juhend.pdf', 'A', 1, now() - interval '40 days'),
        (7, 'Vali-IT', 'Backendi head tavad, mida koos live-coding sessioonides harjutame',
         'Siin on koos need asjad, mida ma sulle iga backend taski juures ikka ja jälle meelde tuletan: kihtide järjekord, DTO-d ja mapperid, nimetamistavad, Optional-i teadlik käsitlemine ja korralik töövoog. Kui need on käpas, läheb iga uus task palju libedamalt!',
-        now(), 'https://docs.example.com/vali-it', 'vali_it_juhend.pdf', 'A', 1, now() - interval '1 days');
+        now(), 'https://docs.example.com/vali-it', 'vali_it_juhend.pdf', 'A', 1, now() - interval '1 days'),
+       (8, 'Java', 'Java keele alused ja objektorienteeritud programmeerimine',
+        'Java süntaks, klassid ja objektid, kollektsioonid, erindite käsitlus, streamid ning ühiktestimine JUnitiga.',
+        now(), 'https://docs.example.com/java', 'java-level-1.pdf', 'A', 1, now() - interval '1 days');
 
 -- ------------------------------------------------------------
 -- competence_level  (competence x level junction)
 -- ------------------------------------------------------------
 INSERT INTO competence_level (id, competence_id, level_id, status)
 VALUES (1, 1, 1, 'A'),  -- JavaScript / Juunior
-       (2, 1, 2, 'A'),  -- JavaScript / Medior
+       (2, 1, 2, 'A'),  -- JavaScript / Mid
        (3, 2, 1, 'A'),  -- SQL / Juunior
        (4, 3, 4, 'A'),  -- Kommunikatsioon / Algaja
        (5, 4, 1, 'A'),  -- Vue.js / Juunior
-       (6, 4, 2, 'A'),  -- Vue.js / Medior
+       (6, 4, 2, 'A'),  -- Vue.js / Mid
        (7, 4, 3, 'A'),  -- Vue.js / Seenior
        (8, 5, 1, 'A'),  -- Spring Boot / Juunior
-       (9, 5, 2, 'A'),  -- Spring Boot / Medior
+       (9, 5, 2, 'A'),  -- Spring Boot / Mid
        (10, 5, 3, 'A'), -- Spring Boot / Seenior
        (11, 6, 1, 'A'), -- Git / Juunior
-       (12, 6, 2, 'A'), -- Git / Medior
+       (12, 6, 2, 'A'), -- Git / Mid
        (13, 6, 3, 'A'), -- Git / Seenior
        (14, 3, 5, 'A'), -- Kommunikatsioon / Edasijõudnu
        (15, 3, 6, 'A'), -- Kommunikatsioon / Spetsialist
-       (16, 7, 6, 'A'); -- Vali-IT / Spetsialist
+       (16, 7, 6, 'A'), -- Vali-IT / Spetsialist
+       (17, 8, 1, 'A'), -- Java / Juunior
+       (18, 8, 2, 'A'); -- Java / Mid
 
 -- ------------------------------------------------------------
 -- competence_file
 -- ------------------------------------------------------------
 INSERT INTO competence_file (id, competence_id, file_name, file_type, file_data)
 VALUES (1, 1, 'javascripti_juhend.pdf', 'application/pdf', decode('ZHVtbXlmaWxlZGF0YQ==', 'base64')),
-       (2, 2, 'sql_juhend.pdf', 'application/pdf', decode('ZHVtbXlmaWxlZGF0YQ==', 'base64'));
+       (2, 2, 'sql_juhend.pdf', 'application/pdf', decode('ZHVtbXlmaWxlZGF0YQ==', 'base64')),
+       -- Päris PDF-id kaustast docs/competences/ (base64-kodeeritud)
+       (3, 8, 'java-level-1.pdf', 'application/pdf', decode('JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUgo+PgplbmRvYmoKMiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjEgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagozIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YyIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMgOCAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCA3IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgNyAwIFIgL1R5cGUgL0NhdGFsb2cKPj4KZW5kb2JqCjYgMCBvYmoKPDwKL0F1dGhvciAoVGVzdCBwbGF0Zm9ybSkgL0NyZWF0aW9uRGF0ZSAoRDoyMDI2MTAwOTA3NTUzNyswMCcwMCcpIC9DcmVhdG9yIChcKHVuc3BlY2lmaWVkXCkpIC9LZXl3b3JkcyAoKSAvTW9kRGF0ZSAoRDoyMDI2MTAwOTA3NTUzNyswMCcwMCcpIC9Qcm9kdWNlciAoUmVwb3J0TGFiIFBERiBMaWJyYXJ5IC0gXChvcGVuc291cmNlXCkpIAogIC9TdWJqZWN0IChcKHVuc3BlY2lmaWVkXCkpIC9UaXRsZSAoQ29tcGV0ZW5jZTogSmF2YSwgTGV2ZWwgMSkgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iago3IDAgb2JqCjw8Ci9Db3VudCAxIC9LaWRzIFsgNCAwIFIgXSAvVHlwZSAvUGFnZXMKPj4KZW5kb2JqCjggMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggMTIzNAo+PgpzdHJlYW0KR2F1YFNhYD8scSZBQEJbcVBeMyM+K2lCXVJGPS47OVVuKEInM2hHQEkiQkQ6IjokMjMhMyMjSlZhNDA8VixAckcjRURmTSI5UmZLcCQ1JFRWWSI/QkhXZ0RTL2A/MVEjMF9payVQNylOPVBVXmhgVFoxa0NKUkY2KEY9T0krOl9uQix1SSMnQlJBSExsZkVwSllVPyxkXWNfa2lZZGtHMnFiQS4maz9kLVEkMTBCJChyJyc+S2JoaUdpPm5AZE1vbEIsXjRPPEsvNy02NW5TJ2M/JGJgLlZNNVQybU1IQmo1JFRtS3FhaXNfImtwST9OZF8vY2RONlQjZzRJajptL01vZm5xVCtIM2tcNVskaGRYdCYvLTo9YD5qRTVWMFIvKU8hVihycyksJ1w3PjpDWmlSXC9JOlxiYFBAR0NzW3EwMmZIdGNUcFVhb2BEOjguRVc5RzghXGYmLFEwaWVdUHBLWTEtIzZGckw6NidFcmBSdCtJbV5jNVViKVJfSGpLJm02Ny1gNGU9ajBsXlRwZkxBOTZOVFtlTU8uPltFS2UiWFBNamIsLDBiYWwkZVdnbDNgYFUjT14qQWhIVSpTVFBjXGdZKUZGYEA4MCU4bFYxJ3MscioqNz08LjEuLG4wMC9FXEBna1pYYUomKERDYkk5YHQrbHQiZFsnMGg1aSkzPWNMaU9zNywqZ3EjVzNmYEM/NVY8I103T1RHMS9AYz9pImkuUyI0K006Yztbc2A4N0dqbzJOaSgnTWI5YD4iJWt1MFlBbC41IjFjaVYtdD1FIykxIkhZQi5qR2A7bE1ZZlpSLFRTOFhSXl84cmRIWmtDPl5fIVRTTUJhLFBIWklhMG82SW9hR10rIltoLmA+WlNcLlBxZ0taXlJQWiE4IVwuQl5JS3E+OC84a0JyP18mblUsIidoUSMiPSxwQVVpbyouVTNNOipOL00ibS45LTgqcjtTIUInQDtRN2gyRSQ2LF4mPi5AUTwoO0M+Uz5dMHQ+LjxGKlsnX01wYyIybF85RmxrSmheJ2A1VHNJY180Q1cnTSlvcjFUaz4mJExAcys+R2pXKXVlNUJTJlNSOUswIWh1Jj0oWmJgRFZlXyIiREZUKD50UU81WydNTTpaayIjbTosXV1yb2ApYSJiQmE+OnQ5IWtrT2dtTVxvO19TKjUvI1poN15iJkkxdFhRRjQ9Mj9pXko5RGNrVStmMGJlWXEsNDBccHI2dCkzJSlmIjg4a10zREdzbWUxVmBLLlJMLSUzMDdvVSEwKTVubDo7RWpfSmovbl4pQ1dKPmViVXI8WlUwYEVTZyZfOCNHIjFiT0QzMy9wZT8mKztkM05mOGM/J0U/QWw6alxlcmw8ZVs8MVc9KDM8YUwqUFw3VlRLLCZqVD5pUlU0NS8jN28jYDZEKzBoJGYzZVxrIXFhIl9IPUxgOWAmZ0VRQHBwOF8hPGBoVXI7QjBScyg1PUQmZ1BZUGZFN085blpXLWdJY0tgSm1CTzEsMHMrRjVJKT9XREBpPDBDclNjXUNIQi5JMipJSidEdVlHR1xfK0tALzgsTjFlKy09cCJjXkQ3ZFReRXNPMjYvWSRtKD9oLS5nWW5wSzw1VGU+W0JycmIyM24wY1dbXyFDZFU3YTh+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDkKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDYxIDAwMDAwIG4gCjAwMDAwMDAxMDIgMDAwMDAgbiAKMDAwMDAwMDIwOSAwMDAwMCBuIAowMDAwMDAwMzIxIDAwMDAwIG4gCjAwMDAwMDA1MjQgMDAwMDAgbiAKMDAwMDAwMDU5MiAwMDAwMCBuIAowMDAwMDAwODg0IDAwMDAwIG4gCjAwMDAwMDA5NDMgMDAwMDAgbiAKdHJhaWxlcgo8PAovSUQgCls8MWMxMDFlNWUyMDE0NTg5NzA4MjM3YjBhMTE4Y2E5MTU+PDFjMTAxZTVlMjAxNDU4OTcwODIzN2IwYTExOGNhOTE1Pl0KJSBSZXBvcnRMYWIgZ2VuZXJhdGVkIFBERiBkb2N1bWVudCAtLSBkaWdlc3QgKG9wZW5zb3VyY2UpCgovSW5mbyA2IDAgUgovUm9vdCA1IDAgUgovU2l6ZSA5Cj4+CnN0YXJ0eHJlZgoyMjY4CiUlRU9GCg==', 'base64')),
+       (4, 8, 'java-level-2.pdf', 'application/pdf', decode('JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUgo+PgplbmRvYmoKMiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjEgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagozIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YyIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMgOCAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCA3IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgNyAwIFIgL1R5cGUgL0NhdGFsb2cKPj4KZW5kb2JqCjYgMCBvYmoKPDwKL0F1dGhvciAoVGVzdCBwbGF0Zm9ybSkgL0NyZWF0aW9uRGF0ZSAoRDoyMDI2MTAwOTA3NTUzNyswMCcwMCcpIC9DcmVhdG9yIChcKHVuc3BlY2lmaWVkXCkpIC9LZXl3b3JkcyAoKSAvTW9kRGF0ZSAoRDoyMDI2MTAwOTA3NTUzNyswMCcwMCcpIC9Qcm9kdWNlciAoUmVwb3J0TGFiIFBERiBMaWJyYXJ5IC0gXChvcGVuc291cmNlXCkpIAogIC9TdWJqZWN0IChcKHVuc3BlY2lmaWVkXCkpIC9UaXRsZSAoQ29tcGV0ZW5jZTogSmF2YSwgTGV2ZWwgMikgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iago3IDAgb2JqCjw8Ci9Db3VudCAxIC9LaWRzIFsgNCAwIFIgXSAvVHlwZSAvUGFnZXMKPj4KZW5kb2JqCjggMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggMTQwMAo+PgpzdHJlYW0KR2F1YFM5NjhpSSUpMW4raTk1Pig9ZDgjTERqczZRYWVrUEVtN10xRGNrTCJGVGNQTVpHbEAoSVV1XUo5VW9jTltEKjNzKiM9KllZNVFHNylkWUlYcmE4byU6MGAnIkQ3QmZDOGBCYXA1Q0gsWkFyQVw5UmM9bXRkKFhbaU5DYmNDTkBfKltCPXE6TTpoQWhYXnA4IXFrRiZFaFVSbGM9JGpPQ0dKKlw9JTE2MGtRUyMsYyQ9VHVCPkBTPXBOdTxgWU8qIz9dZyJsNkA6YGdlRlluVjljSi5aUzdiQlZfIVE/UmlJZS8vQjcpZz9AUy9pImopYiVedDpVYGNSM2NuVkxfMy01SkZxa049SilaOzlRY1ZaNy8xTyNPVD4lXXRxcl86Wj4waCktXHExW3AjczAsQ188RmxmMEAhbU1bMEVeJEZURzUoWVBkVD50b2ZOPisndVgxRkNoNTEmTUxeN3RaKVVMNF1JXWFTNHNKJU1AImZePEl1K2VGWEY4UEVDPDhBV18tS1NUMFhNczlfVmhuYj5eZVBIciMvQzo9dUddS1hFSFEnODM/WEV1XEY4VWRaLjpEI2YwVixLSyZFJ2hWSS1yczkvRixGXUg/WzBiOk1jRTxeSFs9WEI+IW0maTRHOWolO1xdOStIK0pVTjdHPj9bRGk+UzMuV0lrIkJkIVArWyQxNUcqJiIuW10lXHFKdUw7N1VaTFhTIkU3IVFbJ0A4NyUjTkE7XEBMOl41LGJoPktXR2suN0krPjsiTV4vZCJJKi8sSmlTTCxELyEkIyJVLSkhZyFoZTltUiE2RCxcWjg5bkE6US8mLU9xKkplJDs3cFRqZzM7L1ZYXGxoPzAuKD86JDc/S2RGK0BYVy8hJS47YmFrNE9yL1t1QCpcRGVeK28oKWA7JConSFtbTyUjVVtKUyMxODllUE1ESmwoNT41PTpyQFY6dCUtWHRqX14lWDtVV15AQF9aOHRnMlFnSF9jYU5cMk0/XzZsK0MjWVV1NihMREE4Z0MrSW8tLkUsIlxdP2hJUkotJz8kUzlAXl9TRm0lNnVpPkVGbClzXSxNZUJ1RktkanBoJHJRSSNrV2ZhMSw7aiw5KSZONTZoKkZucjZbYzhbIkJOWGc9Uy5jZ15BNT8xW2EnMHBuUXVvTiYjOlY7allUR3MiX285YkxdV2BdNS5Bb18wNERBMDojV2BjXlRUZUdlUXFfSlwtSWxmRU08MkxDUkA/XWVmWGouWVEhbTlsakMqWjMiNkUxSXNLKlJaV2pxM1pSbG4+bGx0S0pnNmxdY01nQmUnYyFhUzw7VDxeN1hzQlhQXktHLz8iZmZYMT5TXyREVDtmZVpWT0UkREo/KlFYTkNDUlhoYispOFM9MUQ8I2EiVSo2KUZFKjFqUSwpYmVQVldvcGRxbyU7UD9pKVFWTGknLFw5YihOKmEuNiFdUUVmJ0Z0O2R0Tj8pK1RuKUBKUU1aZyQ/WSU3LTFsSGJ1K2UpPW1xQlxWLTshP0xLYDwhJTtOWzhGZ1tPSHJgcmBqR2lKUVNuR29fOWtYLC9rZDYkXypgISgvS2ZWVVNDXWhBLkdCOicxW2M/bEplUGVzclUqVVE+WWVHLW5pb0FwPllxInJMOSVuSEQubGJocSRIMVApQiEwY29DUkd0TUNnY1swMSc7aUprMWNdXkwqPWEpW11zQzJtbSUtNkdSSTckQi4mQ19ZO24/Jy1qcS1tXl8/UGdHbUg9UCVjMko0YilRPWYrZWZoI142cTdcY3FedD1OQ1E6OydrbWBGIWdHWl9JT0tgcUlTPXVaJjYnOVhXbWhFPFoxR2hoQzxjWEMsX1lHVSJxb1g0RXFBMC5NPmhdfj5lbmRzdHJlYW0KZW5kb2JqCnhyZWYKMCA5CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDA2MSAwMDAwMCBuIAowMDAwMDAwMTAyIDAwMDAwIG4gCjAwMDAwMDAyMDkgMDAwMDAgbiAKMDAwMDAwMDMyMSAwMDAwMCBuIAowMDAwMDAwNTI0IDAwMDAwIG4gCjAwMDAwMDA1OTIgMDAwMDAgbiAKMDAwMDAwMDg4NCAwMDAwMCBuIAowMDAwMDAwOTQzIDAwMDAwIG4gCnRyYWlsZXIKPDwKL0lEIApbPGU1ZGI2ZWMwMDE5ZDZlOWZiODZkY2ZhZDAwYzBmMzE2PjxlNWRiNmVjMDAxOWQ2ZTlmYjg2ZGNmYWQwMGMwZjMxNj5dCiUgUmVwb3J0TGFiIGdlbmVyYXRlZCBQREYgZG9jdW1lbnQgLS0gZGlnZXN0IChvcGVuc291cmNlKQoKL0luZm8gNiAwIFIKL1Jvb3QgNSAwIFIKL1NpemUgOQo+PgpzdGFydHhyZWYKMjQzNAolJUVPRgo=', 'base64'));
 
 -- ------------------------------------------------------------
 -- "group"
