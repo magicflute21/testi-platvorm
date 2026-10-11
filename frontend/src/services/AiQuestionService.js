@@ -11,6 +11,7 @@ export default {
   },
 
   sendSaveQuestionRequest(question) {
+    console.log("question", question);
     return axios.post('/api/ai-questions', question)
   },
 

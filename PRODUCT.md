@@ -23,7 +23,7 @@ Kompetentsitestide platvorm: haldur kirjeldab kompetentsi ja selle tasemed, koos
 
 Kaks asja, mida tulevane töö peab hoidma ja esile tooma:
 
-1. **Kompetents + tase on kõige alus.** Küsimused ja testid on seotud konkreetse kompetentsi ja tasemega (nt JavaScript / Juunior, Vue.js / Seenior); kompetentsil on kirjeldus ja kompetentsikirjelduse PDF (nt `docs/competences/java-level-1.pdf`).
+1. **Kompetents + tase on kõige alus.** Küsimused ja testid on seotud konkreetse kompetentsi ja tasemega (nt JavaScript / Juunior, Vue.js / Seenior); kompetentsil on kirjeldus ja kompetentsikirjelduse PDF (nt `docs/competences/java-competence.pdf`).
 2. **AI küsimuste genereerimine inimese kontrolli all.** AI pakub kompetentsi ja taseme põhjal küsimusi; haldur vaatab need üle, hindab ja kinnitab enne, kui need küsimustepanka jõuavad. AI on abiline, mitte otsustaja.
 
 ## Operating Context

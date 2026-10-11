@@ -33,7 +33,7 @@ export default {
     QuestionBankCard,
     QuestionBankTabs,
     QuestionAnswerOption,
-    AiQuestionGenerator: QuestionBankAiGenerator,
+    QuestionBankAiGenerator,
     PhArrowLeft,
     PhArrowRight,
     PhCaretDown,
@@ -292,7 +292,7 @@ export default {
 
       <div class="question-bank-slider">
         <Transition :name="contentTransitionName" mode="out-in">
-          <AiQuestionGenerator v-if="isAiGeneratorOpen" key="aiGenerator" />
+          <QuestionBankAiGenerator v-if="isAiGeneratorOpen" key="aiGenerator" />
           <div v-else key="questionList">
             <QuestionBankTabs />
 
@@ -541,43 +541,6 @@ export default {
 /* Peidab välja libiseva sisu, et lehele ei tekiks horisontaalset kerimisriba */
 .question-bank-slider {
   overflow-x: clip;
-}
-
-.slide-left-enter-active,
-.slide-left-leave-active,
-.slide-right-enter-active,
-.slide-right-leave-active {
-  transition:
-    transform 0.25s ease,
-    opacity 0.25s ease;
-}
-
-.slide-left-enter-from,
-.slide-right-leave-to {
-  transform: translateX(3rem);
-  opacity: 0;
-}
-
-.slide-left-leave-to,
-.slide-right-enter-from {
-  transform: translateX(-3rem);
-  opacity: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .slide-left-enter-active,
-  .slide-left-leave-active,
-  .slide-right-enter-active,
-  .slide-right-leave-active {
-    transition: opacity 0.15s ease;
-  }
-
-  .slide-left-enter-from,
-  .slide-left-leave-to,
-  .slide-right-enter-from,
-  .slide-right-leave-to {
-    transform: none;
-  }
 }
 
 @media (min-width: 992px) {

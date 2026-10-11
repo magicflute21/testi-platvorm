@@ -1,8 +1,11 @@
 package ee.testiplatvorm.controller.aiquestionbylevel;
 
+import ee.testiplatvorm.controller.aiquestionbylevel.dto.QuestionsRequest;
 import ee.testiplatvorm.service.AiQuestionByLevelService;
+import ee.testiplatvorm.controller.aiquestion.dto.AiQuestionGenerationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -12,7 +15,7 @@ public class AiQuestionByLevelController {
     private final AiQuestionByLevelService aiQuestionByLevelService;
 
     @PostMapping("/api/ai-questions/generate-by-level")
-    public void generateQuestionsByCompetenceAndLevel() {
-        aiQuestionByLevelService.generateQuestionsByCompetenceAndLevel();
+    public AiQuestionGenerationResponse generateQuestionsByCompetenceAndLevel(@RequestBody QuestionsRequest questionsRequest) {
+        return aiQuestionByLevelService.generateQuestionsByCompetenceAndLevel(questionsRequest);
     }
 }

@@ -2,25 +2,31 @@
 import AiQuestionService from '@/services/AiQuestionService.js'
 import CompetenceService from '@/services/CompetenceService.js'
 import CompetenceLevelService from '@/services/CompetenceLevelService.js'
-import AlertDanger from '@/components/AlertDanger.vue'
+import QuestionTypeService from '@/services/QuestionTypeService.js'
 import QuestionBankCard from '@/components/QuestionBankCard.vue'
 import QuestionAnswerOption from '@/components/QuestionAnswerOption.vue'
-import { PhPaperPlaneRight, PhSparkle } from '@phosphor-icons/vue'
+import { PhSparkle } from '@phosphor-icons/vue'
+import QuestionBankCreateNewConfigurationPanel from '@/components/QuestionBankCreateNewConfigurationPanel.vue'
+import QuestionBankPromptInput from '@/components/QuestionBankPromptInput.vue'
 
 const MAX_INPUT_LENGTH = 500
-// Mitu varasemat sõnumit saadetakse AI-le kaasa ja kui pikk võib üks sõnum olla (vt AiChatWidget)
-const MAX_HISTORY_MESSAGES = 10
-const MAX_HISTORY_MESSAGE_LENGTH = 1000
 
 // Backendi veateated, mida võib kasutajale otse näidata
 const STATUSES_WITH_USER_MESSAGE = [400, 403]
 
 export default {
-  name: 'AiQuestionGenerator',
-  components: { AlertDanger, QuestionBankCard, QuestionAnswerOption, PhPaperPlaneRight, PhSparkle },
+  name: 'QuestionBankAiGenerator',
+  components: {
+    QuestionBankPromptInput,
+    QuestionBankCreateNewConfigurationPanel,
+    QuestionBankCard,
+    QuestionAnswerOption,
+    PhSparkle,
+  },
 
   beforeMount() {
     this.getCompetences()
+    this.getQuestionTypes()
   },
 
   data() {
@@ -32,13 +38,14 @@ export default {
 
       competences: [],
       competenceLevels: [],
+      questionTypes: [],
       competenceId: 0,
       competenceLevelId: 0,
+      // null = tüüp pole piiratud, AI valib küsimustele sobivad tüübid ise
+      questionTypeId: null,
       questionCount: 3,
       userInput: '',
 
-      // Vestluse ajalugu AI jaoks (kasutaja juhised, AI täpsustavad küsimused ja loodud küsimuste kokkuvõtted)
-      conversationHistory: [],
       // Ekraanil kuvatavad sõnumid; AI sõnumil võivad olla kaasas loodud küsimused
       messages: [],
 
@@ -59,7 +66,7 @@ export default {
       return this.competenceLevelId !== 0
     },
     canSend() {
-      return this.isCompetenceLevelSelected && this.userInput.trim() !== '' && !this.isLoading
+      return this.isCompetenceLevelSelected && !this.isLoading
     },
     selectedCompetenceName() {
       const competence = this.competences.find(
@@ -77,7 +84,14 @@ export default {
       if (!this.isCompetenceLevelSelected) {
         return 'Vali enne kompetents ja tase'
       }
-      return `Kirjelda, milliseid küsimusi soovid — nt "massiivide ja tsüklite kohta, üks võiks olla tõene/väär"`
+      return `Kirjelda, milliseid küsimusi soovid — nt "massiivide ja tsüklite kohta, üks võiks olla tõene/väär." (Pole kohustuslik)`
+    },
+  },
+
+  watch: {
+    // Kompetentsi valik tuleb paneelist v-modeliga - tasemed laetakse siin, kui väärtus muutub
+    competenceId() {
+      this.getCompetenceLevels()
     },
   },
 
@@ -85,6 +99,11 @@ export default {
     getCompetences() {
       CompetenceService.getCompetencesRequest()
         .then((response) => (this.competences = response.data))
+        .catch()
+    },
+    getQuestionTypes() {
+      QuestionTypeService.getQuestionTypesRequest()
+        .then((response) => (this.questionTypes = response.data))
         .catch()
     },
     getCompetenceLevels() {
@@ -111,12 +130,12 @@ export default {
     generateQuestions(userText) {
       this.isLoading = true
       const aiQuestionGenerateRequestDto = {
+        competenceId: this.competenceId,
         competenceLevelId: this.competenceLevelId,
+        questionTypeId: this.questionTypeId,
         questionCount: this.questionCount,
         instructions: userText,
-        previousMessages: this.conversationHistory.slice(-MAX_HISTORY_MESSAGES),
       }
-      this.addToHistory('user', userText)
       AiQuestionService.sendGenerateLevelQuestionsRequest(aiQuestionGenerateRequestDto)
         .then((response) => this.handleGenerateQuestionsResponse(response.data))
         .catch((error) => this.handleRequestError(error))
@@ -124,13 +143,6 @@ export default {
     },
 
     handleGenerateQuestionsResponse(generationResponse) {
-      if (generationResponse.clarifyingQuestion) {
-        this.addToHistory('ai', generationResponse.clarifyingQuestion)
-        this.addMessage('ai', generationResponse.clarifyingQuestion)
-        return
-      }
-
-      this.addToHistory('ai', this.createGeneratedQuestionsSummary(generationResponse.questions))
       const questions = generationResponse.questions.map((question) => ({
         ...question,
         status: 'pending',
@@ -142,25 +154,13 @@ export default {
       this.addMessage('ai', text, questions)
     },
 
-    // Loodud küsimused lisatakse ajalukku lühidalt, et kasutaja saaks öelda nt "veel üks sama kohta"
-    createGeneratedQuestionsSummary(questions) {
-      const questionLines = questions.map(
-        (question) => `- ${question.questionTypeName}: ${question.title}`,
-      )
-      return `Koostasin küsimused:\n${questionLines.join('\n')}`
-    },
-
-    addToHistory(sender, text) {
-      this.conversationHistory.push({ sender, text: text.slice(0, MAX_HISTORY_MESSAGE_LENGTH) })
-    },
-
     addMessage(sender, text, questions = []) {
       this.messages.push({ sender, text, questions })
       this.$nextTick(() => this.scrollToInput())
     },
 
     scrollToInput() {
-      this.$refs.promptInput?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+      this.$refs.promptInput?.$el?.scrollIntoView({ behavior: 'smooth', block: 'end' })
     },
 
     saveQuestion(question) {
@@ -214,83 +214,17 @@ export default {
 <template>
   <div class="d-flex flex-column gap-4">
     <div class="card app-surface rounded-4">
-      <div class="card-body generator-card-body">
-        <h2 class="h5 fw-bold d-flex align-items-center gap-2 mb-1">
-          <PhSparkle :size="20" />
-          Loo küsimusi AI-ga
-        </h2>
-        <p class="text-secondary mb-4">
-          Vali kompetents ja tase, millele küsimusi lood. AI arvestab valikuga igas vastuses.
-        </p>
-
-        <div class="row g-3">
-          <div class="col-md-4">
-            <label for="selectGeneratorCompetence" class="form-label fw-semibold">
-              Kompetents
-            </label>
-            <select
-              id="selectGeneratorCompetence"
-              v-model="competenceId"
-              class="form-select"
-              @change="getCompetenceLevels"
-            >
-              <option :value="0" disabled>Vali kompetents</option>
-              <option
-                v-for="competence in competences"
-                :key="competence.competenceId"
-                :value="competence.competenceId"
-              >
-                {{ competence.competenceName }}
-              </option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <label for="selectGeneratorLevel" class="form-label fw-semibold">Tase</label>
-            <select
-              id="selectGeneratorLevel"
-              v-model="competenceLevelId"
-              class="form-select"
-              :disabled="competenceId === 0"
-            >
-              <option :value="0" disabled>
-                {{ competenceId === 0 ? 'Vali enne kompetents' : 'Vali tase' }}
-              </option>
-              <option
-                v-for="competenceLevel in competenceLevels"
-                :key="competenceLevel.competenceLevelId"
-                :value="competenceLevel.competenceLevelId"
-              >
-                {{ competenceLevel.levelName }}
-              </option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <span id="labelQuestionCount" class="form-label fw-semibold d-block">
-              Küsimuste arv
-            </span>
-            <div
-              class="btn-group question-count-group w-100"
-              role="group"
-              aria-labelledby="labelQuestionCount"
-            >
-              <template v-for="count in questionCountOptions" :key="count">
-                <input
-                  :id="`questionCount${count}`"
-                  v-model="questionCount"
-                  type="radio"
-                  class="btn-check"
-                  name="questionCount"
-                  :value="count"
-                  autocomplete="off"
-                />
-                <label class="btn btn-outline-primary fw-bold" :for="`questionCount${count}`">
-                  {{ count }}
-                </label>
-              </template>
-            </div>
-          </div>
-        </div>
-      </div>
+      <QuestionBankCreateNewConfigurationPanel
+        v-model:competence-id="competenceId"
+        v-model:competence-level-id="competenceLevelId"
+        v-model:question-count="questionCount"
+        v-model:question-type-id="questionTypeId"
+        :competence-levels="competenceLevels"
+        :competences="competences"
+        :question-count-options="questionCountOptions"
+        :question-type-labels="questionTypeLabels"
+        :question-types="questionTypes"
+      />
     </div>
 
     <div v-if="!messages.length" class="card app-surface rounded-4 p-5 text-center">
@@ -362,56 +296,24 @@ export default {
       </div>
     </div>
 
-    <div ref="promptInput" class="card app-surface rounded-4">
-      <div class="card-body generator-card-body">
-        <AlertDanger :error-message="errorMessage" class="mb-3" />
-        <div v-if="isCompetenceLevelSelected" class="d-flex flex-wrap gap-2 mb-3">
-          <span class="badge rounded-pill badge-neutral">{{ selectedLevelName }}</span>
-          <span class="badge rounded-pill badge-competence">{{ selectedCompetenceName }}</span>
-          <span class="badge rounded-pill badge-neutral">
-            {{ questionCount }} {{ questionCount === 1 ? 'küsimus' : 'küsimust' }}
-          </span>
-        </div>
-        <label for="inputGeneratorPrompt" class="visually-hidden">Juhis AI-le</label>
-        <div class="d-flex gap-2 align-items-end">
-          <textarea
-            id="inputGeneratorPrompt"
-            v-model="userInput"
-            class="form-control"
-            rows="3"
-            :maxlength="maxInputLength"
-            :placeholder="inputPlaceholder"
-            :disabled="!isCompetenceLevelSelected"
-            @keydown.enter="handleEnterKey"
-          ></textarea>
-          <button
-            type="button"
-            class="btn btn-primary rounded-2 send-button"
-            :disabled="!canSend"
-            aria-label="Saada juhis"
-            @click="sendMessage"
-          >
-            <PhPaperPlaneRight :size="20" />
-          </button>
-        </div>
-        <div class="d-flex justify-content-between small text-secondary mt-1">
-          <span>Enter saadab, Shift+Enter teeb uue rea</span>
-          <span>{{ userInput.length }}/{{ maxInputLength }}</span>
-        </div>
-      </div>
-    </div>
+    <QuestionBankPromptInput
+      ref="promptInput"
+      v-model="userInput"
+      :can-send="canSend"
+      :error-message="errorMessage"
+      :handle-enter-key="handleEnterKey"
+      :input-placeholder="inputPlaceholder"
+      :is-competence-level-selected="isCompetenceLevelSelected"
+      :max-input-length="maxInputLength"
+      :question-count="questionCount"
+      :selected-competence-name="selectedCompetenceName"
+      :selected-level-name="selectedLevelName"
+      :send-message="sendMessage"
+    />
   </div>
 </template>
 
 <style scoped>
-.generator-card-body {
-  padding: 1.75rem 2rem;
-}
-
-.question-count-group .btn {
-  flex: 1 1 0;
-}
-
 .generator-bubble {
   max-width: 75%;
   white-space: pre-wrap;
@@ -432,24 +334,4 @@ export default {
 }
 
 /* Samad mullid nagu QuestionBankCard-is */
-.badge-competence {
-  background-color: var(--bs-info-bg-subtle);
-  color: var(--bs-info-text-emphasis);
-  border: var(--bs-border-width) solid var(--bs-info-border-subtle);
-}
-
-.badge-neutral {
-  background-color: var(--bs-gray-100);
-  color: var(--bs-gray-700);
-  border: var(--bs-border-width) solid var(--bs-gray-300);
-}
-
-.send-button {
-  height: 3rem;
-  width: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
 </style>
