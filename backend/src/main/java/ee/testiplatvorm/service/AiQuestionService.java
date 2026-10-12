@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static ee.testiplatvorm.Error.AI_QUESTION_GENERATION_FAILED;
 import static ee.testiplatvorm.Error.INVALID_AI_QUESTION;
 import static ee.testiplatvorm.Status.STATUS_ACTIVE;
 import static ee.testiplatvorm.Status.STATUS_PENDING;
@@ -191,7 +192,7 @@ public class AiQuestionService {
         }
 
         if (generatedQuestionDtos.isEmpty()) {
-            throw new IllegalStateException("AI ei suutnud korrektseid küsimusi genereerida, proovi uuesti");
+            throw new BadRequestException(AI_QUESTION_GENERATION_FAILED.getMessage(), AI_QUESTION_GENERATION_FAILED.name());
         }
 
         AiQuestionGenerationResponse aiQuestionGenerationResponse = new AiQuestionGenerationResponse();

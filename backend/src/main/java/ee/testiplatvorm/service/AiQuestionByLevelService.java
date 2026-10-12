@@ -1,6 +1,7 @@
 package ee.testiplatvorm.service;
 
 import ee.testiplatvorm.controller.aiquestionbylevel.dto.QuestionsRequest;
+import ee.testiplatvorm.infrastructure.exception.BadRequestException;
 import ee.testiplatvorm.persistence.Level;
 import ee.testiplatvorm.persistence.aiquestion.AiQuestion;
 import ee.testiplatvorm.persistence.aiquestion.AiQuestionRepository;
@@ -32,6 +33,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static ee.testiplatvorm.Error.AI_QUESTION_GENERATION_FAILED;
 import static ee.testiplatvorm.Status.STATUS_ACTIVE;
 import static ee.testiplatvorm.Status.STATUS_REJECTED;
 
@@ -147,11 +149,11 @@ public class AiQuestionByLevelService {
     }
 
     public AiQuestionGenerationResponse generateQuestionsByCompetenceAndLevel(QuestionsRequest questionsRequest) {
-        // Õigused kontrollitakse enne AI päringut, et ilma õiguseta päringutele raha ei kuluks
-        currentUserService.getValidQuestionAuthorId();
+        currentUserService.getValidQuestionAuthorId(); // adminid, haldurid
+
         CompetenceLevel competenceLevel = competenceLevelService.getValidCompetenceLevelBy(questionsRequest.getCompetenceLevelId());
         List<QuestionType> questionTypes = getAllowedQuestionTypes(questionsRequest.getQuestionTypeId());
-        // Kompetentsi ID võetakse tasemelt, et dokument kuuluks kindlasti päringu tasemega samale kompetentsile
+
         List<CompetenceFile> competenceFiles = findCompetenceDocumentsBy(competenceLevel.getCompetence().getId());
         List<AiQuestion> goodExamples = aiQuestionRepository.findGoodAiQuestionsBy(competenceLevel.getId(),
                 STATUS_ACTIVE.getCode(), GOOD_EXAMPLE_MIN_SCORE, Limit.of(EXAMPLE_COUNT));
@@ -181,11 +183,11 @@ public class AiQuestionByLevelService {
 
         AiLevelQuestions aiLevelQuestions = responseEntity.entity();
 
-        System.out.println("promptTokens " + responseEntity.response().getMetadata().getUsage().getPromptTokens());
+//        System.out.println("promptTokens " + responseEntity.response().getMetadata().getUsage().getPromptTokens());
 
         List<GeneratedQuestionDto> generatedQuestionDtos = createGeneratedQuestionDtos(aiLevelQuestions, competenceLevel, questionTypes);
         if (generatedQuestionDtos.isEmpty()) {
-            throw new IllegalStateException("AI ei suutnud korrektseid küsimusi genereerida, proovi uuesti");
+            throw new BadRequestException(AI_QUESTION_GENERATION_FAILED.getMessage(), AI_QUESTION_GENERATION_FAILED.name());
         }
 
         AiQuestionGenerationResponse aiQuestionGenerationResponse = new AiQuestionGenerationResponse();
@@ -211,10 +213,17 @@ public class AiQuestionByLevelService {
         }
         for (AiLevelQuestion aiLevelQuestion : aiLevelQuestions.questions()) {
             Optional<QuestionType> questionType = findQuestionTypeBy(aiLevelQuestion.questionType(), questionTypes);
-            questionType
-                    .filter(type -> aiQuestionValidationService.isValidQuestion(aiLevelQuestion.title(), aiLevelQuestion.description(),
-                            aiLevelQuestion.answers(), type))
-                    .ifPresent(type -> generatedQuestionDtos.add(createGeneratedQuestionDto(aiLevelQuestion, competenceLevel, type)));
+            if (questionType.isEmpty()) {
+                System.out.println("AI küsimus jäeti välja: tundmatu tüüp \"" + aiLevelQuestion.questionType() + "\" - " + aiLevelQuestion.title());
+                continue;
+            }
+            Optional<String> invalidQuestionReason = aiQuestionValidationService.findInvalidQuestionReason(aiLevelQuestion.title(),
+                    aiLevelQuestion.description(), aiLevelQuestion.answers(), questionType.get());
+            if (invalidQuestionReason.isPresent()) {
+                System.out.println("AI küsimus jäeti välja: " + invalidQuestionReason.get() + " - " + aiLevelQuestion.title());
+                continue;
+            }
+            generatedQuestionDtos.add(createGeneratedQuestionDto(aiLevelQuestion, competenceLevel, questionType.get()));
         }
         return generatedQuestionDtos;
     }
