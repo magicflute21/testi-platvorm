@@ -18,6 +18,8 @@ import ee.testiplatvorm.controller.aiquestion.dto.GeneratedQuestionDto;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ResponseEntity;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.google.genai.GoogleGenAiChatOptions;
+import org.springframework.ai.google.genai.common.GoogleGenAiThinkingLevel;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static ee.testiplatvorm.Status.STATUS_ACTIVE;
@@ -72,6 +75,7 @@ public class AiQuestionByLevelService {
             6. Answer texts must not reveal correctness (no "(õige)"/"(vale)" labels, the correct answer
                must not be noticeably longer, no "Kõik eelnevad"/"Mitte ükski eelnevatest").
             7. Do not repeat questions within the batch.
+            8. Randomize which answer in the sequence is correct. Do not always make the first answer the correct option.
             """;
 
     private static final String USER_PROMPT_TEMPLATE = """
@@ -96,6 +100,14 @@ public class AiQuestionByLevelService {
             </request>
             """;
 
+    // Kasutaja ei tohi saada <request> sildi sulgeda ega uut avada - muidu jääks tema tekst "reeglite" alale
+    private static final Pattern REQUEST_TAG = Pattern.compile("</?\\s*request\\s*>", Pattern.CASE_INSENSITIVE);
+    // Nähtamatud juhtmärgid (v.a reavahetus ja tabulaator) ning nullaiusega märgid, millega saab teksti peita
+    private static final Pattern HIDDEN_CHARACTERS = Pattern.compile("[\\p{Cntrl}&&[^\\n\\t]]|[\\u200B-\\u200F\\u2060\\uFEFF]");
+    // Rohkem kui kaks järjestikust tühja rida surutakse kokku
+    private static final Pattern EXTRA_BLANK_LINES = Pattern.compile("\\n{3,}");
+    private static final int MAX_INSTRUCTIONS_LENGTH = 500;
+
     private static final int EXAMPLE_COUNT = 2;
     // Hinne 3 jäetakse näidetest välja - see ei õpeta AI-le selgelt kumbagi suunda
     private static final int GOOD_EXAMPLE_MIN_SCORE = 4;
@@ -108,11 +120,14 @@ public class AiQuestionByLevelService {
     private final AiQuestionAnswerRepository aiQuestionAnswerRepository;
     private final CompetenceLevelService competenceLevelService;
     private final QuestionTypeService questionTypeService;
+    private final CurrentUserService currentUserService;
+    private final AiQuestionValidationService aiQuestionValidationService;
 
     public AiQuestionByLevelService(ChatClient.Builder builder, CompetenceFileRepository competenceFileRepository,
                                     CompetenceLevelRepository competenceLevelRepository, AiQuestionRepository aiQuestionRepository,
                                     AiQuestionAnswerRepository aiQuestionAnswerRepository, CompetenceLevelService competenceLevelService,
-                                    QuestionTypeService questionTypeService) {
+                                    QuestionTypeService questionTypeService, CurrentUserService currentUserService,
+                                    AiQuestionValidationService aiQuestionValidationService) {
         this.chat = builder.build();
         this.competenceFileRepository = competenceFileRepository;
         this.competenceLevelRepository = competenceLevelRepository;
@@ -120,6 +135,8 @@ public class AiQuestionByLevelService {
         this.aiQuestionAnswerRepository = aiQuestionAnswerRepository;
         this.competenceLevelService = competenceLevelService;
         this.questionTypeService = questionTypeService;
+        this.currentUserService = currentUserService;
+        this.aiQuestionValidationService = aiQuestionValidationService;
     }
 
     // AI vastuse kuju - iga küsimus ütleb, millise tüübi AI valis (oluline, kui tüüp jäeti päringus valimata)
@@ -130,6 +147,8 @@ public class AiQuestionByLevelService {
     }
 
     public AiQuestionGenerationResponse generateQuestionsByCompetenceAndLevel(QuestionsRequest questionsRequest) {
+        // Õigused kontrollitakse enne AI päringut, et ilma õiguseta päringutele raha ei kuluks
+        currentUserService.getValidQuestionAuthorId();
         CompetenceLevel competenceLevel = competenceLevelService.getValidCompetenceLevelBy(questionsRequest.getCompetenceLevelId());
         List<QuestionType> questionTypes = getAllowedQuestionTypes(questionsRequest.getQuestionTypeId());
         // Kompetentsi ID võetakse tasemelt, et dokument kuuluks kindlasti päringu tasemega samale kompetentsile
@@ -145,6 +164,10 @@ public class AiQuestionByLevelService {
         System.out.println("userPrompt " + userPrompt);
 
         ResponseEntity<ChatResponse, AiLevelQuestions> responseEntity = chat.prompt()
+                .options(GoogleGenAiChatOptions.builder()
+                        .temperature(1.0)
+                        .thinkingLevel(GoogleGenAiThinkingLevel.LOW)
+                )
                 .system(SYSTEM_PROMPT)
                 .user(userSpec -> {
                     userSpec.text(userPrompt);
@@ -160,8 +183,13 @@ public class AiQuestionByLevelService {
 
         System.out.println("promptTokens " + responseEntity.response().getMetadata().getUsage().getPromptTokens());
 
+        List<GeneratedQuestionDto> generatedQuestionDtos = createGeneratedQuestionDtos(aiLevelQuestions, competenceLevel, questionTypes);
+        if (generatedQuestionDtos.isEmpty()) {
+            throw new IllegalStateException("AI ei suutnud korrektseid küsimusi genereerida, proovi uuesti");
+        }
+
         AiQuestionGenerationResponse aiQuestionGenerationResponse = new AiQuestionGenerationResponse();
-        aiQuestionGenerationResponse.setQuestions(createGeneratedQuestionDtos(aiLevelQuestions, competenceLevel, questionTypes));
+        aiQuestionGenerationResponse.setQuestions(generatedQuestionDtos);
         return aiQuestionGenerationResponse;
     }
 
@@ -173,7 +201,8 @@ public class AiQuestionByLevelService {
         return List.of(questionTypeService.getValidQuestionTypeBy(questionTypeId));
     }
 
-    // Küsimused, mille tüüp pole lubatud tüüpide hulgas, jäetakse välja - neid ei saaks hiljem salvestada
+    // Küsimused, mille tüüp pole lubatud tüüpide hulgas või mis rikuvad reegleid (vastuste arv, õigete vastuste arv,
+    // õigsust reetvad märgendid, liiga pikk kirjeldus), jäetakse välja - neid ei saaks hiljem salvestada
     private List<GeneratedQuestionDto> createGeneratedQuestionDtos(AiLevelQuestions aiLevelQuestions, CompetenceLevel competenceLevel,
                                                                    List<QuestionType> questionTypes) {
         List<GeneratedQuestionDto> generatedQuestionDtos = new ArrayList<>();
@@ -182,7 +211,10 @@ public class AiQuestionByLevelService {
         }
         for (AiLevelQuestion aiLevelQuestion : aiLevelQuestions.questions()) {
             Optional<QuestionType> questionType = findQuestionTypeBy(aiLevelQuestion.questionType(), questionTypes);
-            questionType.ifPresent(type -> generatedQuestionDtos.add(createGeneratedQuestionDto(aiLevelQuestion, competenceLevel, type)));
+            questionType
+                    .filter(type -> aiQuestionValidationService.isValidQuestion(aiLevelQuestion.title(), aiLevelQuestion.description(),
+                            aiLevelQuestion.answers(), type))
+                    .ifPresent(type -> generatedQuestionDtos.add(createGeneratedQuestionDto(aiLevelQuestion, competenceLevel, type)));
         }
         return generatedQuestionDtos;
     }
@@ -271,9 +303,26 @@ public class AiQuestionByLevelService {
     }
 
     private String createAuthorRequestSection(String instructions) {
-        if (instructions == null || instructions.isBlank()) {
+        String cleanInstructions = cleanInstructions(instructions);
+        if (cleanInstructions.isEmpty()) {
             return "";
         }
-        return AUTHOR_REQUEST_TEMPLATE.formatted(instructions.strip());
+        return AUTHOR_REQUEST_TEMPLATE.formatted(cleanInstructions);
+    }
+
+    // Kasutaja teksti puhastamine enne prompti lisamist (prompt injection'i vastu)
+    private String cleanInstructions(String instructions) {
+        if (instructions == null) {
+            return "";
+        }
+        String cleanInstructions = instructions.replace("\r\n", "\n");
+        cleanInstructions = HIDDEN_CHARACTERS.matcher(cleanInstructions).replaceAll("");
+        cleanInstructions = REQUEST_TAG.matcher(cleanInstructions).replaceAll("");
+        cleanInstructions = EXTRA_BLANK_LINES.matcher(cleanInstructions).replaceAll("\n\n");
+        cleanInstructions = cleanInstructions.strip();
+        // DTO @Size piirab juba pikkust, see on lisakaitse juhuks, kui meetodit kutsutakse mujalt
+        return cleanInstructions.length() > MAX_INSTRUCTIONS_LENGTH
+                ? cleanInstructions.substring(0, MAX_INSTRUCTIONS_LENGTH)
+                : cleanInstructions;
     }
 }
