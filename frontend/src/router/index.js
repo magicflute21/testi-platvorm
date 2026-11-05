@@ -3,7 +3,6 @@ import MainLayout from '@/navigation/MainLayout.vue'
 import LoginView from '@/views/LoginView.vue'
 import TestResultView from '@/views/TestResultView.vue'
 import TestAttemptView from '@/views/TestAttemptView.vue'
-import TestStartView from '@/views/TestStartView.vue'
 import TestDetailView from '@/views/TestDetailView.vue'
 import CompetenceView from '@/views/CompetenceView.vue'
 import MyTestsView from '@/views/MyTestsView.vue'
@@ -15,6 +14,7 @@ import AiQuestionBankView from '@/views/AiQuestionBankView.vue'
 import SessionStorageService from '@/services/SessionStorageService.js'
 import DashboardView from '@/views/DashboardView.vue'
 import TestOverview from '@/views/TestOverview.vue'
+import TestStartViewComposition from '@/views/TestStartViewComposition.vue'
 
 
 const toNumber = (param) => (route) => ({ [param]: Number(route.params[param]) })
@@ -52,8 +52,8 @@ const router = createRouter({
         },
         {
           path: 'tests/:testId/start',
-          name: 'testStartRoute',
-          component: TestStartView,
+          name: 'TestStartViewComposition',
+          component: TestStartViewComposition,
           props: toNumber('testId'),
         },
         {

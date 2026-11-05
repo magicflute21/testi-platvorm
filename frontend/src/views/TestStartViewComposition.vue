@@ -1,71 +1,53 @@
-<script>
+<script setup>
+import { onMounted, ref } from 'vue'
 import NavigationService from '@/services/NavigationService.js'
 import TestStartService from '@/services/TestStartService.js'
 import LoadingText from '@/components/LoadingText.vue'
-import { PhInfinity, PhPlay, PhTimer } from '@phosphor-icons/vue'
-import aloeVeraImage from '@/assets/images/aloe vera-cuate.svg'
 import TestNotFoundIllustration from '@/components/TestNotFoundIllustration.vue'
+import { PhTimer, PhInfinity, PhPlay } from '@phosphor-icons/vue'
 
-export default {
-  name: 'TestStartView',
-  components: { TestNotFoundIllustration, LoadingText, PhTimer, PhInfinity, PhPlay },
-  props: {
-    testId: { type: Number, required: true },
-  },
-  data() {
-    return {
-      isLoading: true,
-      aloeVeraImage,
-      errorMessage: '',
-      test: {
-        title: '',
-        description: '',
-        shortDescription: '',
-        competence: '',
-        competenceLevel: '',
-        status: '',
-        testId: '',
-        timerMin: '',
-        isTimed: '',
-      },
-      errorResponse: {
-        message: '',
-        errorCode: '',
-      },
-    }
-  },
-  methods: {
-    startTheTest() {
-      NavigationService.navigateToTestAttempt(this.testId)
-    },
-    getTestStart() {
-      TestStartService.getTestStart(this.testId)
-        .then((response) => (this.test = response.data))
-        .catch((error) => this.handleGetTestStartErrorResponse(error))
-        .finally(() => (this.isLoading = false))
-    },
-    handleGetTestStartErrorResponse(error) {
-      this.errorResponse = error.response.data
-      if (
-        error.response.status === 403 &&
-        this.errorResponse.errorCode === 'NO_TEST_ASSIGNMENT_FOR_THIS_USER'
-      ) {
-        this.errorMessage = this.errorResponse.message
-        this.test = {}
-      }
-    },
-  },
-  beforeMount() {
-    this.getTestStart()
-  },
+const props = defineProps({
+  testId: { type: Number, required: true },
+})
+const isLoading = ref(true)
+const errorMessage = ref('')
+const test = ref({
+  title: '',
+  description: '',
+  shortDescription: '',
+  competence: '',
+  competenceLevel: '',
+  status: '',
+  testId: '',
+  timerMin: 0,
+  isTimed: false,
+})
+
+const startTheTest = () => {
+  NavigationService.navigateToTestAttempt(props.testId)
 }
+const getTestStart = () => {
+  TestStartService.getTestStart(props.testId)
+    .then((response) => (test.value = response.data))
+    .catch((error) => handleGetTestStartErrorResponse(error))
+    .finally(() => (isLoading.value = false))
+}
+const handleGetTestStartErrorResponse = (error) => {
+  const data = error.response?.data
+  const noAssignment =
+    error.response?.status === 403 && data?.errorCode === 'NO_TEST_ASSIGNMENT_FOR_THIS_USER'
+
+  errorMessage.value = noAssignment ? data.message : 'Testi laadimine ebaõnnestus'
+}
+
+onMounted(getTestStart)
 </script>
 
 <template>
   <div class="container d-flex flex-column align-items-center">
     <LoadingText v-if="isLoading" />
 
-    <TestNotFoundIllustration v-else-if="errorMessage.length" :message="errorMessage" />
+    <TestNotFoundIllustration v-else-if="errorMessage" :message="errorMessage" />
 
     <div v-else class="card my-4 app-surface p-4 start-card">
       <div class="card-body">
