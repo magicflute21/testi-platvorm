@@ -1,8 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainLayout from '@/navigation/MainLayout.vue'
-import DashboardView from '@/views/DashboardView.vue'
 import LoginView from '@/views/LoginView.vue'
-import TestOverview from '@/views/TestOverview.vue'
 import TestResultView from '@/views/TestResultView.vue'
 import TestAttemptView from '@/views/TestAttemptView.vue'
 import TestStartView from '@/views/TestStartView.vue'
@@ -15,6 +13,9 @@ import TestCreateView from '@/views/TestCreateView.vue'
 import QuestionBankView from '@/views/QuestionBankView.vue'
 import AiQuestionBankView from '@/views/AiQuestionBankView.vue'
 import SessionStorageService from '@/services/SessionStorageService.js'
+import DashboardView from '@/views/DashboardView.vue'
+import TestOverview from '@/views/TestOverview.vue'
+
 
 const toNumber = (param) => (route) => ({ [param]: Number(route.params[param]) })
 
@@ -28,7 +29,12 @@ const router = createRouter({
       path: '/',
       component: MainLayout,
       children: [
-        { path: 'dashboard', name: 'dashboardRoute', component: DashboardView, meta: STAFF },
+        {
+          path: 'dashboard',
+          name: 'dashboardRoute',
+          component: DashboardView,
+          meta: STAFF,
+        },
         { path: 'tests/new', name: 'testCreateRoute', component: TestCreateView, meta: STAFF },
         { path: 'tests', name: 'testsRoute', component: TestOverview, meta: STAFF },
         { path: 'my-tests', name: 'myTestsRoute', component: MyTestsView },

@@ -1,86 +1,66 @@
-<script>
-import MainTitle from '@/components/MainTitle.vue'
+<script setup>
 import LoadingText from '@/components/LoadingText.vue'
+import MainTitle from '@/components/MainTitle.vue'
+import { PhClipboardText, PhFilePlus, PhQuestion, PhSparkle } from '@phosphor-icons/vue'
+import { computed, ref, onMounted } from 'vue'
 import DashboardService from '@/services/DashboardService.js'
-import {
-  PhArrowRight,
-  PhClipboardText,
-  PhFilePlus,
-  PhQuestion,
-  PhSparkle,
-} from '@phosphor-icons/vue'
 
-export default {
-  name: 'DashboardView',
-  components: { MainTitle, LoadingText, PhArrowRight },
-  data() {
-    return {
-      isLoading: true,
-      errorMessage: '',
-      dashboard: {
-        assignedTestCount: 0,
-        recentTestCount: 0,
-        recentQuestionCount: 0,
-        pendingAiQuestionCount: 0,
-        recentDays: 7,
-      },
-    }
-  },
-  computed: {
-    recentPeriodText() {
-      return `viimase ${this.dashboard.recentDays} päeva jooksul`
-    },
-    statCards() {
-      return [
-        {
-          key: 'assignedTests',
-          icon: PhClipboardText,
-          count: this.dashboard.assignedTestCount,
-          label: 'Mulle määratud testid',
-          hint: 'Ootavad sooritamist',
-          to: { name: 'myTestsRoute' },
-        },
-        {
-          key: 'recentTests',
-          icon: PhFilePlus,
-          count: this.dashboard.recentTestCount,
-          label: 'Uued testid',
-          hint: this.recentPeriodText,
-          to: { name: 'testsRoute' },
-        },
-        {
-          key: 'recentQuestions',
-          icon: PhQuestion,
-          count: this.dashboard.recentQuestionCount,
-          label: 'Uued küsimused',
-          hint: this.recentPeriodText,
-          to: { name: 'questionBankView' },
-        },
-        {
-          key: 'pendingAiQuestions',
-          icon: PhSparkle,
-          count: this.dashboard.pendingAiQuestionCount,
-          label: 'AI küsimused ootel',
-          hint: 'Ootavad ülevaatust',
-          to: { name: 'aiQuestionBankView' },
-          // Ootel AI küsimused vajavad tegevust — tõstame kaardi esile, kui neid on
-          isHighlighted: this.dashboard.pendingAiQuestionCount > 0,
-        },
-      ]
-    },
-  },
-  methods: {
-    getDashboard() {
-      DashboardService.getDashboard()
-        .then((response) => (this.dashboard = response.data))
-        .catch(() => (this.errorMessage = 'Töölaua andmete laadimine ebaõnnestus'))
-        .finally(() => (this.isLoading = false))
-    },
-  },
-  beforeMount() {
-    this.getDashboard()
-  },
+const dashboard = ref({
+  assignedTestCount: 0,
+  recentTestCount: 0,
+  recentQuestionCount: 0,
+  pendingAiQuestionCount: 0,
+  recentDays: 7,
+})
+const errorMessage = ref('')
+const isLoading = ref(true)
+
+const getDashboard = () => {
+  DashboardService.getDashboard()
+    .then((response) => (dashboard.value = response.data))
+    .catch(() => (errorMessage.value = 'Töölaua andmete laadimine ebaõnnestus'))
+    .finally(() => (isLoading.value = false))
 }
+
+onMounted(getDashboard)
+
+const recentPeriodText = computed(() => `viimase ${dashboard.value.recentDays} päeva jooksul`)
+const statCards = computed(() => [
+  {
+    key: 'assignedTests',
+    icon: PhClipboardText,
+    count: dashboard.value.assignedTestCount,
+    label: 'Mulle määratud testid',
+    hint: 'Ootavad sooritamist',
+    to: { name: 'myTestsRoute' },
+  },
+  {
+    key: 'recentTests',
+    icon: PhFilePlus,
+    count: dashboard.value.recentTestCount,
+    label: 'Uued testid',
+    hint: recentPeriodText.value,
+    to: { name: 'testsRoute' },
+  },
+  {
+    key: 'recentQuestions',
+    icon: PhQuestion,
+    count: dashboard.value.recentQuestionCount,
+    label: 'Uued küsimused',
+    hint: recentPeriodText.value,
+    to: { name: 'questionBankView' },
+  },
+  {
+    key: 'pendingAiQuestions',
+    icon: PhSparkle,
+    count: dashboard.value.pendingAiQuestionCount,
+    label: 'AI küsimused ootel',
+    hint: 'Ootavad ülevaatust',
+    to: { name: 'aiQuestionBankView' },
+    // Ootel AI küsimused vajavad tegevust — tõstame kaardi esile, kui neid on
+    isHighlighted: dashboard.value.pendingAiQuestionCount > 0,
+  },
+])
 </script>
 
 <template>
@@ -88,7 +68,7 @@ export default {
     <MainTitle title="Töölaud" />
     <LoadingText v-if="isLoading" />
 
-    <div v-else-if="errorMessage.length" class="alert alert-danger">{{ errorMessage }}</div>
+    <div v-else-if="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
 
     <div v-else class="stat-grid">
       <RouterLink

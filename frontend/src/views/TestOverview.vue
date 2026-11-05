@@ -1,50 +1,40 @@
-<script>
+<script setup>
 import TestService from '@/services/TestService.js'
-import NavigationService from '@/services/NavigationService.js'
+import { ref, onMounted } from 'vue'
 import Status from '@/Status.js'
+import MainTitle from '@/components/MainTitle.vue'
 import PreviewCard from '@/components/PreviewCard.vue'
 import LoadingText from '@/components/LoadingText.vue'
-import MainTitle from '@/components/MainTitle.vue'
+import NavigationService from '@/services/NavigationService.js'
 
-export default {
-  name: 'TestOverview',
-  components: { LoadingText, PreviewCard, MainTitle },
+const isLoading = ref(true)
+const testStatus = Status
+const testSummaries = ref([
+  {
+    testId: 0,
+    testName: '',
+    testShortDescription: '',
+    testStatus: '',
+  },
+])
 
-  beforeMount() {
-    this.getAllTests()
-  },
-
-  data() {
-    return {
-      isLoading: true,
-      testStatus: Status,
-      testSummaries: [
-        {
-          testId: 0,
-          testName: '',
-          testShortDescription: '',
-          testStatus: '',
-        },
-      ],
-    }
-  },
-  methods: {
-    getAllTests() {
-      TestService.getAllTests()
-        .then((response) => this.handleGetAllTests(response))
-        .catch()
-        .finally(() => (this.isLoading = false))
-    },
-    handleGetAllTests(response) {
-      this.testSummaries = response.data
-    },
-    navigateToTestDetail(testId) {
-      NavigationService.navigateToTestDetail(testId)
-    },
-    assignTestToUser() {},
-    // tühi meetod nupuvajutuse näitamiseks
-  },
+const handleGetAllTests = (response) => {
+  testSummaries.value = response.data
 }
+
+const getAllTests = () => {
+  TestService.getAllTests()
+    .then((response) => handleGetAllTests(response))
+    .catch()
+    .finally(() => (isLoading.value = false))
+}
+
+const navigateToTestDetail = (testId) => {
+  NavigationService.navigateToTestDetail(testId)
+}
+
+onMounted(getAllTests)
+
 </script>
 
 <template>
